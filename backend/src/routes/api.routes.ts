@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
-import { asyncHandler, AppError } from '../middleware/errorHandler.js';
-import { formService } from '../services/form.service.js';
-import { ollamaService } from '../services/ollama.service.js';
+import { asyncHandler, AppError } from '../middleware/errorHandler.ts';
+import { formService } from '../services/form.service.ts';
+import { ollamaService } from '../services/ollama.service.ts';
 
 const router = Router();
 

@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors';
-import { config } from './config/config.js';
-import { initializeDatabase, setDatabase } from './db/database.js';
-import { errorHandler } from './middleware/errorHandler.js';
-import apiRoutes from './routes/api.routes.js';
+import { config } from './config/config.ts';
+import { initializeDatabase, setDatabase } from './db/database.ts';
+import { errorHandler } from './middleware/errorHandler.ts';
+import apiRoutes from './routes/api.routes.ts';
 
 const app = express();
 

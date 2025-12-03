@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
-import { config } from '../config/config.js';
+import { config } from '../config/config.ts';
 
 export interface OllamaMessage {
     role: 'system' | 'user' | 'assistant';

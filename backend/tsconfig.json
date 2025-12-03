@@ -18,7 +18,17 @@
         "sourceMap": true,
         "noImplicitAny": true,
         "strictNullChecks": true,
-        "strictFunctionTypes": true
+        "strictFunctionTypes": true,
+        "allowImportingTsExtensions": true
+    },
+    "ts-node": {
+        "esm": true,
+        "experimentalEsm": true,
+        "transpileOnly": false,
+        "compilerOptions": {
+            "module": "ES2020",
+            "noEmit": true
+        }
     },
     "include": [
         "src/**/*"

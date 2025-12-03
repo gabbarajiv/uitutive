@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import { getDatabase } from '../db/database.js';
-import { Form, FormSubmission, ResponseTemplate } from '../models/types.js';
+import { getDatabase } from '../db/database.ts';
+import { Form, FormSubmission, ResponseTemplate } from '../models/types.ts';
 
 export class FormService {
     /**
