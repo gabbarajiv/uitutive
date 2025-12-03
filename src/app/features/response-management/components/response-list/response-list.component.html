@@ -1,0 +1,175 @@
+<div class="response-list-container">
+    <!-- Header Section -->
+    <div class="response-header">
+        <h1>Form Responses</h1>
+        <div class="header-actions">
+            <button mat-stroked-button color="accent" [disabled]="selectedRows.size === 0" (click)="bulkDelete()"
+                class="action-button">
+                <mat-icon>delete</mat-icon>
+                Delete Selected
+            </button>
+
+            <button mat-icon-button [matMenuTriggerFor]="exportMenu" [disabled]="selectedRows.size === 0">
+                <mat-icon>more_vert</mat-icon>
+            </button>
+
+            <mat-menu #exportMenu="matMenu">
+                <button mat-menu-item (click)="bulkUpdateStatus('reviewed')">
+                    <mat-icon>check_circle</mat-icon>
+                    <span>Mark as Reviewed</span>
+                </button>
+                <button mat-menu-item (click)="bulkUpdateStatus('archived')">
+                    <mat-icon>archive</mat-icon>
+                    <span>Archive Selected</span>
+                </button>
+                <mat-divider></mat-divider>
+                <button mat-menu-item (click)="exportSelected('json')">
+                    <mat-icon>download</mat-icon>
+                    <span>Export as JSON</span>
+                </button>
+                <button mat-menu-item (click)="exportSelected('csv')">
+                    <mat-icon>download</mat-icon>
+                    <span>Export as CSV</span>
+                </button>
+            </mat-menu>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <form [formGroup]="filterForm" (ngSubmit)="onFilterChange()" class="filter-form">
+            <mat-form-field appearance="outline">
+                <mat-label>Status</mat-label>
+                <mat-select formControlName="status" (selectionChange)="onFilterChange()">
+                    <mat-option value="">All</mat-option>
+                    <mat-option value="new">New</mat-option>
+                    <mat-option value="reviewed">Reviewed</mat-option>
+                    <mat-option value="archived">Archived</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="search-field">
+                <mat-label>Search</mat-label>
+                <input matInput type="text" formControlName="searchTerm" placeholder="Search responses..."
+                    (change)="onFilterChange()" />
+                <button mat-icon-button matSuffix>
+                    <mat-icon>search</mat-icon>
+                </button>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>From Date</mat-label>
+                <input matInput [matDatepicker]="pickerFrom" formControlName="dateFrom"
+                    (dateChange)="onFilterChange()" />
+                <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
+                <mat-datepicker #pickerFrom></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <mat-label>To Date</mat-label>
+                <input matInput [matDatepicker]="pickerTo" formControlName="dateTo" (dateChange)="onFilterChange()" />
+                <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
+                <mat-datepicker #pickerTo></mat-datepicker>
+            </mat-form-field>
+
+            <button mat-stroked-button type="button" (click)="clearFilters()" [disabled]="!filterForm.dirty"
+                class="clear-button">
+                Clear Filters
+            </button>
+        </form>
+    </div>
+
+    <!-- Results Info -->
+    <div class="results-info">
+        <span>{{ selectedRows.size }} of {{ totalCount }} selected</span>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+        <mat-spinner></mat-spinner>
+    </div>
+
+    <!-- Table -->
+    <div *ngIf="!isLoading" class="table-container">
+        <table mat-table [dataSource]="submissions" matSort (matSortChange)="onSortChange($event)"
+            class="responses-table">
+            <!-- Checkbox Column -->
+            <ng-container matColumnDef="select">
+                <th mat-header-cell *matHeaderCellDef>
+                    <mat-checkbox [checked]="isAllSelected()" (change)="toggleSelectAll()"
+                        aria-label="Select all submissions">
+                    </mat-checkbox>
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    <mat-checkbox [checked]="isRowSelected(element.id)" (change)="toggleRowSelection(element.id)"
+                        [attr.aria-label]="'Select submission ' + element.id">
+                    </mat-checkbox>
+                </td>
+            </ng-container>
+
+            <!-- ID Column -->
+            <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+                <td mat-cell *matCellDef="let element" class="id-cell">
+                    <span class="id-text" [title]="element.id">{{ element.id | slice : 0 : 8 }}...</span>
+                </td>
+            </ng-container>
+
+            <!-- Status Column -->
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+                <td mat-cell *matCellDef="let element">
+                    <mat-chip-set aria-label="Status">
+                        <mat-chip [color]="getStatusColor(element.status)" [highlighted]="true">
+                            <mat-icon matChipAvatar>{{ getStatusIcon(element.status) }}</mat-icon>
+                            {{ element.status | titlecase }}
+                        </mat-chip>
+                    </mat-chip-set>
+                </td>
+            </ng-container>
+
+            <!-- Submitted At Column -->
+            <ng-container matColumnDef="submittedAt">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Submitted</th>
+                <td mat-cell *matCellDef="let element">
+                    {{ element.submittedAt | date : 'short' }}
+                </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let element">
+                    <button mat-icon-button matTooltip="View Details" (click)="viewSubmission(element.id)"
+                        aria-label="View submission details">
+                        <mat-icon>visibility</mat-icon>
+                    </button>
+                    <button mat-icon-button matTooltip="Edit" (click)="editSubmission(element.id)"
+                        aria-label="Edit submission">
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button matTooltip="Delete" (click)="deleteSubmission(element.id)"
+                        aria-label="Delete submission" color="warn">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns" class="response-row"
+                [class.selected]="isRowSelected(row.id)"></tr>
+        </table>
+
+        <!-- Empty State -->
+        <div *ngIf="submissions.length === 0 && !isLoading" class="empty-state">
+            <mat-icon class="empty-icon">inbox</mat-icon>
+            <p class="empty-title">No responses found</p>
+            <p class="empty-text">Try adjusting your filters or check back later for new submissions.</p>
+        </div>
+    </div>
+
+    <!-- Paginator -->
+    <mat-paginator [length]="totalCount" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 25, 50]"
+        (page)="onPageChange($event)" aria-label="Select page of submissions">
+    </mat-paginator>
+</div>

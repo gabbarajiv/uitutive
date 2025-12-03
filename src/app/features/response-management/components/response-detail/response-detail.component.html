@@ -1,0 +1,172 @@
+<div class="response-detail-container">
+    <!-- Header -->
+    <div class="detail-header">
+        <div class="header-top">
+            <button mat-icon-button (click)="goBack()" aria-label="Go back">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            <h1>Submission Details</h1>
+            <div class="header-spacer"></div>
+        </div>
+
+        <div class="header-actions">
+            <button mat-stroked-button (click)="downloadAsJson()" [disabled]="isLoading">
+                <mat-icon>download</mat-icon>
+                Export as JSON
+            </button>
+
+            <button mat-stroked-button color="accent" *ngIf="!isEditing" (click)="startEdit()" [disabled]="isLoading">
+                <mat-icon>edit</mat-icon>
+                Edit
+            </button>
+
+            <button mat-raised-button color="warn" (click)="deleteSubmission()" [disabled]="isLoading || isEditing">
+                <mat-icon>delete</mat-icon>
+                Delete
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+        <mat-spinner></mat-spinner>
+    </div>
+
+    <!-- Content -->
+    <div *ngIf="!isLoading && submission" class="detail-content">
+        <!-- Metadata Card -->
+        <mat-card class="metadata-card">
+            <mat-card-header>
+                <mat-card-title>Submission Information</mat-card-title>
+            </mat-card-header>
+
+            <mat-card-content>
+                <div class="metadata-grid">
+                    <div class="metadata-item">
+                        <label>Submission ID</label>
+                        <div class="metadata-value">
+                            <code [title]="submission.id">{{ submission.id }}</code>
+                            <button mat-icon-button matTooltip="Copy ID" (click)="copyToClipboard(submission.id)"
+                                class="copy-button">
+                                <mat-icon>content_copy</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="metadata-item">
+                        <label>Status</label>
+                        <div class="metadata-value">
+                            <mat-chip-set aria-label="Status">
+                                <mat-chip [highlighted]="true">
+                                    {{ submission.status | titlecase }}
+                                </mat-chip>
+                            </mat-chip-set>
+                        </div>
+                    </div>
+
+                    <div class="metadata-item">
+                        <label>Submitted At</label>
+                        <div class="metadata-value">
+                            {{ submission.submittedAt | date : 'medium' }}
+                        </div>
+                    </div>
+
+                    <div class="metadata-item" *ngIf="submission.userAgent">
+                        <label>User Agent</label>
+                        <div class="metadata-value truncate">
+                            {{ submission.userAgent }}
+                        </div>
+                    </div>
+
+                    <div class="metadata-item" *ngIf="submission.ipAddress">
+                        <label>IP Address</label>
+                        <div class="metadata-value">
+                            {{ submission.ipAddress }}
+                        </div>
+                    </div>
+
+                    <div class="metadata-item" *ngIf="submission.tags && submission.tags.length > 0">
+                        <label>Tags</label>
+                        <div class="metadata-value">
+                            <mat-chip-set aria-label="Tags">
+                                <mat-chip *ngFor="let tag of submission.tags">
+                                    {{ tag }}
+                                </mat-chip>
+                            </mat-chip-set>
+                        </div>
+                    </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+
+        <!-- Response Data Card -->
+        <mat-card class="response-data-card">
+            <mat-card-header>
+                <mat-card-title>Response Data</mat-card-title>
+            </mat-card-header>
+
+            <mat-card-content>
+                <div class="response-fields">
+                    <div *ngFor="let field of (submission.data | keyvalue)" class="response-field">
+                        <div class="field-label">{{ field.key | titlecase }}</div>
+                        <div class="field-value">
+                            <div *ngIf="!isComplexValue(field.value)" class="simple-value">
+                                {{ field.value }}
+                            </div>
+                            <pre *ngIf="isComplexValue(field.value)"
+                                class="complex-value">{{ field.value | json }}</pre>
+                        </div>
+                    </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+
+        <!-- Edit Card -->
+        <mat-card class="edit-card" *ngIf="isEditing">
+            <mat-card-header>
+                <mat-card-title>Edit Submission</mat-card-title>
+            </mat-card-header>
+
+            <mat-card-content>
+                <form [formGroup]="editForm">
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Status</mat-label>
+                        <mat-select formControlName="status">
+                            <mat-option value="new">New</mat-option>
+                            <mat-option value="reviewed">Reviewed</mat-option>
+                            <mat-option value="archived">Archived</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Notes</mat-label>
+                        <textarea matInput formControlName="notes" rows="4"
+                            placeholder="Add notes or comments..."></textarea>
+                        <mat-hint align="end">
+                            {{ editForm.get('notes')?.value?.length || 0 }}/1000
+                        </mat-hint>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Tags</mat-label>
+                        <input matInput type="text" formControlName="tags"
+                            placeholder="Enter tags separated by commas (e.g., important, follow-up)" />
+                        <mat-hint>Comma-separated values</mat-hint>
+                    </mat-form-field>
+                </form>
+            </mat-card-content>
+
+            <mat-card-actions>
+                <button mat-raised-button color="primary" (click)="saveChanges()"
+                    [disabled]="!editForm.valid || isSaving">
+                    <mat-icon *ngIf="!isSaving">save</mat-icon>
+                    <mat-spinner *ngIf="isSaving" diameter="20"></mat-spinner>
+                    {{ isSaving ? 'Saving...' : 'Save Changes' }}
+                </button>
+                <button mat-stroked-button (click)="cancelEdit()" [disabled]="isSaving">
+                    Cancel
+                </button>
+            </mat-card-actions>
+        </mat-card>
+    </div>
+</div>

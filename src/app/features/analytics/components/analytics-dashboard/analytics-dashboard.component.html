@@ -1,0 +1,240 @@
+<div class="analytics-container">
+    <!-- Header -->
+    <div class="analytics-header">
+        <h1>Analytics Dashboard</h1>
+        <button mat-raised-button color="primary" (click)="exportAnalytics()" [disabled]="isLoading">
+            <mat-icon>download</mat-icon>
+            Export Report
+        </button>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+        <mat-spinner></mat-spinner>
+    </div>
+
+    <!-- Content -->
+    <div *ngIf="!isLoading && submissions.length > 0" class="analytics-content">
+        <!-- Key Metrics Section -->
+        <div class="metrics-section">
+            <h2>Key Metrics</h2>
+
+            <div class="metrics-grid">
+                <!-- Total Submissions Card -->
+                <mat-card class="metric-card">
+                    <mat-card-content>
+                        <div class="metric-icon total">
+                            <mat-icon>assignment</mat-icon>
+                        </div>
+                        <div class="metric-data">
+                            <div class="metric-value">{{ metrics.totalSubmissions }}</div>
+                            <div class="metric-label">Total Submissions</div>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+                <!-- New Submissions Card -->
+                <mat-card class="metric-card">
+                    <mat-card-content>
+                        <div class="metric-icon new">
+                            <mat-icon>fiber_new</mat-icon>
+                        </div>
+                        <div class="metric-data">
+                            <div class="metric-value">{{ metrics.newSubmissions }}</div>
+                            <div class="metric-label">New Submissions</div>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+                <!-- Reviewed Card -->
+                <mat-card class="metric-card">
+                    <mat-card-content>
+                        <div class="metric-icon reviewed">
+                            <mat-icon>check_circle</mat-icon>
+                        </div>
+                        <div class="metric-data">
+                            <div class="metric-value">{{ metrics.reviewedSubmissions }}</div>
+                            <div class="metric-label">Reviewed</div>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+                <!-- Completion Rate Card -->
+                <mat-card class="metric-card">
+                    <mat-card-content>
+                        <div class="metric-icon rate">
+                            <mat-icon>trending_up</mat-icon>
+                        </div>
+                        <div class="metric-data">
+                            <div class="metric-value">{{ metrics.completionRate | number : '1.0-1' }}%</div>
+                            <div class="metric-label">Completion Rate</div>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+        </div>
+
+        <!-- Summary Stats Section -->
+        <mat-card class="summary-card" *ngIf="summaryStats">
+            <mat-card-header>
+                <mat-card-title>Summary Statistics</mat-card-title>
+            </mat-card-header>
+
+            <mat-card-content>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <div class="summary-label">Average Field Completion</div>
+                        <div class="summary-value">
+                            {{ summaryStats.avgCompletionRate | number : '1.0-1' }}%
+                        </div>
+                        <mat-progress-bar mode="determinate" [value]="summaryStats.avgCompletionRate"
+                            class="progress-bar"></mat-progress-bar>
+                    </div>
+
+                    <div class="summary-item">
+                        <div class="summary-label">Total Fields</div>
+                        <div class="summary-value">{{ summaryStats.totalFields }}</div>
+                    </div>
+
+                    <div class="summary-item">
+                        <div class="summary-label">Avg Submissions Per Day</div>
+                        <div class="summary-value">
+                            {{ summaryStats.avgSubmissionsPerDay | number : '1.0-2' }}
+                        </div>
+                    </div>
+
+                    <div class="summary-item">
+                        <div class="summary-label">Date Range</div>
+                        <div class="summary-value" *ngIf="timeline.dates.length > 0">
+                            {{ timeline.dates[0].date }} to {{ timeline.dates[timeline.dates.length - 1].date }}
+                        </div>
+                    </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+
+        <!-- Status Distribution Section -->
+        <mat-card class="status-card">
+            <mat-card-header>
+                <mat-card-title>Status Distribution</mat-card-title>
+            </mat-card-header>
+
+            <mat-card-content>
+                <div class="status-distribution">
+                    <div class="status-item">
+                        <div class="status-header">
+                            <span class="status-label">New</span>
+                            <span class="status-count">{{ metrics.newSubmissions }}</span>
+                        </div>
+                        <mat-progress-bar mode="determinate" [value]="getStatusPercentage('new')" color="primary"
+                            class="status-bar"></mat-progress-bar>
+                        <div class="status-percentage">{{ getStatusPercentage('new') | number : '1.0-1' }}%</div>
+                    </div>
+
+                    <div class="status-item">
+                        <div class="status-header">
+                            <span class="status-label">Reviewed</span>
+                            <span class="status-count">{{ metrics.reviewedSubmissions }}</span>
+                        </div>
+                        <mat-progress-bar mode="determinate" [value]="getStatusPercentage('reviewed')" color="accent"
+                            class="status-bar"></mat-progress-bar>
+                        <div class="status-percentage">{{ getStatusPercentage('reviewed') | number : '1.0-1' }}%</div>
+                    </div>
+
+                    <div class="status-item">
+                        <div class="status-header">
+                            <span class="status-label">Archived</span>
+                            <span class="status-count">{{ metrics.archivedSubmissions }}</span>
+                        </div>
+                        <mat-progress-bar mode="determinate" [value]="getStatusPercentage('archived')" color="warn"
+                            class="status-bar"></mat-progress-bar>
+                        <div class="status-percentage">{{ getStatusPercentage('archived') | number : '1.0-1' }}%</div>
+                    </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+
+        <!-- Field Analytics Section -->
+        <mat-card class="field-analytics-card">
+            <mat-card-header>
+                <mat-card-title>Field Completion Analysis</mat-card-title>
+            </mat-card-header>
+
+            <mat-card-content>
+                <div class="field-table-container">
+                    <table mat-table [dataSource]="getFieldAnalyticsArray()" class="field-table">
+                        <!-- Field Name Column -->
+                        <ng-container matColumnDef="fieldName">
+                            <th mat-header-cell *matHeaderCellDef>Field</th>
+                            <td mat-cell *matCellDef="let element">
+                                {{ element.fieldName | titlecase }}
+                            </td>
+                        </ng-container>
+
+                        <!-- Fill Rate Column -->
+                        <ng-container matColumnDef="fillRate">
+                            <th mat-header-cell *matHeaderCellDef>Fill Rate</th>
+                            <td mat-cell *matCellDef="let element">
+                                <div class="fill-rate-cell">
+                                    <mat-progress-bar mode="determinate" [value]="element.fillRate"
+                                        class="fill-rate-bar"></mat-progress-bar>
+                                    <span>{{ element.fillRate | number : '1.0-1' }}%</span>
+                                </div>
+                            </td>
+                        </ng-container>
+
+                        <!-- Filled Count Column -->
+                        <ng-container matColumnDef="filledCount">
+                            <th mat-header-cell *matHeaderCellDef>Filled</th>
+                            <td mat-cell *matCellDef="let element">
+                                {{ element.filledCount }} / {{ element.filledCount + element.emptyCount }}
+                            </td>
+                        </ng-container>
+
+                        <!-- Unique Values Column -->
+                        <ng-container matColumnDef="uniqueValues">
+                            <th mat-header-cell *matHeaderCellDef>Unique Values</th>
+                            <td mat-cell *matCellDef="let element">
+                                {{ element.uniqueValues }}
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+                    </table>
+                </div>
+            </mat-card-content>
+        </mat-card>
+
+        <!-- Timeline Section -->
+        <mat-card class="timeline-card" *ngIf="timeline.dates.length > 0">
+            <mat-card-header>
+                <mat-card-title>Submission Timeline</mat-card-title>
+            </mat-card-header>
+
+            <mat-card-content>
+                <div class="timeline-info">
+                    <p>Average submissions per day: <strong>{{ timeline.totalPerDay | number : '1.0-2' }}</strong></p>
+                </div>
+
+                <div class="timeline-list">
+                    <div *ngFor="let item of timeline.dates" class="timeline-item">
+                        <div class="timeline-date">{{ item.date }}</div>
+                        <div class="timeline-bar">
+                            <div class="timeline-bar-fill"
+                                [style.width.%]="(item.count / (timeline.totalPerDay * 2)) * 100"></div>
+                        </div>
+                        <div class="timeline-count">{{ item.count }}</div>
+                    </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && submissions.length === 0" class="empty-state">
+        <mat-icon class="empty-icon">analytics</mat-icon>
+        <p class="empty-title">No data available</p>
+        <p class="empty-text">Submissions will appear here once you start collecting form responses.</p>
+    </div>
+</div>

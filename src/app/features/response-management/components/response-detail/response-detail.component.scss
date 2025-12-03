@@ -1,0 +1,463 @@
+.response-detail-container {
+    padding: 24px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* ============================================================ */
+/* HEADER SECTION */
+/* ============================================================ */
+
+.detail-header {
+    margin-bottom: 32px;
+
+    .header-top {
+        display: flex;
+        align-items: center;
+        margin-bottom: 16px;
+        gap: 16px;
+
+        h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.87);
+        }
+
+        .header-spacer {
+            flex: 1;
+        }
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+
+        button {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+    }
+}
+
+/* ============================================================ */
+/* LOADING STATE */
+/* ============================================================ */
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+
+    mat-spinner {
+        display: flex;
+        margin: 0 auto;
+    }
+}
+
+/* ============================================================ */
+/* CONTENT SECTION */
+/* ============================================================ */
+
+.detail-content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+
+    mat-card {
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+        mat-card-header {
+            padding: 16px;
+            border-bottom: 1px solid #e0e0e0;
+
+            mat-card-title {
+                margin: 0;
+                font-size: 18px;
+                font-weight: 500;
+            }
+        }
+
+        mat-card-content {
+            padding: 24px;
+        }
+
+        mat-card-actions {
+            padding: 16px 24px;
+            display: flex;
+            gap: 12px;
+            border-top: 1px solid #e0e0e0;
+        }
+    }
+}
+
+/* ============================================================ */
+/* METADATA CARD */
+/* ============================================================ */
+
+.metadata-card {
+    .metadata-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 24px;
+    }
+
+    .metadata-item {
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.54);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .metadata-value {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.87);
+
+            code {
+                padding: 4px 8px;
+                background-color: #f5f5f5;
+                border-radius: 2px;
+                font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+                font-size: 12px;
+                max-width: 300px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            &.truncate {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                word-break: break-all;
+            }
+
+            .copy-button {
+                margin-left: auto;
+                margin-right: -8px;
+            }
+
+            mat-chip-set {
+                margin: 0;
+
+                mat-chip {
+                    font-size: 12px;
+                    min-height: 24px;
+                    padding: 0 12px;
+                }
+            }
+        }
+    }
+}
+
+/* ============================================================ */
+/* RESPONSE DATA CARD */
+/* ============================================================ */
+
+.response-data-card {
+    .response-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .response-field {
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+
+        &:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .field-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.54);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .field-value {
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.87);
+            word-break: break-word;
+
+            .simple-value {
+                padding: 8px 12px;
+                background-color: #f9f9f9;
+                border-left: 3px solid #2196f3;
+                border-radius: 2px;
+            }
+
+            .complex-value {
+                margin: 0;
+                padding: 12px;
+                background-color: #f5f5f5;
+                border-left: 3px solid #ff9800;
+                border-radius: 2px;
+                font-size: 12px;
+                font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+                overflow-x: auto;
+                max-height: 300px;
+                overflow-y: auto;
+                line-height: 1.4;
+            }
+        }
+    }
+}
+
+/* ============================================================ */
+/* EDIT CARD */
+/* ============================================================ */
+
+.edit-card {
+    background-color: #fafafa;
+    border: 1px solid #e8e8e8;
+
+    .full-width {
+        width: 100%;
+        margin-bottom: 16px;
+
+        &:last-of-type {
+            margin-bottom: 0;
+        }
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    mat-card-actions {
+        justify-content: flex-end;
+
+        button {
+            min-width: 120px;
+        }
+    }
+}
+
+/* ============================================================ */
+/* RESPONSIVE DESIGN */
+/* ============================================================ */
+
+@media (max-width: 768px) {
+    .response-detail-container {
+        padding: 16px;
+    }
+
+    .detail-header {
+        .header-top {
+            flex-direction: column;
+            align-items: flex-start;
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+
+        .header-actions {
+            width: 100%;
+
+            button {
+                flex: 1;
+                min-width: 100px;
+            }
+        }
+    }
+
+    .detail-content {
+        mat-card {
+            mat-card-content {
+                padding: 16px;
+            }
+
+            mat-card-actions {
+                flex-direction: column;
+
+                button {
+                    width: 100%;
+                }
+            }
+        }
+    }
+
+    .metadata-card {
+        .metadata-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .response-data-card {
+        .response-field {
+            .field-value {
+                .complex-value {
+                    max-height: 200px;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .response-detail-container {
+        padding: 12px;
+    }
+
+    .detail-header {
+        margin-bottom: 20px;
+
+        .header-top {
+            h1 {
+                font-size: 20px;
+            }
+        }
+
+        .header-actions {
+            gap: 8px;
+
+            button {
+                padding: 8px;
+                font-size: 12px;
+            }
+        }
+    }
+
+    .detail-content {
+        gap: 16px;
+
+        mat-card {
+            mat-card-header {
+                padding: 12px;
+            }
+
+            mat-card-content {
+                padding: 12px;
+            }
+
+            mat-card-actions {
+                padding: 12px;
+            }
+        }
+    }
+
+    .metadata-card {
+        .metadata-item {
+            .metadata-value {
+                flex-direction: column;
+                align-items: flex-start;
+
+                code {
+                    width: 100%;
+                }
+            }
+        }
+    }
+
+    .response-data-card {
+        .response-field {
+            padding: 8px 0;
+
+            .field-value {
+                .complex-value {
+                    max-height: 150px;
+                    font-size: 11px;
+                }
+            }
+        }
+    }
+}
+
+/* ============================================================ */
+/* DARK MODE SUPPORT */
+/* ============================================================ */
+
+@media (prefers-color-scheme: dark) {
+    .response-detail-container {
+        h1 {
+            color: rgba(255, 255, 255, 0.87);
+        }
+    }
+
+    .detail-content {
+        mat-card {
+            background-color: rgba(255, 255, 255, 0.05);
+
+            mat-card-header {
+                border-bottom-color: rgba(255, 255, 255, 0.12);
+
+                mat-card-title {
+                    color: rgba(255, 255, 255, 0.87);
+                }
+            }
+
+            mat-card-content {
+                color: rgba(255, 255, 255, 0.87);
+            }
+
+            mat-card-actions {
+                border-top-color: rgba(255, 255, 255, 0.12);
+            }
+        }
+    }
+
+    .metadata-card {
+        .metadata-item {
+            label {
+                color: rgba(255, 255, 255, 0.54);
+            }
+
+            .metadata-value {
+                color: rgba(255, 255, 255, 0.87);
+
+                code {
+                    background-color: rgba(0, 0, 0, 0.3);
+                    color: rgba(255, 255, 255, 0.87);
+                }
+            }
+        }
+    }
+
+    .response-data-card {
+        .response-field {
+            border-bottom-color: rgba(255, 255, 255, 0.12);
+
+            .field-label {
+                color: rgba(255, 255, 255, 0.54);
+            }
+
+            .field-value {
+                color: rgba(255, 255, 255, 0.87);
+
+                .simple-value {
+                    background-color: rgba(33, 150, 243, 0.1);
+                    border-left-color: #64b5f6;
+                }
+
+                .complex-value {
+                    background-color: rgba(0, 0, 0, 0.3);
+                    border-left-color: #ffb74d;
+                    color: rgba(255, 255, 255, 0.87);
+                }
+            }
+        }
+    }
+
+    .edit-card {
+        background-color: rgba(0, 0, 0, 0.2);
+        border-color: rgba(255, 255, 255, 0.12);
+    }
+}

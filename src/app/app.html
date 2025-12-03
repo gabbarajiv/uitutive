@@ -27,7 +27,7 @@
             <span>Settings & Help</span>
         </button>
         <mat-divider></mat-divider>
-        <button mat-menu-item>
+        <button mat-menu-item routerLink="/settings">
             <mat-icon>settings</mat-icon>
             <span>Settings</span>
         </button>
@@ -64,6 +64,11 @@
                     class="nav-item">
                     <mat-icon matListItemIcon class="nav-icon">description</mat-icon>
                     <span matListItemTitle class="nav-label">Responses</span>
+                </mat-list-item>
+                <mat-list-item routerLink="/analytics" routerLinkActive="active" (click)="sidenav.close()"
+                    class="nav-item">
+                    <mat-icon matListItemIcon class="nav-icon">analytics</mat-icon>
+                    <span matListItemTitle class="nav-label">Analytics</span>
                 </mat-list-item>
                 <mat-divider class="nav-divider"></mat-divider>
                 <mat-list-item routerLink="/settings" routerLinkActive="active" (click)="sidenav.close()"
