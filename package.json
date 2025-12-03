@@ -1,13 +1,23 @@
 {
   "name": "uitutive",
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Monorepo: Form Generator with AI assistance - Angular Frontend + Node.js Backend",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "serve:ssr:uitutive": "node dist/uitutive/server/server.mjs"
+    "frontend:start": "ng serve",
+    "frontend:build": "ng build",
+    "frontend:watch": "ng build --watch --configuration development",
+    "frontend:test": "ng test",
+    "backend:start": "cd backend && npm start",
+    "backend:dev": "cd backend && npm run dev",
+    "backend:dev:watch": "cd backend && npm run dev:watch",
+    "backend:build": "cd backend && npm run build",
+    "backend:test": "cd backend && npm run test",
+    "backend:lint": "cd backend && npm run lint",
+    "install:all": "npm install && cd backend && npm install",
+    "build:all": "npm run frontend:build && npm run backend:build",
+    "start:frontend": "npm run frontend:start",
+    "start:backend": "npm run backend:dev:watch",
+    "dev": "concurrently \"npm run start:frontend\" \"npm run start:backend\""
   },
   "prettier": {
     "printWidth": 100,
@@ -47,6 +57,7 @@
     "@types/express": "^5.0.1",
     "@types/jasmine": "~5.1.0",
     "@types/node": "^20.17.19",
+    "concurrently": "^8.2.2",
     "jasmine-core": "~5.9.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
