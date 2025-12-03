@@ -40,7 +40,7 @@ describe('ResponseStorageService', () => {
 
             service.createSubmission(formId, data).subscribe(() => {
                 service.getSubmissions().subscribe((result) => {
-                    expect(result.submissions.length).toBeGreaterThan(0);
+                    expect(result.items.length).toBeGreaterThan(0);
                     done();
                 });
             });
@@ -56,7 +56,7 @@ describe('ResponseStorageService', () => {
             service.createSubmission(formId, data1).subscribe(() => {
                 service.createSubmission(formId, data2).subscribe(() => {
                     service.getSubmissions().subscribe((result) => {
-                        expect(result.submissions.length).toBe(2);
+                        expect(result.items.length).toBe(2);
                         done();
                     });
                 });
@@ -70,8 +70,8 @@ describe('ResponseStorageService', () => {
             service.createSubmission(formId, data).subscribe((submission) => {
                 service.updateStatus(submission.id, 'reviewed').subscribe(() => {
                     service.getSubmissions({ status: 'reviewed' }).subscribe((result) => {
-                        expect(result.submissions.length).toBe(1);
-                        expect(result.submissions[0].status).toBe('reviewed');
+                        expect(result.items.length).toBe(1);
+                        expect(result.items[0].status).toBe('reviewed');
                         done();
                     });
                 });
@@ -89,8 +89,8 @@ describe('ResponseStorageService', () => {
             }
 
             Promise.all(promises).then(() => {
-                service.getSubmissions({ page: 1, pageSize: 10 }).subscribe((result) => {
-                    expect(result.submissions.length).toBe(10);
+                service.getSubmissions(undefined, undefined, 1, 10).subscribe((result) => {
+                    expect(result.items.length).toBe(10);
                     expect(result.total).toBe(15);
                     done();
                 });
@@ -132,7 +132,7 @@ describe('ResponseStorageService', () => {
             service.createSubmission(formId, data).subscribe((submission) => {
                 service.deleteSubmission(submission.id).subscribe(() => {
                     service.getSubmissions().subscribe((result) => {
-                        expect(result.submissions.length).toBe(0);
+                        expect(result.items.length).toBe(0);
                         done();
                     });
                 });
@@ -180,8 +180,8 @@ describe('ResponseStorageService', () => {
 
             Promise.all(promises).then(() => {
                 service.getMetadata().subscribe((metadata) => {
-                    expect(metadata.totalSubmissions).toBe(5);
-                    expect(metadata.newSubmissions).toBe(5);
+                    expect(metadata.totalCount).toBe(5);
+                    expect(metadata.newCount).toBe(5);
                     done();
                 });
             });
