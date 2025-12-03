@@ -1,0 +1,104 @@
+:host {
+    display: block;
+    height: 100%;
+}
+
+.app-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: var(--color-surface);
+    color: var(--color-text);
+
+    .toolbar-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.25rem;
+        font-weight: 500;
+        color: var(--color-primary);
+    }
+
+    .app-icon {
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+        color: var(--color-primary);
+    }
+
+    .spacer {
+        flex: 1 1 auto;
+    }
+
+    .menu-button {
+        margin-right: 1rem;
+        color: var(--color-text);
+    }
+
+    .user-menu {
+        color: var(--color-text);
+    }
+}
+
+.sidenav-container {
+    height: 100%;
+    background-color: var(--color-background);
+
+    .app-sidenav {
+        width: 250px;
+        background: var(--color-surface);
+        border-right: 1px solid var(--color-border);
+
+        .nav-list {
+            padding-top: 1rem;
+
+            .nav-item {
+                margin: 0.5rem 1rem;
+                border-radius: 4px;
+                color: var(--color-text-secondary);
+                cursor: pointer;
+                transition: all 0.3s ease;
+
+                &:hover {
+                    background-color: var(--color-background);
+                    color: var(--color-primary);
+
+                    mat-icon {
+                        color: var(--color-primary);
+                    }
+                }
+
+                &.active {
+                    background-color: var(--color-primary);
+                    color: white;
+                    font-weight: 500;
+
+                    mat-icon {
+                        color: white;
+                    }
+                }
+
+                mat-icon {
+                    color: var(--color-text-secondary);
+                    margin-right: 1rem;
+                }
+            }
+        }
+    }
+
+    .content {
+        background-color: var(--color-background);
+        overflow-y: auto;
+        height: 100%;
+        color: var(--color-text);
+    }
+}
+
+@media (max-width: 768px) {
+    .app-sidenav {
+        width: 200px !important;
+    }
+}

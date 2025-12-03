@@ -1,0 +1,136 @@
+<div class="settings-container">
+    <!-- Header -->
+    <div class="settings-header">
+        <h1>
+            <mat-icon>settings</mat-icon>
+            Settings
+        </h1>
+        <p class="subtitle">Manage your application preferences and configuration</p>
+    </div>
+
+    <!-- Success Message -->
+    <div *ngIf="successMessage" class="success-message">
+        <mat-icon>check_circle</mat-icon>
+        <span>{{ successMessage }}</span>
+    </div>
+
+    <div class="settings-content">
+        <!-- Theme Settings -->
+        <mat-card class="settings-card">
+            <mat-card-header>
+                <mat-icon class="section-icon">palette</mat-icon>
+                <h2>Theme Settings</h2>
+            </mat-card-header>
+            <mat-divider></mat-divider>
+            <mat-card-content>
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <h3>Application Theme</h3>
+                        <p class="description">Choose your preferred theme color scheme</p>
+                    </div>
+                    <mat-form-field appearance="outline" class="theme-select">
+                        <mat-label>Theme</mat-label>
+                        <mat-select [value]="currentTheme" (selectionChange)="changeTheme($event.value)">
+                            <mat-option *ngFor="let theme of availableThemes" [value]="theme">
+                                {{ theme | titlecase }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
+                <mat-divider class="inner-divider"></mat-divider>
+
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <h3>Theme Preview</h3>
+                        <p class="description">Preview of current theme colors</p>
+                    </div>
+                    <div class="theme-preview">
+                        <div class="color-swatch" [style.background-color]="'var(--color-primary)'">
+                            <span>Primary</span>
+                        </div>
+                        <div class="color-swatch" [style.background-color]="'var(--color-secondary)'">
+                            <span>Secondary</span>
+                        </div>
+                        <div class="color-swatch" [style.background-color]="'var(--color-accent)'">
+                            <span>Accent</span>
+                        </div>
+                        <div class="color-swatch" [style.background-color]="'var(--color-success)'">
+                            <span>Success</span>
+                        </div>
+                    </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+
+        <!-- API Settings -->
+        <mat-card class="settings-card">
+            <mat-card-header>
+                <mat-icon class="section-icon">api</mat-icon>
+                <h2>AI Configuration</h2>
+            </mat-card-header>
+            <mat-divider></mat-divider>
+            <mat-card-content>
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <h3>OpenAI API Key</h3>
+                        <p class="description">Configure your OpenAI API key for form generation</p>
+                    </div>
+                    <div class="api-key-container">
+                        <mat-form-field appearance="outline" class="api-input">
+                            <mat-label>API Key</mat-label>
+                            <input matInput [type]="showApiKey ? 'text' : 'password'" [(ngModel)]="apiKey"
+                                placeholder="sk-...">
+                            <button mat-icon-button matSuffix (click)="toggleApiKeyVisibility()" type="button">
+                                <mat-icon>{{ showApiKey ? 'visibility_off' : 'visibility' }}</mat-icon>
+                            </button>
+                        </mat-form-field>
+                        <button mat-raised-button color="primary" (click)="saveApiKey()"
+                            [disabled]="!apiKey || apiKey.startsWith('••••••••')">
+                            <mat-icon>save</mat-icon>
+                            Save
+                        </button>
+                        <button mat-stroked-button (click)="clearApiKey()" [disabled]="!apiKey">
+                            <mat-icon>delete</mat-icon>
+                            Clear
+                        </button>
+                    </div>
+                </div>
+
+                <mat-divider class="inner-divider"></mat-divider>
+
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <h3>API Status</h3>
+                        <p class="description">Connection status to AI services</p>
+                    </div>
+                    <div class="status-badge" [class.active]="apiKey && !apiKey.startsWith('••••••••')">
+                        <mat-icon>{{ apiKey && !apiKey.startsWith('••••••••') ? 'check_circle' : 'error' }}</mat-icon>
+                        <span>{{ apiKey && !apiKey.startsWith('••••••••') ? 'Configured' : 'Not Configured' }}</span>
+                    </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+
+        <!-- General Settings -->
+        <mat-card class="settings-card">
+            <mat-card-header>
+                <mat-icon class="section-icon">tune</mat-icon>
+                <h2>General Settings</h2>
+            </mat-card-header>
+            <mat-divider></mat-divider>
+            <mat-card-content>
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <h3>Clear All Settings</h3>
+                        <p class="description">Reset all settings back to their default values</p>
+                    </div>
+                    <button mat-stroked-button color="warn" (click)="resetToDefaults()">
+                        <mat-icon>refresh</mat-icon>
+                        Reset to Defaults
+                    </button>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

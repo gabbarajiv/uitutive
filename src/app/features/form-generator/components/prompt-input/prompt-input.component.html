@@ -1,0 +1,33 @@
+<mat-card class="prompt-input-card">
+    <mat-card-content>
+        <div class="input-group">
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Enter your form description</mat-label>
+                <textarea matInput [(ngModel)]="prompt"
+                    placeholder="e.g., Create a customer registration form with name, email, phone, and address fields"
+                    rows="4" [disabled]="isLoading"></textarea>
+                <mat-hint>Describe what form you want to generate</mat-hint>
+            </mat-form-field>
+
+            <div class="input-actions">
+                <button mat-raised-button color="primary" (click)="submit()" [disabled]="!prompt.trim() || isLoading">
+                    <mat-icon>auto_awesome</mat-icon>
+                    Generate Form
+                </button>
+                <button mat-icon-button (click)="clearPrompt()" [disabled]="!prompt || isLoading"
+                    matTooltip="Clear input">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </div>
+
+            <div class="prompt-examples">
+                <strong>Examples:</strong>
+                <ul>
+                    <li>Create a contact form with name, email, message, and phone number</li>
+                    <li>Generate a product feedback form with rating, comments, and email</li>
+                    <li>Build a job application form with skills, experience, and resume upload</li>
+                </ul>
+            </div>
+        </div>
+    </mat-card-content>
+</mat-card>

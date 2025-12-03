@@ -1,0 +1,66 @@
+.prompt-input-card {
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    mat-card-content {
+        padding: 2rem;
+    }
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.input-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+
+    button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+}
+
+.prompt-examples {
+    padding: 1rem;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    font-size: 0.9rem;
+
+    strong {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #333;
+    }
+
+    ul {
+        margin: 0;
+        padding-left: 1.5rem;
+        list-style: disc;
+
+        li {
+            margin: 0.25rem 0;
+            color: #666;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .input-actions {
+        flex-direction: column;
+        width: 100%;
+
+        button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+}

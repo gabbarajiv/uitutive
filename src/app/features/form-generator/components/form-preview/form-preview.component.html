@@ -1,0 +1,99 @@
+<div class="form-preview">
+    <div class="form-header">
+        <h3>{{ formConfig.title }}</h3>
+        <p *ngIf="formConfig.description" class="form-description">{{ formConfig.description }}</p>
+    </div>
+
+    <form [formGroup]="form" class="preview-form">
+        <div *ngFor="let field of formConfig.fields" class="form-field-wrapper" [class.hidden]="field.hidden">
+            <!-- Text Input -->
+            <mat-form-field *ngIf="field.type === 'text'" appearance="outline" class="full-width">
+                <mat-label>{{ field.label }}</mat-label>
+                <input matInput [formControlName]="field.name" [placeholder]="field.placeholder || ''" />
+                <mat-hint *ngIf="field.description">{{ field.description }}</mat-hint>
+            </mat-form-field>
+
+            <!-- Email Input -->
+            <mat-form-field *ngIf="field.type === 'email'" appearance="outline" class="full-width">
+                <mat-label>{{ field.label }}</mat-label>
+                <input matInput type="email" [formControlName]="field.name" [placeholder]="field.placeholder || ''" />
+                <mat-hint *ngIf="field.description">{{ field.description }}</mat-hint>
+            </mat-form-field>
+
+            <!-- Password Input -->
+            <mat-form-field *ngIf="field.type === 'password'" appearance="outline" class="full-width">
+                <mat-label>{{ field.label }}</mat-label>
+                <input matInput type="password" [formControlName]="field.name"
+                    [placeholder]="field.placeholder || ''" />
+                <mat-hint *ngIf="field.description">{{ field.description }}</mat-hint>
+            </mat-form-field>
+
+            <!-- Number Input -->
+            <mat-form-field *ngIf="field.type === 'number'" appearance="outline" class="full-width">
+                <mat-label>{{ field.label }}</mat-label>
+                <input matInput type="number" [formControlName]="field.name" [placeholder]="field.placeholder || ''" />
+                <mat-hint *ngIf="field.description">{{ field.description }}</mat-hint>
+            </mat-form-field>
+
+            <!-- Date Input -->
+            <mat-form-field *ngIf="field.type === 'date'" appearance="outline" class="full-width">
+                <mat-label>{{ field.label }}</mat-label>
+                <input matInput [matDatepicker]="picker" [formControlName]="field.name" />
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+                <mat-hint *ngIf="field.description">{{ field.description }}</mat-hint>
+            </mat-form-field>
+
+            <!-- Textarea -->
+            <mat-form-field *ngIf="field.type === 'textarea'" appearance="outline" class="full-width">
+                <mat-label>{{ field.label }}</mat-label>
+                <textarea matInput [formControlName]="field.name" [rows]="field.rows || 4"
+                    [placeholder]="field.placeholder || ''"></textarea>
+                <mat-hint *ngIf="field.description">{{ field.description }}</mat-hint>
+            </mat-form-field>
+
+            <!-- Select -->
+            <mat-form-field *ngIf="field.type === 'select'" appearance="outline" class="full-width">
+                <mat-label>{{ field.label }}</mat-label>
+                <mat-select [formControlName]="field.name">
+                    <mat-option value="">-- Select --</mat-option>
+                    <mat-option *ngFor="let option of field.options" [value]="option.value">
+                        {{ option.label }}
+                    </mat-option>
+                </mat-select>
+                <mat-hint *ngIf="field.description">{{ field.description }}</mat-hint>
+            </mat-form-field>
+
+            <!-- Checkbox -->
+            <div *ngIf="field.type === 'checkbox'" class="checkbox-wrapper">
+                <mat-checkbox [formControlName]="field.name">
+                    {{ field.label }}
+                </mat-checkbox>
+                <p *ngIf="field.description" class="field-description">{{ field.description }}</p>
+            </div>
+
+            <!-- Radio -->
+            <div *ngIf="field.type === 'radio'" class="radio-wrapper">
+                <label>{{ field.label }}</label>
+                <mat-radio-group [formControlName]="field.name">
+                    <mat-radio-button *ngFor="let option of field.options" [value]="option.value">
+                        {{ option.label }}
+                    </mat-radio-button>
+                </mat-radio-group>
+                <p *ngIf="field.description" class="field-description">{{ field.description }}</p>
+            </div>
+
+            <!-- File Input -->
+            <div *ngIf="field.type === 'file'" class="file-input-wrapper">
+                <label for="file_{{ field.id }}">{{ field.label }}</label>
+                <input type="file" [id]="'file_' + field.id" [formControlName]="field.name" />
+                <p *ngIf="field.description" class="field-description">{{ field.description }}</p>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" mat-raised-button color="primary">Submit</button>
+            <button type="reset" mat-stroked-button>Reset</button>
+        </div>
+    </form>
+</div>
