@@ -1,59 +1,151 @@
-# Uitutive
+#  Uitutive - AI-Powered Dynamic Form & UI Builder
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.3.
+Modern web application for generating forms and UI components using AI prompts. Built with Angular 20, SSR-ready, and powered by OpenAI/Claude.
 
-## Development server
+##  Project Overview
 
-To start a local development server, run:
+Uitutive enables users to create complex forms and UI layouts through natural language prompts. Generate professional forms, dashboards, and components in seconds without writing code.
 
-```bash
-ng serve
-```
+##  Core Features
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+**Phase 1 (MVP)**
+- AI Form Generator - Generate forms from text descriptions
+- Dynamic Form Builder - Visual drag-and-drop form editor
+- Form Preview - Real-time form visualization
+- Validation Engine - Built-in validation rules
 
-## Code scaffolding
+**Phase 2 (Enhancement)**
+- Response Collection - Store form submissions
+- Form Templates - Save and reuse form templates
+- Dashboard Analytics - View submission statistics
+- Export Forms - Generate Angular component code
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+**Phase 3 (Advanced)**
+- AI UI Component Generator - Create dashboards/layouts
+- Theme Customization - Custom colors and styling
+- Dark Mode Support - Light/dark theme toggle
+- API Integration - Export forms as REST API endpoints
 
-```bash
-ng generate component component-name
-```
+##  Quick Start
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+\\\ash
+# Install dependencies
+npm install
 
-```bash
-ng generate --help
-```
+# Development server
+npm start
 
-## Building
+# Production build
+npm run build
+\\\
 
-To build the project run:
+##  Development Stages
 
-```bash
-ng build
-```
+| Stage | Tasks | Status |
+|-------|-------|--------|
+| **Setup** | Install Material/PrimeNG, AI SDK, RxJS | Pending |
+| **Phase 1** | Core form generation, dynamic forms | Pending |
+| **Phase 2** | Backend API, response storage | Pending |
+| **Phase 3** | Analytics, theming, export | Pending |
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+##  Tech Stack
 
-## Running unit tests
+- **Framework**: Angular 20 with SSR
+- **Forms**: Reactive Forms + Dynamic Form Generation
+- **UI Library**: Angular Material (planned)
+- **AI**: OpenAI/Claude API integration
+- **State**: RxJS with TypeScript
+- **Backend**: Express (included with SSR)
+- **Database**: Firebase/Supabase (planned)
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+##  Component-Based Architecture
 
-```bash
-ng test
-```
+\\\
+src/
+ app/
+    features/                          # Lazy-loaded feature modules
+       form-generator/
+          components/
+             prompt-input/
+             form-preview/
+             form-generator.component.ts
+          services/
+          models/
+          form-generator.routes.ts
+       form-builder/
+          components/
+             form-canvas/
+             field-inspector/
+             field-palette/
+          services/
+          form-builder.routes.ts
+       dashboard/
+    shared/
+       components/                   # Reusable UI components
+          form-field/
+          dialog/
+          layout/
+       services/
+          ai.service.ts
+          form.service.ts
+          storage.service.ts
+       models/
+          form.model.ts
+          field.model.ts
+       pipes/
+       directives/
+       guards/
+    core/
+       interceptors/
+       providers/
+    app.routes.ts
+    app.config.ts
+\\\
 
-## Running end-to-end tests
+##  Best Practices
 
-For end-to-end (e2e) testing, run:
+ **Architecture**
+- Standalone Components (Angular 14+)
+- Lazy-loaded feature modules
+- Separation of concerns (features/shared/core)
+- Service-oriented data management
 
-```bash
-ng e2e
-```
+ **Code Quality**
+- Strict TypeScript mode
+- RxJS observables + async pipe
+- No memory leaks (proper unsubscribe)
+- Dependency injection
+- Single Responsibility Principle
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+ **Reactive Forms**
+- Strongly-typed FormBuilder
+- Dynamic form generation
+- Custom validators
+- Real-time form state management
 
-## Additional Resources
+ **Reusability**
+- Presentational components (dumb)
+- Container components (smart)
+- Shared module for common components
+- Service layer for business logic
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+ **Performance**
+- OnPush change detection
+- Lazy loading routes
+- Server-side rendering (SSR)
+- Code splitting
+
+##  Next Steps
+
+1. Install Material & AI SDK dependencies
+2. Create shared models (Form, Field, Validation)
+3. Build AI service (form generation)
+4. Create feature-specific components
+5. Set up state management (signals/services)
+
+##  Notes
+
+- Uses Angular 20 standalone components
+- SSR-ready for performance
+- TypeScript strict mode enabled
+- SCSS with Material Design patterns

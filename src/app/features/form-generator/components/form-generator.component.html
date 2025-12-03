@@ -1,0 +1,46 @@
+<div class="form-generator-container">
+    <div class="header">
+        <h1>AI Form Generator</h1>
+        <p class="subtitle">Generate forms instantly using natural language prompts</p>
+    </div>
+
+    <!-- Prompt Input Section -->
+    <app-prompt-input (promptSubmit)="onPromptSubmit($event)" [isLoading]="isGenerating"></app-prompt-input>
+
+    <!-- Error Message -->
+    <div *ngIf="error" class="error-message" [class.success]="error.includes('successfully')">
+        <mat-icon>{{ error.includes('successfully') ? 'check_circle' : 'error' }}</mat-icon>
+        <span>{{ error }}</span>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isGenerating" class="loading-state">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Generating your form...</p>
+    </div>
+
+    <!-- Generated Form Preview -->
+    <div *ngIf="generatedForm && !isGenerating" class="generated-form-section">
+        <div class="section-header">
+            <h2>Preview</h2>
+            <div class="actions">
+                <button mat-raised-button color="primary" (click)="saveForm()">
+                    <mat-icon>save</mat-icon>
+                    Save Form
+                </button>
+                <button mat-stroked-button (click)="discardForm()">
+                    <mat-icon>delete_outline</mat-icon>
+                    Discard
+                </button>
+            </div>
+        </div>
+
+        <app-form-preview [formConfig]="generatedForm"></app-form-preview>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!generatedForm && !isGenerating" class="empty-state">
+        <mat-icon>description</mat-icon>
+        <p>Enter a prompt above to generate a form</p>
+    </div>
+</div>
