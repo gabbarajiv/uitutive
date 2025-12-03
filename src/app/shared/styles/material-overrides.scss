@@ -1,0 +1,476 @@
+// ====================================
+// Material Design Overrides
+// ====================================
+
+// ====================================
+// Toolbar
+// ====================================
+.mat-toolbar {
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+    height: 64px !important;
+    min-height: 64px !important;
+
+    @media (max-width: 768px) {
+        height: 56px !important;
+        min-height: 56px !important;
+    }
+
+    &.mat-primary {
+        background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+        box-shadow: 0 4px 20px rgba(99, 102, 241, 0.15);
+        color: white;
+    }
+}
+
+// ====================================
+// Sidenav
+// ====================================
+.mat-sidenav {
+    background: var(--color-surface);
+    border-right: 2px solid var(--color-border);
+    transition: all var(--transition-base);
+
+    &.mat-drawer-over {
+        box-shadow: var(--shadow-lg);
+    }
+}
+
+.mat-sidenav-container {
+    height: 100%;
+}
+
+// ====================================
+// Cards
+// ====================================
+.mat-card {
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+    background: var(--color-surface);
+
+    &:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+    }
+
+    mat-card-header {
+        padding: var(--spacing-lg) var(--spacing-lg) 0 var(--spacing-lg);
+
+        .mat-card-header-text {
+            margin-left: 0;
+        }
+    }
+
+    mat-card-content {
+        padding: var(--spacing-lg);
+        color: var(--color-text);
+
+        &:first-child {
+            padding-top: var(--spacing-lg);
+        }
+    }
+
+    mat-card-footer {
+        padding: var(--spacing-lg);
+        border-top: 1px solid var(--color-border);
+    }
+}
+
+// ====================================
+// Buttons
+// ====================================
+.mat-button,
+.mat-raised-button,
+.mat-stroked-button,
+.mat-flat-button {
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0;
+    transition: all var(--transition-fast);
+    font-size: var(--font-size-sm);
+    padding: 0.625rem 1rem;
+    height: auto;
+    line-height: 1.5;
+
+    &.mat-primary {
+        background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+        color: white;
+
+        &:hover {
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
+    }
+
+    &.mat-accent {
+        background: var(--color-secondary);
+        color: white;
+
+        &:hover {
+            box-shadow: 0 8px 16px rgba(236, 72, 153, 0.3);
+            transform: translateY(-2px);
+        }
+    }
+
+    &.mat-warn {
+        background: var(--color-error);
+        color: white;
+
+        &:hover {
+            box-shadow: 0 8px 16px rgba(239, 68, 68, 0.3);
+            transform: translateY(-2px);
+        }
+    }
+
+    &[disabled] {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        margin-right: 0.5rem;
+        margin-left: -0.25rem;
+    }
+}
+
+// ====================================
+// Icon Button
+// ====================================
+.mat-icon-button {
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+
+    &:hover {
+        background-color: rgba(99, 102, 241, 0.1);
+        transform: scale(1.05);
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+
+    mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+    }
+
+    @media (max-width: 768px) {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        min-height: 36px;
+
+        mat-icon {
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+        }
+    }
+}
+
+// ====================================
+// Form Fields
+// ====================================
+.mat-form-field {
+    width: 100%;
+    display: block;
+    margin-bottom: var(--spacing-md);
+
+    &.mat-form-field-appearance-outline {
+        .mat-form-field-infix {
+            padding: 1em 0;
+        }
+
+        .mat-form-field-outline-thick {
+            color: var(--color-border);
+        }
+    }
+
+    &.mat-focused {
+        .mat-form-field-outline-thick {
+            color: var(--color-primary);
+        }
+    }
+
+    .mat-form-field-wrapper {
+        padding-bottom: 1.25em;
+    }
+
+    .mat-form-field-label {
+        color: var(--color-text-secondary);
+        font-weight: 500;
+    }
+
+    .mat-input-element {
+        border-radius: var(--radius-md);
+        padding: 0.75rem;
+        font-family: var(--font-family);
+        font-size: 1rem;
+        transition: all var(--transition-fast);
+
+        &::placeholder {
+            color: var(--color-text-secondary);
+            opacity: 0.6;
+        }
+
+        @media (max-width: 768px) {
+            font-size: 16px; // Prevents iOS auto-zoom
+        }
+    }
+
+    textarea {
+        resize: vertical;
+        min-height: 100px;
+
+        @media (max-width: 768px) {
+            font-size: 16px;
+        }
+    }
+}
+
+// ====================================
+// Select
+// ====================================
+.mat-select {
+    width: 100%;
+
+    .mat-select-trigger {
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+    }
+}
+
+.mat-option {
+    &.mat-selected {
+        background: rgba(99, 102, 241, 0.1);
+        font-weight: 600;
+    }
+
+    &:hover {
+        background: rgba(99, 102, 241, 0.05);
+    }
+}
+
+// ====================================
+// Checkbox & Radio
+// ====================================
+.mat-checkbox {
+    display: block;
+    margin: var(--spacing-md) 0;
+
+    .mat-checkbox-label {
+        font-weight: 500;
+        color: var(--color-text);
+    }
+}
+
+.mat-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+
+    @media (max-width: 768px) {
+        gap: var(--spacing-sm);
+    }
+}
+
+.mat-radio-button {
+    display: block;
+    margin: var(--spacing-sm) 0;
+
+    .mat-radio-label {
+        font-weight: 500;
+        color: var(--color-text);
+    }
+}
+
+// ====================================
+// List
+// ====================================
+.mat-list {
+    padding: 0;
+
+    .mat-list-item {
+        border-radius: var(--radius-md);
+        transition: all var(--transition-fast);
+        height: 48px;
+        padding: 0 var(--spacing-md);
+
+        &:hover {
+            background-color: rgba(99, 102, 241, 0.05);
+        }
+
+        &.mat-selected {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0.05) 100%);
+        }
+
+        .mat-list-item-content {
+            padding: 0;
+            color: var(--color-text);
+        }
+    }
+}
+
+.mat-nav-list {
+    padding: var(--spacing-md) 0;
+
+    .mat-list-item {
+        height: 40px;
+        font-weight: 500;
+        color: var(--color-text-secondary);
+
+        &.active,
+        &.mat-list-item-active {
+            color: var(--color-primary);
+            background: rgba(99, 102, 241, 0.1);
+            font-weight: 600;
+        }
+    }
+}
+
+// ====================================
+// Datepicker
+// ====================================
+.mat-datepicker-toggle {
+    button {
+        color: var(--color-text-secondary);
+    }
+}
+
+.mat-calendar {
+    background: var(--color-surface);
+
+    .mat-calendar-body-selected {
+        background: var(--color-primary);
+        color: white;
+    }
+
+    .mat-calendar-body-today:not(.mat-calendar-body-selected) {
+        border-color: var(--color-primary);
+    }
+}
+
+// ====================================
+// Divider
+// ====================================
+.mat-divider {
+    background-color: var(--color-border);
+    opacity: 1;
+}
+
+// ====================================
+// Menu
+// ====================================
+.mat-menu-panel {
+    background: var(--color-surface) !important;
+    box-shadow: var(--shadow-lg);
+    border-radius: var(--radius-lg);
+
+    .mat-menu-content {
+        padding: var(--spacing-sm) 0;
+
+        .mat-menu-item {
+            color: var(--color-text);
+            height: 40px;
+            line-height: 40px;
+            padding: 0 var(--spacing-md);
+            border-radius: 0;
+            transition: all var(--transition-fast);
+
+            mat-icon {
+                color: var(--color-text-secondary);
+                margin-right: var(--spacing-md);
+            }
+
+            &:hover {
+                background-color: rgba(99, 102, 241, 0.1);
+
+                mat-icon {
+                    color: var(--color-primary);
+                }
+            }
+
+            &[disabled] {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+        }
+    }
+}
+
+// ====================================
+// Tooltip
+// ====================================
+.mat-tooltip {
+    background: var(--color-text);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    padding: 0.5rem 0.75rem;
+}
+
+// ====================================
+// Progress Bar
+// ====================================
+.mat-progress-bar {
+    height: 4px;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+// ====================================
+// Progress Spinner
+// ====================================
+.mat-progress-spinner,
+.mat-spinner {
+    circle {
+        stroke: var(--color-primary);
+    }
+}
+
+// ====================================
+// Responsive Material Adjustments
+// ====================================
+
+@media (max-width: 768px) {
+    .mat-toolbar {
+        padding: 0 var(--spacing-sm) !important;
+    }
+
+    .mat-card {
+        mat-card-content {
+            padding: var(--spacing-md);
+        }
+    }
+
+    .mat-button,
+    .mat-raised-button,
+    .mat-stroked-button {
+        padding: 0.5rem 0.75rem;
+        font-size: var(--font-size-xs);
+    }
+
+    .mat-form-field {
+        margin-bottom: var(--spacing-sm);
+
+        .mat-form-field-wrapper {
+            padding-bottom: 1em;
+        }
+    }
+}

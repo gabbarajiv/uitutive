@@ -8,10 +8,10 @@
         <p class="subtitle">Manage your application preferences and configuration</p>
     </div>
 
-    <!-- Success Message -->
-    <div *ngIf="successMessage" class="success-message">
-        <mat-icon>check_circle</mat-icon>
-        <span>{{ successMessage }}</span>
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="error-message">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorMessage }}</span>
     </div>
 
     <div class="settings-content">
@@ -125,12 +125,50 @@
                         <h3>Clear All Settings</h3>
                         <p class="description">Reset all settings back to their default values</p>
                     </div>
-                    <button mat-stroked-button color="warn" (click)="resetToDefaults()">
+                    <button mat-stroked-button color="warn" (click)="resetToDefaults()"
+                        [matTooltip]="'This action cannot be undone'">
                         <mat-icon>refresh</mat-icon>
                         Reset to Defaults
                     </button>
                 </div>
+
+                <mat-divider class="inner-divider"></mat-divider>
+
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <h3>Export Settings</h3>
+                        <p class="description">Download your settings as a JSON file</p>
+                    </div>
+                    <button mat-stroked-button (click)="exportSettings()"
+                        [matTooltip]="'Save settings for backup or transfer'">
+                        <mat-icon>download</mat-icon>
+                        Export
+                    </button>
+                </div>
+
+                <mat-divider class="inner-divider"></mat-divider>
+
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <h3>Import Settings</h3>
+                        <p class="description">Load settings from a previously exported JSON file</p>
+                    </div>
+                    <div class="import-container">
+                        <input type="file" #fileInput hidden accept=".json" (change)="importSettings($event)" />
+                        <button mat-stroked-button (click)="fileInput.click()"
+                            [matTooltip]="'Load settings from a file'">
+                            <mat-icon>upload</mat-icon>
+                            Import
+                        </button>
+                    </div>
+                </div>
             </mat-card-content>
         </mat-card>
+
+        <!-- Unsaved Changes Indicator -->
+        <div *ngIf="hasUnsavedChanges" class="unsaved-indicator">
+            <mat-icon>info</mat-icon>
+            <span>You have unsaved changes</span>
+        </div>
     </div>
 </div>

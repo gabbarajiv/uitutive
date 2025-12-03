@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
 import { ThemeService } from './shared/services/theme.service';
 
@@ -24,15 +25,23 @@ import { ThemeService } from './shared/services/theme.service';
     MatButtonModule,
     MatMenuModule,
     MatDividerModule,
+    MatTooltipModule,
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
 export class App implements OnInit {
+  isDarkTheme = false;
+
   constructor(private themeService: ThemeService) { }
 
   ngOnInit(): void {
     // Initialize theme service (loads saved theme from localStorage)
-    // Theme is automatically applied in the service constructor
+    this.isDarkTheme = this.themeService.getCurrentTheme() === 'dark';
+  }
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+    this.isDarkTheme = this.themeService.getCurrentTheme() === 'dark';
   }
 }

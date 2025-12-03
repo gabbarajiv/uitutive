@@ -1,0 +1,234 @@
+// ====================================
+// Responsive Breakpoints & Utilities
+// ====================================
+
+// Breakpoint Variables
+$breakpoint-xs: 320px;
+$breakpoint-sm: 480px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1280px;
+$breakpoint-2xl: 1536px;
+
+// Responsive Mixins
+@mixin respond-to-xs {
+    @media (max-width: $breakpoint-xs) {
+        @content;
+    }
+}
+
+@mixin respond-to-sm {
+    @media (max-width: $breakpoint-sm) {
+        @content;
+    }
+}
+
+@mixin respond-to-md {
+    @media (max-width: $breakpoint-md) {
+        @content;
+    }
+}
+
+@mixin respond-to-lg {
+    @media (max-width: $breakpoint-lg) {
+        @content;
+    }
+}
+
+@mixin respond-to-xl {
+    @media (max-width: $breakpoint-xl) {
+        @content;
+    }
+}
+
+@mixin respond-to-2xl {
+    @media (max-width: $breakpoint-2xl) {
+        @content;
+    }
+}
+
+// Mobile-first approach
+@mixin from-sm {
+    @media (min-width: ($breakpoint-sm + 1px)) {
+        @content;
+    }
+}
+
+@mixin from-md {
+    @media (min-width: ($breakpoint-md + 1px)) {
+        @content;
+    }
+}
+
+@mixin from-lg {
+    @media (min-width: ($breakpoint-lg + 1px)) {
+        @content;
+    }
+}
+
+@mixin from-xl {
+    @media (min-width: ($breakpoint-xl + 1px)) {
+        @content;
+    }
+}
+
+// ====================================
+// Global Responsive Adjustments
+// ====================================
+
+// Tablet & Desktop Adjustments
+@media (max-width: $breakpoint-lg) {
+    :root {
+        --spacing-md: 0.875rem;
+        --spacing-lg: 1.25rem;
+        --font-size-xl: 1.125rem;
+        --font-size-2xl: 1.375rem;
+    }
+
+    html,
+    body {
+        font-size: 15px;
+    }
+}
+
+// Tablet Adjustments
+@media (max-width: $breakpoint-md) {
+    :root {
+        --spacing-md: 0.75rem;
+        --spacing-lg: 1rem;
+        --spacing-xl: 1.5rem;
+        --font-size-lg: 1rem;
+        --font-size-xl: 1.125rem;
+        --font-size-2xl: 1.25rem;
+    }
+
+    html,
+    body {
+        font-size: 14px;
+    }
+
+    .hide-tablet {
+        display: none;
+    }
+}
+
+// Mobile Adjustments
+@media (max-width: $breakpoint-sm) {
+    :root {
+        --spacing-md: 0.625rem;
+        --spacing-lg: 0.875rem;
+        --spacing-xl: 1.25rem;
+        --spacing-2xl: 1.75rem;
+        --font-size-base: 0.9375rem;
+        --font-size-lg: 0.9375rem;
+        --font-size-xl: 1rem;
+        --font-size-2xl: 1.125rem;
+        --font-size-3xl: 1.375rem;
+        --radius-lg: 12px;
+        --radius-xl: 16px;
+    }
+
+    html,
+    body {
+        font-size: 13px;
+        letter-spacing: -0.2px;
+    }
+
+    .hide-mobile {
+        display: none;
+    }
+}
+
+// Extra Small Devices (< 320px)
+@media (max-width: $breakpoint-xs) {
+    :root {
+        --spacing-md: 0.5rem;
+        --spacing-lg: 0.75rem;
+        --spacing-xl: 1rem;
+        --font-size-base: 0.875rem;
+        --font-size-2xl: 1rem;
+        --font-size-3xl: 1.25rem;
+        --radius-md: 8px;
+        --radius-lg: 10px;
+    }
+
+    html,
+    body {
+        font-size: 12px;
+    }
+}
+
+// Landscape Mode Adjustments
+@media (orientation: landscape) and (max-height: 500px) {
+    :root {
+        --spacing-lg: 0.75rem;
+        --spacing-xl: 1rem;
+    }
+
+    html,
+    body {
+        font-size: 13px;
+    }
+}
+
+// ====================================
+// Touch Device Enhancements
+// ====================================
+
+@media (hover: none) and (pointer: coarse) {
+
+    // Increase touch target sizes
+    button,
+    [role="button"],
+    .mat-icon-button {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    // Better spacing for touch
+    .mat-list-item {
+        min-height: 48px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="number"],
+    textarea,
+    select {
+        font-size: 16px; // Prevents iOS zoom
+        min-height: 44px;
+    }
+
+    // Remove hover effects on touch
+    a,
+    button {
+        &:active {
+            opacity: 0.8;
+        }
+    }
+}
+
+// ====================================
+// Print Styles
+// ====================================
+
+@media print {
+
+    .no-print,
+    .mat-toolbar,
+    .app-sidenav,
+    button,
+    [role="button"] {
+        display: none;
+    }
+
+    body {
+        background: white;
+        color: black;
+    }
+
+    .print-container {
+        padding: 0;
+        margin: 0;
+    }
+}

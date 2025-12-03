@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Observable, from, throwError } from 'rxjs';
+import { Observable, from, throwError, timeout } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { FormConfig, FormField, FieldType } from '../models/form.model';
-import OpenAI from 'openai';
+import { environment } from '../../../environments/environment';
 
 interface GeneratedFormResponse {
     formName: string;
@@ -20,98 +20,165 @@ interface GeneratedFormResponse {
     }>;
 }
 
+interface OllamaRequest {
+    model: string;
+    messages: Array<{
+        role: string;
+        content: string;
+    }>;
+    temperature?: number;
+    stream: boolean;
+}
+
+interface OllamaResponse {
+    model: string;
+    created_at: string;
+    message: {
+        role: string;
+        content: string;
+    };
+    done: boolean;
+}
+
 @Injectable({
     providedIn: 'root',
 })
 export class AIService {
-    private openai: OpenAI | null = null;
+    private ollamaApiUrl = environment.ollama.apiUrl;
+    private ollamaModel = environment.ollama.model;
+    private apiTimeout = environment.apiTimeout;
 
     constructor() {
-        // Initialize OpenAI client - API key should come from environment
-        const apiKey = this.getApiKey();
-        if (apiKey) {
-            this.openai = new OpenAI({
-                apiKey: apiKey,
-                dangerouslyAllowBrowser: true, // Only for development - move to backend in production
-            });
-        }
+        console.log(`Ollama AI Service initialized with API: ${this.ollamaApiUrl}`);
     }
 
     /**
-     * Generate a form configuration from a text prompt using OpenAI
+     * Generate a form configuration from a text prompt using Ollama
      */
     generateFormFromPrompt(prompt: string): Observable<FormConfig> {
-        if (!this.openai) {
-            return throwError(
-                () => new Error('OpenAI API key not configured. Please set OPENAI_API_KEY environment variable.')
-            );
-        }
-
-        return from(this.callOpenAI(prompt)).pipe(
+        return from(this.callOllama(prompt)).pipe(
+            timeout(this.apiTimeout),
             map((response) => this.parseFormResponse(response)),
             catchError((error) => {
                 console.error('Error generating form:', error);
-                return throwError(() => new Error('Failed to generate form. Please try again.'));
+                const errorMessage = error.name === 'TimeoutError'
+                    ? 'Request timed out. Please check if Ollama is running.'
+                    : 'Failed to generate form. Please try again.';
+                return throwError(() => new Error(errorMessage));
             })
         );
     }
 
     /**
-     * Call OpenAI API to generate form structure
+     * Call Ollama API to generate form structure
      */
-    private callOpenAI(prompt: string): Promise<GeneratedFormResponse> {
-        if (!this.openai) {
-            throw new Error('OpenAI not initialized');
-        }
+    private callOllama(prompt: string): Promise<GeneratedFormResponse> {
+        const systemPrompt = `You are an expert form designer and UX specialist. Generate a JSON form configuration based on user requirements.
 
-        const systemPrompt = `You are an expert form designer. Generate a JSON form configuration based on user requirements.
-    
-    Return a valid JSON object with this structure:
+IMPORTANT: Analyze the user's request carefully and create fields that directly match what they described. Think about:
+- What information needs to be collected?
+- What field types best suit each piece of information?
+- What validations and constraints apply?
+- What helpful placeholders and descriptions would guide users?
+
+Return ONLY a valid JSON object with this exact structure (no markdown, no extra text):
+{
+  "formName": "unique-form-name-in-lowercase-with-underscores",
+  "formTitle": "Human Readable Form Title",
+  "formDescription": "Brief description of what this form does",
+  "fields": [
     {
-      "formName": "unique-form-name",
-      "formTitle": "Human Readable Form Title",
-      "formDescription": "Brief description",
-      "fields": [
-        {
-          "name": "field_name",
-          "label": "Field Label",
-          "type": "text|email|password|number|date|checkbox|radio|select|textarea|file",
-          "required": true|false,
-          "placeholder": "placeholder text",
-          "description": "field help text",
-          "options": [{"label": "Option 1", "value": "opt1"}],
-          "validation": "description of validation rules"
-        }
-      ]
+      "name": "field_name_lowercase",
+      "label": "User Friendly Field Label",
+      "type": "text|email|password|number|date|checkbox|radio|select|textarea|file",
+      "required": true|false,
+      "placeholder": "Helpful hint or example",
+      "description": "Optional field help text or instructions",
+      "options": [{"label": "Display Text", "value": "stored_value"}],
+      "validation": "Specific validation rules like 'email format', 'min 8 chars', etc"
     }
-    
-    Make sure:
-    - Field types are valid (text, email, password, number, date, checkbox, radio, select, textarea, file)
-    - Field names are lowercase with underscores
-    - Include at least 3-5 relevant fields
-    - Add appropriate validations
-    - Return only valid JSON, no markdown or extra text`;
+  ]
+}
 
-        return this.openai.chat.completions
-            .create({
-                model: 'gpt-3.5-turbo',
-                messages: [
-                    {
-                        role: 'system',
-                        content: systemPrompt,
-                    },
-                    {
-                        role: 'user',
-                        content: prompt,
-                    },
-                ],
-                temperature: 0.7,
-                max_tokens: 2000,
-            })
+CRITICAL RULES:
+1. Field types MUST be: text, email, password, number, date, checkbox, radio, select, textarea, or file
+2. Field names MUST be lowercase with underscores (no spaces or special characters)
+3. Match the exact number and type of fields described by the user
+4. Add helpful placeholder text that shows examples or expected format
+5. Include relevant descriptions for complex fields
+6. Set required: true for essential fields
+7. Only include 'options' array for select/radio/checkbox types
+8. Make field labels clear and user-friendly
+9. Tailor validation rules to the specific field purpose
+10. Return ONLY valid JSON - no explanations, no markdown code blocks
+
+Example for a contact form:
+{
+  "formName": "contact_form",
+  "formTitle": "Contact Us",
+  "formDescription": "Send us a message and we'll get back to you soon",
+  "fields": [
+    {
+      "name": "full_name",
+      "label": "Full Name",
+      "type": "text",
+      "required": true,
+      "placeholder": "John Doe",
+      "description": "Your first and last name",
+      "validation": "minimum 2 characters"
+    },
+    {
+      "name": "email",
+      "label": "Email Address",
+      "type": "email",
+      "required": true,
+      "placeholder": "john@example.com",
+      "description": "We'll use this to reply",
+      "validation": "valid email format"
+    },
+    {
+      "name": "message",
+      "label": "Message",
+      "type": "textarea",
+      "required": true,
+      "placeholder": "Tell us what you think...",
+      "description": "Your message (minimum 10 characters)",
+      "validation": "minimum 10 characters"
+    }
+  ]
+}`;
+
+        const fullPrompt = `${systemPrompt}\n\nGenerate form for: ${prompt}`;
+
+        const ollamaRequest: OllamaRequest = {
+            model: this.ollamaModel,
+            messages: [
+                {
+                    role: 'user',
+                    content: fullPrompt,
+                },
+            ],
+            temperature: 0.5, // Lower temperature for more consistent JSON
+            stream: false,
+        };
+
+        return fetch(`${this.ollamaApiUrl}/api/chat`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(ollamaRequest),
+        })
             .then((response) => {
-                const content = response.choices[0]?.message?.content;
+                if (!response.ok) {
+                    throw new Error(`Ollama API error: ${response.status} ${response.statusText}`);
+                }
+                return response.json() as Promise<OllamaResponse>;
+            })
+            .then((data: OllamaResponse) => {
+                const content = data.message.content.trim();
                 if (!content) {
-                    throw new Error('No response from OpenAI');
+                    throw new Error('No response from Ollama');
                 }
 
                 // Extract JSON from response (in case there's surrounding text)
@@ -120,12 +187,25 @@ export class AIService {
                     throw new Error('Could not extract valid JSON from response');
                 }
 
-                return JSON.parse(jsonMatch[0]) as GeneratedFormResponse;
+                try {
+                    return JSON.parse(jsonMatch[0]) as GeneratedFormResponse;
+                } catch (e) {
+                    console.error('Failed to parse JSON:', jsonMatch[0]);
+                    throw new Error('Invalid JSON format in response');
+                }
+            })
+            .catch((error) => {
+                if (error instanceof Error && error.message.includes('Failed to fetch')) {
+                    throw new Error(
+                        `Cannot connect to Ollama at ${this.ollamaApiUrl}. Make sure Ollama is running.`
+                    );
+                }
+                throw error;
             });
     }
 
     /**
-     * Parse OpenAI response into FormConfig
+     * Parse Ollama response into FormConfig
      */
     private parseFormResponse(response: GeneratedFormResponse): FormConfig {
         const fields: FormField[] = response.fields.map((field, index) => ({
@@ -175,34 +255,20 @@ export class AIService {
     }
 
     /**
-     * Get API key from environment or localStorage
-     */
-    private getApiKey(): string | null {
-        // In production, this should come from a secure backend
-        // For development, you can store it in localStorage or use environment variables
-        if (typeof window !== 'undefined') {
-            return localStorage.getItem('openai_api_key') || '';
-        }
-        return null;
-    }
-
-    /**
-     * Set API key (for development/testing)
-     */
-    setApiKey(apiKey: string): void {
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('openai_api_key', apiKey);
-            this.openai = new OpenAI({
-                apiKey: apiKey,
-                dangerouslyAllowBrowser: true,
-            });
-        }
-    }
-
-    /**
-     * Check if API key is configured
+     * Check if Ollama API is configured and accessible
      */
     isConfigured(): boolean {
-        return !!this.openai;
+        return !!this.ollamaApiUrl;
+    }
+
+    /**
+     * Get current API configuration
+     */
+    getApiConfig() {
+        return {
+            apiUrl: this.ollamaApiUrl,
+            model: this.ollamaModel,
+            timeout: this.apiTimeout,
+        };
     }
 }

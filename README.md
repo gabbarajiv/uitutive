@@ -43,8 +43,8 @@ npm run build
 
 | Stage | Tasks | Status |
 |-------|-------|--------|
-| **Setup** | Install Material/PrimeNG, AI SDK, RxJS | Pending |
-| **Phase 1** | Core form generation, dynamic forms | Pending |
+| **Setup** | Install Material/PrimeNG, AI SDK, RxJS | ✅ Complete |
+| **Phase 1** | Core form generation, dynamic forms | 🔄 In Progress |
 | **Phase 2** | Backend API, response storage | Pending |
 | **Phase 3** | Analytics, theming, export | Pending |
 
