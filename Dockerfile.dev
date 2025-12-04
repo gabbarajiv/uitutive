@@ -1,0 +1,36 @@
+# Dockerfile for Development with Hot Reload
+# Use this for development with live code changes
+
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install development tools
+RUN apk add --no-cache bash git
+
+# Copy root package files
+COPY package.json package-lock.json ./
+
+# Copy source files
+COPY src ./src
+COPY public ./public
+COPY angular.json tsconfig.json tsconfig.app.json tsconfig.spec.json ./
+
+# Copy backend
+COPY backend ./backend
+
+# Install all dependencies (including dev)
+RUN npm install
+
+# Build frontend once
+RUN npm run frontend:build
+
+# Install backend dependencies
+WORKDIR /app/backend
+RUN npm install
+
+# Expose ports
+EXPOSE 3000 4200
+
+# Start with nodemon for hot reload
+CMD ["npm", "run", "dev:watch"]

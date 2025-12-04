@@ -1,0 +1,109 @@
+services:
+  # Main application (Frontend + Backend)
+  uitutive:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: uitutive-app
+    ports:
+      - "${APP_PORT:-3000}:3000"
+      - "${FRONTEND_PORT:-4200}:4200"
+    environment:
+      # Node environment
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=3000
+
+      # Database configuration
+      - DB_TYPE=${DB_TYPE:-sqlite}
+      - SQLITE_PATH=${SQLITE_PATH:-./data/uitutive.db}
+      - POSTGRES_HOST=${POSTGRES_HOST:-postgres}
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgrespassword}
+      - POSTGRES_DB=${POSTGRES_DB:-uitutive}
+
+      # Ollama configuration
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-llama2}
+      - OLLAMA_TIMEOUT=${OLLAMA_TIMEOUT:-30000}
+
+      # CORS configuration
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:4200}
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      - ollama
+    networks:
+      - uitutive-network
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/v1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Ollama service for AI model
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama-service
+    ports:
+      - "${OLLAMA_PORT:-11434}:11434"
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+    volumes:
+      - ollama-data:/root/.ollama
+    networks:
+      - uitutive-network
+    restart: unless-stopped
+    # Note: Pull model on container start
+    # To use: docker exec ollama-service ollama pull llama2
+
+    # PostgreSQL (optional - for production database)
+  postgres:
+    image: postgres:16-alpine
+    container_name: uitutive-postgres
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgrespassword}
+      - POSTGRES_DB=${POSTGRES_DB:-uitutive}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - uitutive-network
+    restart: unless-stopped
+    profiles:
+      - postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # pgAdmin (optional - for database management)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: uitutive-pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_EMAIL:-admin@example.com}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD:-admin}
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    networks:
+      - uitutive-network
+    restart: unless-stopped
+    profiles:
+      - postgres
+    depends_on:
+      - postgres
+
+volumes:
+  ollama-data:
+  postgres-data:
+
+
+networks:
+  uitutive-network:
+    driver: bridge
