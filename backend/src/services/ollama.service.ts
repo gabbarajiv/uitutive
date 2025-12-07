@@ -80,12 +80,29 @@ Return ONLY valid JSON array, no additional text.`;
             const response = await this.generate(description, systemPrompt);
 
             // Extract JSON from response (in case there's extra text)
-            const jsonMatch = response.match(/\[[\s\S]*\]/);
+            let jsonMatch = response.match(/\[[\s\S]*\]/);
             if (!jsonMatch) {
-                throw new Error('No valid JSON found in response');
+                throw new Error('No valid JSON array found in response');
             }
 
-            return JSON.parse(jsonMatch[0]);
+            let jsonStr = jsonMatch[0];
+
+            // Try to find the most complete valid JSON
+            // Sometimes Ollama adds text after the JSON, so we need to trim it
+            for (let i = jsonStr.length; i > 0; i--) {
+                try {
+                    const candidate = jsonStr.substring(0, i);
+                    const parsed = JSON.parse(candidate);
+                    if (Array.isArray(parsed)) {
+                        return parsed;
+                    }
+                } catch {
+                    // Continue trying shorter strings
+                    continue;
+                }
+            }
+
+            throw new Error('Could not parse valid JSON array from response');
         } catch (error: any) {
             console.error('Form field generation error:', error.message);
             throw new Error(`Failed to generate form fields: ${error.message}`);
@@ -104,12 +121,29 @@ Return ONLY valid JSON, no additional text.`;
             const response = await this.generate(userInput, systemPrompt);
 
             // Extract JSON from response
-            const jsonMatch = response.match(/\{[\s\S]*\}/);
+            let jsonMatch = response.match(/\{[\s\S]*\}/);
             if (!jsonMatch) {
-                throw new Error('No valid JSON found in response');
+                throw new Error('No valid JSON object found in response');
             }
 
-            return JSON.parse(jsonMatch[0]);
+            let jsonStr = jsonMatch[0];
+
+            // Try to find the most complete valid JSON
+            // Sometimes Ollama adds text after the JSON, so we need to trim it
+            for (let i = jsonStr.length; i > 0; i--) {
+                try {
+                    const candidate = jsonStr.substring(0, i);
+                    const parsed = JSON.parse(candidate);
+                    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                        return parsed as { title: string; description: string };
+                    }
+                } catch {
+                    // Continue trying shorter strings
+                    continue;
+                }
+            }
+
+            throw new Error('Could not parse valid JSON object from response');
         } catch (error: any) {
             console.error('Form metadata generation error:', error.message);
             throw new Error(`Failed to generate form metadata: ${error.message}`);
@@ -133,12 +167,29 @@ Validate the submission against the schema and return validation result as JSON.
             const response = await this.generate(prompt, systemPrompt);
 
             // Extract JSON from response
-            const jsonMatch = response.match(/\{[\s\S]*\}/);
+            let jsonMatch = response.match(/\{[\s\S]*\}/);
             if (!jsonMatch) {
-                throw new Error('No valid JSON found in response');
+                throw new Error('No valid JSON object found in response');
             }
 
-            return JSON.parse(jsonMatch[0]);
+            let jsonStr = jsonMatch[0];
+
+            // Try to find the most complete valid JSON
+            for (let i = jsonStr.length; i > 0; i--) {
+                try {
+                    const candidate = jsonStr.substring(0, i);
+                    const parsed = JSON.parse(candidate);
+                    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                        return parsed as { valid: boolean; errors: string[] };
+                    }
+                } catch {
+                    // Continue trying shorter strings
+                    continue;
+                }
+            }
+
+            // Return valid by default if parsing fails
+            return { valid: true, errors: [] };
         } catch (error: any) {
             console.error('Validation error:', error.message);
             // Return valid by default if validation fails

@@ -171,7 +171,10 @@ export class AIService {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ description: prompt }),
+            body: JSON.stringify({
+                description: prompt,
+                model: this.currentModel.value
+            }),
         })
             .then((response) => {
                 if (!response.ok) {

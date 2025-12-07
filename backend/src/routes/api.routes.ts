@@ -152,10 +152,15 @@ router.delete('/forms/:formId/submissions/:submissionId', asyncHandler(async (re
 
 // AI endpoints
 router.post('/ai/generate-form', asyncHandler(async (req: Request, res: Response) => {
-    const { description } = req.body;
+    const { description, model } = req.body;
 
     if (!description) {
         throw new AppError(400, 'Description is required');
+    }
+
+    // Set model if provided
+    if (model) {
+        ollamaService.setModel(model);
     }
 
     const fields = await ollamaService.generateFormFields(description);

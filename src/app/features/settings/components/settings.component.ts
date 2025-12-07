@@ -214,6 +214,16 @@ export class SettingsComponent implements OnInit {
     }
 
     /**
+     * Compare function for mat-select to properly identify selected model
+     */
+    compareModels(m1: string, m2: string): boolean {
+        // Extract base model name (before colon for versioned names like 'llama2:latest')
+        const m1Base = m1?.split(':')[0]?.toLowerCase() || '';
+        const m2Base = m2?.split(':')[0]?.toLowerCase() || '';
+        return m1Base === m2Base || m1 === m2;
+    }
+
+    /**
      * Reset all settings to default
      */
     resetToDefaults(): void {

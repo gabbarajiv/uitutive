@@ -13,7 +13,7 @@
                 <mat-form-field appearance="outline" class="model-select-field">
                     <mat-label>Model</mat-label>
                     <mat-select [value]="selectedModel" (selectionChange)="changeModel($event.value)"
-                        [disabled]="loadingModels || modelChangeInProgress">
+                        [disabled]="loadingModels || modelChangeInProgress" [compareWith]="compareModels">
                         <mat-option *ngFor="let model of availableModels" [value]="model.name">
                             {{ model.name }}
                         </mat-option>
