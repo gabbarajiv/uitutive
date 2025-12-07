@@ -23,7 +23,7 @@ export const config = {
     ollama: {
         baseUrl: process.env.OLLAMA_BASE_URL || 'http://localhost:11434',
         model: process.env.OLLAMA_MODEL || 'llama2',
-        timeout: parseInt(process.env.OLLAMA_TIMEOUT || '30000', 10)
+        timeout: parseInt(process.env.OLLAMA_TIMEOUT || '120000', 10)  // 2 minutes for model inference
     },
 
     // CORS Configuration

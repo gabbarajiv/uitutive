@@ -7,6 +7,7 @@ services:
       - "11434:11434"
     environment:
       - OLLAMA_HOST=0.0.0.0:11434
+      - CUDA_VISIBLE_DEVICES=0
     volumes:
       - ollama-data:/root/.ollama
     healthcheck:
@@ -16,7 +17,8 @@ services:
       retries: 5
     networks:
       - uitutive-network
-    # GPU acceleration - uncomment based on your GPU type
+    # GPU acceleration - NVIDIA GPU support
+    runtime: nvidia
     deploy:
       resources:
         reservations:
@@ -63,10 +65,10 @@ services:
       - POSTGRES_DB=${POSTGRES_DB:-uitutive}
       # SQLite config (if using sqlite)
       - SQLITE_PATH=./data/uitutive.db
-      # Ollama config
+      # Ollama config (increased timeout for model inference - up to 2 minutes)
       - OLLAMA_BASE_URL=http://ollama:11434
       - OLLAMA_MODEL=${OLLAMA_MODEL:-llama2}
-      - OLLAMA_TIMEOUT=30000
+      - OLLAMA_TIMEOUT=120000
       # CORS
       - CORS_ORIGIN=http://localhost:4200
     ports:
