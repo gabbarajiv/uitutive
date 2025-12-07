@@ -1,5 +1,5 @@
 services:
-  # Ollama - Local AI Service
+  # Ollama - Local AI Service with GPU support
   ollama:
     image: ollama/ollama:latest
     container_name: uitutive-ollama
@@ -16,8 +16,16 @@ services:
       retries: 5
     networks:
       - uitutive-network
+    # GPU acceleration - uncomment based on your GPU type
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
 
-  # PostgreSQL - Optional Database (comment out to use SQLite)
+  # PostgreSQL - Optional Database
   postgres:
     image: postgres:16-alpine
     container_name: uitutive-postgres

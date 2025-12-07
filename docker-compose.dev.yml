@@ -1,6 +1,4 @@
 # Development version with hot-reload for backend
-version: '3.8'
-
 services:
   ollama:
     image: ollama/ollama:latest

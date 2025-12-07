@@ -1,4 +1,4 @@
-# Stage 1: Build Angular app
+# Stage 1: Build Angular app - Browser only (no SSR)
 FROM node:20-alpine AS builder
 WORKDIR /app
 
@@ -11,8 +11,9 @@ RUN npm ci
 # Copy source code
 COPY . .
 
-# Build the Angular app
-RUN npm run frontend:build
+# Build the Angular app using docker configuration
+# The docker config uses static outputMode to avoid SSR/prerendering
+RUN npm run frontend:build -- --configuration=docker
 
 # Stage 2: Serve with Nginx
 FROM nginx:alpine

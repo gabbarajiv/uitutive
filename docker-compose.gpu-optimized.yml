@@ -1,5 +1,8 @@
+# Docker Compose with GPU acceleration and build optimizations
+# Use this for maximum build speed and inference performance
+
 services:
-  # Ollama - Local AI Service
+  # Ollama - Local AI Service with full GPU support
   ollama:
     image: ollama/ollama:latest
     container_name: uitutive-ollama
@@ -7,6 +10,7 @@ services:
       - "11434:11434"
     environment:
       - OLLAMA_HOST=0.0.0.0:11434
+      - OLLAMA_NUM_GPU=1 # Number of GPUs (or set to 0 to disable GPU)
     volumes:
       - ollama-data:/root/.ollama
     healthcheck:
@@ -16,8 +20,17 @@ services:
       retries: 5
     networks:
       - uitutive-network
+    restart: unless-stopped
+    # GPU acceleration - Full NVIDIA GPU support
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all # Use all available GPUs
+              capabilities: [ gpu ]
 
-  # PostgreSQL - Optional Database (comment out to use SQLite)
+  # PostgreSQL - Database
   postgres:
     image: postgres:16-alpine
     container_name: uitutive-postgres
@@ -36,30 +49,30 @@ services:
       retries: 5
     networks:
       - uitutive-network
+    restart: unless-stopped
 
   # Backend API
   backend:
     build:
       context: .
       dockerfile: Dockerfile.backend
+      # Use BuildKit for faster builds
+      args:
+        BUILDKIT_INLINE_CACHE: 1
     container_name: uitutive-backend
     environment:
       - NODE_ENV=production
       - PORT=3000
       - DB_TYPE=${DB_TYPE:-sqlite}
-      # PostgreSQL config (if using postgres)
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
       - POSTGRES_DB=${POSTGRES_DB:-uitutive}
-      # SQLite config (if using sqlite)
       - SQLITE_PATH=./data/uitutive.db
-      # Ollama config
       - OLLAMA_BASE_URL=http://ollama:11434
       - OLLAMA_MODEL=${OLLAMA_MODEL:-llama2}
       - OLLAMA_TIMEOUT=30000
-      # CORS
       - CORS_ORIGIN=http://localhost:4200
     ports:
       - "3000:3000"
@@ -74,11 +87,14 @@ services:
       - uitutive-network
     restart: unless-stopped
 
-  # Frontend (Angular)
+  # Frontend - Angular with Nginx
   frontend:
     build:
       context: .
       dockerfile: Dockerfile.frontend
+      # Use BuildKit for faster builds
+      args:
+        BUILDKIT_INLINE_CACHE: 1
     container_name: uitutive-frontend
     ports:
       - "4200:4200"
@@ -94,4 +110,6 @@ networks:
 
 volumes:
   ollama-data:
+    driver: local
   postgres-data:
+    driver: local
