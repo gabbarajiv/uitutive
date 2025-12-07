@@ -22,10 +22,8 @@
             display: flex;
             gap: 10px;
 
-            button {
-                mat-icon {
-                    margin-right: 5px;
-                }
+            mat-icon {
+                margin-right: 5px;
             }
         }
     }
@@ -90,12 +88,13 @@
             .metric-value {
                 @include metric-value;
 
-                &.success {
-                    @include cell-status('success');
-                }
-
+                &.success,
                 &.error {
                     @include cell-status('error');
+                }
+
+                &.success {
+                    @include cell-status('success');
                 }
             }
         }
@@ -152,6 +151,13 @@
             mat-chip {
                 font-size: var(--font-size-xs);
 
+                &.success,
+                &.warning,
+                &.error,
+                &.info {
+                    @include status-chip('error');
+                }
+
                 &.success {
                     @include status-chip('success');
                 }
@@ -167,6 +173,13 @@
                 &.info {
                     @include status-chip('info');
                 }
+            }
+
+            &.success,
+            &.error,
+            &.warning,
+            &.info {
+                @include cell-status('error');
             }
 
             &.success {

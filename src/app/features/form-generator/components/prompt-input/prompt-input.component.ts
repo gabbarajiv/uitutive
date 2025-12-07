@@ -44,6 +44,9 @@ export class PromptInputComponent implements OnInit, OnDestroy {
     modelChangeInProgress: boolean = false;
 
     suggestions: PromptSuggestion[] = [];
+    autocompleteSuggestion: string = '';
+    showAutocompleteSuggestion: boolean = false;
+    completionLoading: boolean = false;
     private destroy$ = new Subject<void>();
 
     constructor(
@@ -129,6 +132,69 @@ export class PromptInputComponent implements OnInit, OnDestroy {
 
     clearPrompt(): void {
         this.prompt = '';
+        this.autocompleteSuggestion = '';
+        this.showAutocompleteSuggestion = false;
+    }
+
+    /**
+     * Handle Tab key for autocomplete
+     */
+    onPromptKeydown(event: KeyboardEvent): void {
+        if (event.key === 'Tab' && this.prompt.trim().length > 3) {
+            event.preventDefault();
+            this.getAICompletion();
+        }
+    }
+
+    /**
+     * Get AI-powered text completion
+     */
+    private getAICompletion(): void {
+        if (this.completionLoading || this.isLoading || this.prompt.trim().length < 3) {
+            return;
+        }
+
+        this.completionLoading = true;
+        this.cdr.markForCheck();
+
+        this.aiService.getTextCompletion(this.prompt)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (completion) => {
+                    if (completion && completion !== this.prompt) {
+                        this.autocompleteSuggestion = completion;
+                        this.showAutocompleteSuggestion = true;
+                    }
+                    this.completionLoading = false;
+                    this.cdr.markForCheck();
+                },
+                error: (error) => {
+                    console.error('Autocomplete error:', error);
+                    this.completionLoading = false;
+                    this.cdr.markForCheck();
+                }
+            });
+    }
+
+    /**
+     * Accept the autocomplete suggestion
+     */
+    acceptAutocompleteSuggestion(): void {
+        if (this.autocompleteSuggestion) {
+            this.prompt = this.autocompleteSuggestion;
+            this.autocompleteSuggestion = '';
+            this.showAutocompleteSuggestion = false;
+            this.cdr.markForCheck();
+        }
+    }
+
+    /**
+     * Reject the autocomplete suggestion
+     */
+    rejectAutocompleteSuggestion(): void {
+        this.autocompleteSuggestion = '';
+        this.showAutocompleteSuggestion = false;
+        this.cdr.markForCheck();
     }
 
     /**

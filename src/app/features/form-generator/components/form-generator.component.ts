@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -43,6 +43,8 @@ import { PageHeaderComponent } from '../../../shared/components/page-header/page
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormGeneratorComponent implements OnInit, OnDestroy {
+    @ViewChild('previewSection') previewSection: ElementRef | null = null;
+
     generatedForm: FormConfig | null = null;
     isGenerating = false;
     error: string | null = null;
@@ -110,6 +112,8 @@ export class FormGeneratorComponent implements OnInit, OnDestroy {
                     this.generatedForm = form;
                     this.isGenerating = false;
                     this.cdr.markForCheck();
+                    // Scroll to preview section after form is generated
+                    setTimeout(() => this.scrollToPreview(), 100);
                 },
                 error: (err: any) => {
                     this.error = err.message || 'Failed to generate form. Please try again.';
@@ -149,6 +153,18 @@ export class FormGeneratorComponent implements OnInit, OnDestroy {
         // Clear query params
         this.router.navigate(['/form-generator']);
         this.cdr.markForCheck();
+    }
+
+    /**
+     * Scroll to the generated form preview section
+     */
+    private scrollToPreview(): void {
+        if (this.previewSection?.nativeElement) {
+            this.previewSection.nativeElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
     }
 
     ngOnDestroy(): void {

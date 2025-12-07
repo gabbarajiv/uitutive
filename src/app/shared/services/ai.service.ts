@@ -292,6 +292,41 @@ export class AIService {
     }
 
     /**
+     * Get AI text completion for partial prompts
+     */
+    private completeText(partialPrompt: string): Promise<string> {
+        const systemPrompt = `You are a helpful assistant that completes form generation prompts. 
+Given a partial prompt, complete it with a few more descriptive words to make it a better form generation request.
+Return ONLY the completed prompt text, nothing else. Keep it concise (under 20 words total).`;
+
+        return fetch(`${this.backendApiUrl}/ai/complete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                prompt: partialPrompt,
+                systemPrompt: systemPrompt,
+                model: this.currentModelSignal()
+            }),
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`Backend API error: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data: any) => {
+                return data.data?.completion || data.completion || partialPrompt;
+            })
+            .catch((error) => {
+                console.error('Text completion error:', error);
+                // Fallback: return original prompt if completion fails
+                return partialPrompt;
+            });
+    }
+
+    /**
      * Check if backend API is configured and accessible
      */
     isConfigured(): boolean {

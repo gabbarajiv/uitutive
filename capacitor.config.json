@@ -1,0 +1,24 @@
+{
+    "appId": "com.uitutive.app",
+    "appName": "Uitutive",
+    "webDir": "dist/uitutive/browser",
+    "server": {
+        "androidScheme": "https",
+        "hostname": "localhost",
+        "cleartext": true
+    },
+    "ios": {
+        "preferredContentMode": "mobile"
+    },
+    "android": {
+        "useLegacyEdgeToEdge": false
+    },
+    "plugins": {
+        "SplashScreen": {
+            "launchAutoHide": true
+        },
+        "StatusBar": {
+            "style": "dark"
+        }
+    }
+}

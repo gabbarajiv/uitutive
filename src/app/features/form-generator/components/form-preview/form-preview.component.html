@@ -1,4 +1,9 @@
 <div class="form-preview">
+    <!-- Back Button -->
+    <button mat-icon-button (click)="goBack()" class="back-button" aria-label="Go back">
+        <mat-icon>arrow_back</mat-icon>
+    </button>
+
     <!-- Error Summary -->
     <div *ngIf="hasErrors" class="error-summary" role="alert" aria-live="polite">
         <mat-icon>error_outline</mat-icon>

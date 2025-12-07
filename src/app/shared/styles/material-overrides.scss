@@ -191,18 +191,24 @@
     display: block;
     margin-bottom: var(--spacing-md);
 
-    &.mat-form-field-appearance-outline {
+    // Force outline appearance for all form fields
+    &.mat-form-field-appearance-outline,
+    &.mat-form-field-appearance-fill,
+    &.mat-form-field-appearance-legacy {
         .mat-form-field-infix {
             padding: 1em 0;
         }
 
+        .mat-form-field-outline,
         .mat-form-field-outline-thick {
             color: var(--color-border);
         }
     }
 
     &.mat-focused {
-        .mat-form-field-outline-thick {
+
+        .mat-form-field-outline-thick,
+        .mat-form-field-outline {
             color: var(--color-primary);
         }
     }
@@ -618,20 +624,25 @@ body.dark-theme {
     // MDC Form Field (Material 14+)
     // ====================================
     .mat-mdc-form-field {
-        .mdc-floating-label {
-            color: var(--color-text-secondary) !important;
+        width: 100% !important;
+
+        // Outline appearance styling
+        &.mat-form-field-appearance-outline,
+        &.mat-mdc-text-field--outlined {
+            .mdc-text-field {
+                background-color: transparent !important;
+                border-radius: var(--radius-md) !important;
+            }
+
+            .mdc-notched-outline__leading,
+            .mdc-notched-outline__notch,
+            .mdc-notched-outline__trailing {
+                border-color: var(--color-border) !important;
+            }
         }
 
-        .mdc-text-field {
-            background-color: rgba(255, 255, 255, 0.05) !important;
-
-            &:hover {
-                background-color: rgba(255, 255, 255, 0.08) !important;
-            }
-
-            &.mdc-text-field--focused {
-                background-color: rgba(255, 255, 255, 0.1) !important;
-            }
+        .mdc-floating-label {
+            color: var(--color-text-secondary) !important;
         }
 
         .mdc-text-field__input {
@@ -639,19 +650,8 @@ body.dark-theme {
             caret-color: var(--color-primary) !important;
 
             &::placeholder {
-                color: var(--color-primary) !important;
-            }
-
-            &:disabled {
                 color: var(--color-text-secondary) !important;
-                opacity: 0.6 !important;
             }
-        }
-
-        .mdc-notched-outline__leading,
-        .mdc-notched-outline__notch,
-        .mdc-notched-outline__trailing {
-            border-color: var(--color-border) !important;
         }
 
         &.mdc-text-field--focused {
@@ -673,457 +673,511 @@ body.dark-theme {
         }
     }
 
-    // ====================================
-    // Select Dropdowns (Legacy & MDC)
-    // ====================================
-    .mat-select-trigger {
-        color: var(--color-text) !important;
-    }
-
-    .mat-mdc-select {
-        color: var(--color-text) !important;
-
-        &.mat-mdc-form-field .mat-mdc-select {
-            color: var(--color-text) !important;
-        }
-    }
-
-    .mat-mdc-select-trigger {
-        color: var(--color-text) !important;
-    }
-
-    .mat-mdc-select-value {
-        color: var(--color-text) !important;
-    }
-
-    .mat-mdc-select-arrow {
-        color: var(--color-text) !important;
-    }
-
-    .mat-mdc-form-field.mat-focused {
-        .mat-mdc-select-arrow {
-            color: var(--color-primary) !important;
-        }
-    }
-
-    // ====================================
-    // Options (Dropdown Items)
-    // ====================================
-    .mat-option {
-        color: var(--color-text) !important;
-        background-color: var(--color-surface) !important;
-
-        &.mat-selected {
-            background: rgba(99, 102, 241, 0.15) !important;
-            color: var(--color-text) !important;
-            font-weight: 600;
-        }
-
-        &:hover {
-            background: rgba(99, 102, 241, 0.1) !important;
-        }
-
-        &.mat-option-disabled {
-            color: var(--color-text-secondary) !important;
-            opacity: 0.5 !important;
-        }
-    }
-
-    .mat-mdc-option {
-        color: var(--color-text) !important;
-        background-color: var(--color-surface) !important;
-
-        &.mat-mdc-option-active {
-            background: rgba(99, 102, 241, 0.1) !important;
-            color: var(--color-text) !important;
-        }
-
-        &.mat-mdc-option-selected {
-            background: rgba(99, 102, 241, 0.15) !important;
-            color: var(--color-text) !important;
-            font-weight: 600;
-        }
-
-        &:hover {
-            background: rgba(99, 102, 241, 0.1) !important;
-        }
-
-        &.mat-mdc-option-disabled {
-            color: var(--color-text-secondary) !important;
-            opacity: 0.5 !important;
-        }
-    }
-
-    .mat-optgroup-label {
+    .mdc-floating-label {
         color: var(--color-text-secondary) !important;
     }
 
-    .mat-optgroup-disabled {
-        opacity: 0.5 !important;
-    }
-
-    .mdc-list-item {
-        color: var(--color-text) !important;
-
-        &.mdc-list-item--selected {
-            background-color: rgba(99, 102, 241, 0.15) !important;
-        }
-
-        &:hover {
-            background-color: rgba(99, 102, 241, 0.1) !important;
-        }
-    }
-
-    .mdc-list-item__primary-text {
-        color: var(--color-text) !important;
-    }
-
-    // ====================================
-    // Checkbox & Checkmark
-    // ====================================
-    .mat-checkbox {
-        .mat-checkbox-label {
-            color: var(--color-text) !important;
-        }
-
-        .mat-mdc-checkbox-label {
-            color: var(--color-text) !important;
-        }
-    }
-
-    .mdc-checkbox__native-control:checked~.mdc-checkbox__background {
-        border-color: var(--color-primary) !important;
-        background-color: var(--color-primary) !important;
-    }
-
-    .mdc-checkbox__native-control:indeterminate~.mdc-checkbox__background {
-        border-color: var(--color-primary) !important;
-        background-color: var(--color-primary) !important;
-    }
-
-    .mdc-checkbox.mdc-checkbox--disabled .mdc-checkbox__native-control:checked~.mdc-checkbox__background {
-        opacity: 0.6 !important;
-    }
-
-    // ====================================
-    // Radio Button
-    // ====================================
-    .mat-radio-group {
-        .mat-radio-label {
-            color: var(--color-text) !important;
-        }
-
-        .mat-mdc-radio-label {
-            color: var(--color-text) !important;
-        }
-    }
-
-    .mdc-radio__native-control:checked+.mdc-radio__background .mdc-radio__outer-circle {
-        border-color: var(--color-primary) !important;
-    }
-
-    .mdc-radio__native-control:checked+.mdc-radio__background .mdc-radio__inner-circle {
-        background-color: var(--color-primary) !important;
-    }
-
-    .mdc-radio.mdc-radio--disabled {
-        opacity: 0.6 !important;
-    }
-
-    // ====================================
-    // Helper Text, Hints & Errors
-    // ====================================
-    .mat-hint,
-    .mat-form-field-hint-wrapper {
-        color: var(--color-text-secondary) !important;
-    }
-
-    .mat-mdc-form-field-hint {
-        color: var(--color-primary) !important;
-    }
-
-    .mat-error,
-    .mat-form-field-error-wrapper {
-        color: var(--color-error) !important;
-    }
-
-    .mat-mdc-form-field-error {
-        color: var(--color-error) !important;
-    }
-
-    // ====================================
-    // Autocomplete
-    // ====================================
-    .mat-autocomplete-panel {
-        background-color: var(--color-surface) !important;
-        border: 1px solid var(--color-border) !important;
-
-        .mat-autocomplete-option {
-            color: var(--color-text) !important;
-
-            &.mat-selected {
-                background-color: rgba(99, 102, 241, 0.15) !important;
-            }
-
-            &:hover {
-                background-color: rgba(99, 102, 241, 0.1) !important;
-            }
-        }
-
-        .mat-mdc-optgroup-label {
-            color: var(--color-text-secondary) !important;
-        }
-    }
-
-    .mdc-menu-surface,
-    .mdc-menu {
-        background-color: var(--color-surface) !important;
-        color: var(--color-text) !important;
-    }
-
-    // ====================================
-    // Menu Panel (App Menu, Context Menu)
-    // ====================================
-    .mat-mdc-menu-panel,
-    .mat-menu-panel {
-        background-color: var(--color-surface) !important;
-        border: 1px solid var(--color-border) !important;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
-
-        .mat-mdc-menu-content,
-        .mat-menu-content {
-            background-color: var(--color-surface) !important;
-
-            .mat-mdc-menu-item,
-            .mat-menu-item {
-                color: var(--color-text) !important;
-                background-color: transparent !important;
-
-                .mat-icon,
-                mat-icon {
-                    color: var(--color-text-secondary) !important;
-                }
-
-                &:hover {
-                    background-color: rgba(99, 102, 241, 0.15) !important;
-
-                    .mat-icon,
-                    mat-icon {
-                        color: var(--color-primary) !important;
-                    }
-                }
-
-                &.danger {
-                    color: var(--color-error) !important;
-
-                    .mat-icon,
-                    mat-icon {
-                        color: var(--color-error) !important;
-                    }
-                }
-
-                &.menu-header {
-                    color: var(--color-text-secondary) !important;
-                }
-            }
-
-            .mat-mdc-menu-item-text {
-                color: var(--color-text) !important;
-            }
-        }
-
-        .mat-divider,
-        mat-divider {
-            border-top-color: var(--color-border) !important;
-        }
-    }
-
-    // App-specific menu class
-    .app-menu {
-
-        &.mat-mdc-menu-panel,
-        &.mat-menu-panel {
-            background-color: var(--color-surface) !important;
-        }
-    }
-
-    // ====================================
-    // Slider
-    // ====================================
-    .mat-mdc-slider {
-        .mdc-slider__track {
-            background-color: var(--color-border) !important;
-        }
-
-        .mdc-slider__thumb-knob {
-            border-color: var(--color-primary) !important;
-            background-color: var(--color-primary) !important;
-        }
-
-        &.mdc-slider--focus-ring .mdc-slider__thumb-knob {
-            box-shadow: 0 0 1px 6px rgba(99, 102, 241, 0.15) !important;
-        }
-    }
-
-    // ====================================
-    // Datepicker & Timepicker
-    // ====================================
-    .mat-datepicker-content {
-        background-color: var(--color-surface) !important;
-        color: var(--color-text) !important;
-    }
-
-    .mat-calendar {
-        background-color: var(--color-surface) !important;
-        color: var(--color-text) !important;
-
-        .mat-calendar-body {
-            color: var(--color-text) !important;
-        }
-
-        .mat-calendar-body-label {
-            color: #ffffff !important;
-            font-weight: 500 !important;
-        }
-
-        .mat-calendar-body-cell {
-            color: #ffffff !important;
-
-            &.mat-calendar-body-selected {
-                background-color: var(--color-primary) !important;
-                color: white !important;
-            }
-
-            &.mat-calendar-body-disabled {
-                color: rgba(255, 255, 255, 0.5) !important;
-            }
-
-            &:hover {
-                background-color: rgba(99, 102, 241, 0.1) !important;
-            }
-        }
-
-        .mat-calendar-body-today {
-            border-color: var(--color-primary) !important;
-            color: #ffffff !important;
-        }
-
-        .mat-calendar-body-preview {
-            background-color: rgba(99, 102, 241, 0.1) !important;
-            color: #ffffff !important;
-        }
-    }
-
-    .mat-calendar-body-label {
-        color: #ffffff !important;
-    }
-
-    // Weekday header (day names like Mon, Tue, etc.)
-    .mat-calendar-body-cell-content {
-        color: #ffffff !important;
-    }
-
-    thead th,
-    .mat-calendar-body th {
-        color: #ffffff !important;
-        background-color: transparent !important;
-    }
-
-    // Calendar header
-    .mat-calendar-header {
-        background-color: var(--color-surface) !important;
-        color: #ffffff !important;
-
-        button {
-            color: #ffffff !important;
-
-            &:hover {
-                background-color: rgba(99, 102, 241, 0.1) !important;
-            }
-        }
-    }
-
-    .mat-calendar-period-button {
-        color: #ffffff !important;
-    }
-
-    // Datepicker input styling
-    .mat-datepicker-toggle-default-icon {
-        color: var(--color-text) !important;
-    }
-
-    // Additional calendar text color overrides
-    .mat-calendar-body table tbody tr td {
-        color: #ffffff !important;
-    }
-
-    .mat-calendar-body table thead tr th {
-        color: #ffffff !important;
-    }
-
-    // ====================================
-    // Tooltip
-    // ====================================
-    .mat-tooltip {
-        background-color: var(--color-surface) !important;
-        color: var(--color-text) !important;
-        border: 1px solid var(--color-border) !important;
-    }
-
-    // ====================================
-    // Chips
-    // ====================================
-    .mat-mdc-chip {
-        background-color: var(--color-surface) !important;
-        color: var(--color-text) !important;
-        border-color: var(--color-border) !important;
-
-        &.mat-mdc-chip-selected {
-            background-color: rgba(99, 102, 241, 0.15) !important;
-            border-color: var(--color-primary) !important;
-        }
+    .mdc-text-field {
+        background-color: rgba(255, 255, 255, 0.05) !important;
 
         &:hover {
             background-color: rgba(255, 255, 255, 0.08) !important;
         }
+
+        &.mdc-text-field--focused {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+        }
     }
 
-    .mdc-chip__text {
+    .mdc-text-field__input {
+        color: var(--color-text) !important;
+        caret-color: var(--color-primary) !important;
+
+        &::placeholder {
+            color: var(--color-primary) !important;
+        }
+
+        &:disabled {
+            color: var(--color-text-secondary) !important;
+            opacity: 0.6 !important;
+        }
+    }
+
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+        border-color: var(--color-border) !important;
+    }
+
+    &.mdc-text-field--focused {
+
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+            border-color: var(--color-primary) !important;
+        }
+    }
+
+    &.mat-form-field-invalid {
+
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+            border-color: var(--color-error) !important;
+        }
+    }
+}
+
+// ====================================
+// Select Dropdowns (Legacy & MDC)
+// ====================================
+.mat-select-trigger {
+    color: var(--color-text) !important;
+}
+
+.mat-mdc-select {
+    color: var(--color-text) !important;
+
+    &.mat-mdc-form-field .mat-mdc-select {
+        color: var(--color-text) !important;
+    }
+}
+
+.mat-mdc-select-trigger {
+    color: var(--color-text) !important;
+}
+
+.mat-mdc-select-value {
+    color: var(--color-text) !important;
+}
+
+.mat-mdc-select-arrow {
+    color: var(--color-text) !important;
+}
+
+.mat-mdc-form-field.mat-focused {
+    .mat-mdc-select-arrow {
+        color: var(--color-primary) !important;
+    }
+}
+
+// ====================================
+// Options (Dropdown Items)
+// ====================================
+.mat-option {
+    color: var(--color-text) !important;
+    background-color: var(--color-surface) !important;
+
+    &.mat-selected {
+        background: rgba(99, 102, 241, 0.15) !important;
+        color: var(--color-text) !important;
+        font-weight: 600;
+    }
+
+    &:hover {
+        background: rgba(99, 102, 241, 0.1) !important;
+    }
+
+    &.mat-option-disabled {
+        color: var(--color-text-secondary) !important;
+        opacity: 0.5 !important;
+    }
+}
+
+.mat-mdc-option {
+    color: var(--color-text) !important;
+    background-color: var(--color-surface) !important;
+
+    &.mat-mdc-option-active {
+        background: rgba(99, 102, 241, 0.1) !important;
         color: var(--color-text) !important;
     }
 
-    .mdc-chip-set__chip {
+    &.mat-mdc-option-selected {
+        background: rgba(99, 102, 241, 0.15) !important;
+        color: var(--color-text) !important;
+        font-weight: 600;
+    }
+
+    &:hover {
+        background: rgba(99, 102, 241, 0.1) !important;
+    }
+
+    &.mat-mdc-option-disabled {
+        color: var(--color-text-secondary) !important;
+        opacity: 0.5 !important;
+    }
+}
+
+.mat-optgroup-label {
+    color: var(--color-text-secondary) !important;
+}
+
+.mat-optgroup-disabled {
+    opacity: 0.5 !important;
+}
+
+.mdc-list-item {
+    color: var(--color-text) !important;
+
+    &.mdc-list-item--selected {
+        background-color: rgba(99, 102, 241, 0.15) !important;
+    }
+
+    &:hover {
+        background-color: rgba(99, 102, 241, 0.1) !important;
+    }
+}
+
+.mdc-list-item__primary-text {
+    color: var(--color-text) !important;
+}
+
+// ====================================
+// Checkbox & Checkmark
+// ====================================
+.mat-checkbox {
+    .mat-checkbox-label {
+        color: var(--color-text) !important;
+    }
+
+    .mat-mdc-checkbox-label {
+        color: var(--color-text) !important;
+    }
+}
+
+.mdc-checkbox__native-control:checked~.mdc-checkbox__background {
+    border-color: var(--color-primary) !important;
+    background-color: var(--color-primary) !important;
+}
+
+.mdc-checkbox__native-control:indeterminate~.mdc-checkbox__background {
+    border-color: var(--color-primary) !important;
+    background-color: var(--color-primary) !important;
+}
+
+.mdc-checkbox.mdc-checkbox--disabled .mdc-checkbox__native-control:checked~.mdc-checkbox__background {
+    opacity: 0.6 !important;
+}
+
+// ====================================
+// Radio Button
+// ====================================
+.mat-radio-group {
+    .mat-radio-label {
+        color: var(--color-text) !important;
+    }
+
+    .mat-mdc-radio-label {
+        color: var(--color-text) !important;
+    }
+}
+
+.mdc-radio__native-control:checked+.mdc-radio__background .mdc-radio__outer-circle {
+    border-color: var(--color-primary) !important;
+}
+
+.mdc-radio__native-control:checked+.mdc-radio__background .mdc-radio__inner-circle {
+    background-color: var(--color-primary) !important;
+}
+
+.mdc-radio.mdc-radio--disabled {
+    opacity: 0.6 !important;
+}
+
+// ====================================
+// Helper Text, Hints & Errors
+// ====================================
+.mat-hint,
+.mat-form-field-hint-wrapper {
+    color: var(--color-text-secondary) !important;
+}
+
+.mat-mdc-form-field-hint {
+    color: var(--color-primary) !important;
+}
+
+.mat-error,
+.mat-form-field-error-wrapper {
+    color: var(--color-error) !important;
+}
+
+.mat-mdc-form-field-error {
+    color: var(--color-error) !important;
+}
+
+// ====================================
+// Autocomplete
+// ====================================
+.mat-autocomplete-panel {
+    background-color: var(--color-surface) !important;
+    border: 1px solid var(--color-border) !important;
+
+    .mat-autocomplete-option {
+        color: var(--color-text) !important;
+
+        &.mat-selected {
+            background-color: rgba(99, 102, 241, 0.15) !important;
+        }
+
+        &:hover {
+            background-color: rgba(99, 102, 241, 0.1) !important;
+        }
+    }
+
+    .mat-mdc-optgroup-label {
+        color: var(--color-text-secondary) !important;
+    }
+}
+
+.mdc-menu-surface,
+.mdc-menu {
+    background-color: var(--color-surface) !important;
+    color: var(--color-text) !important;
+}
+
+// ====================================
+// Menu Panel (App Menu, Context Menu)
+// ====================================
+.mat-mdc-menu-panel,
+.mat-menu-panel {
+    background-color: var(--color-surface) !important;
+    border: 1px solid var(--color-border) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+
+    .mat-mdc-menu-content,
+    .mat-menu-content {
         background-color: var(--color-surface) !important;
-        color: var(--color-text) !important;
-    }
 
-    // ====================================
-    // Paginator
-    // ====================================
-    .mat-paginator {
-        background-color: var(--color-surface) !important;
-        color: var(--color-text) !important;
-        border-top: 1px solid var(--color-border) !important;
-    }
+        .mat-mdc-menu-item,
+        .mat-menu-item {
+            color: var(--color-text) !important;
+            background-color: transparent !important;
 
-    .mat-paginator-container {
-        background-color: var(--color-surface) !important;
-        color: var(--color-text) !important;
-        justify-content: flex-end;
-    }
+            .mat-icon,
+            mat-icon {
+                color: var(--color-text-secondary) !important;
+            }
 
-    .mat-paginator-page-size {
-        color: var(--color-text) !important;
+            &:hover {
+                background-color: rgba(99, 102, 241, 0.15) !important;
 
-        .mat-paginator-page-size-label {
+                .mat-icon,
+                mat-icon {
+                    color: var(--color-primary) !important;
+                }
+            }
+
+            &.danger {
+                color: var(--color-error) !important;
+
+                .mat-icon,
+                mat-icon {
+                    color: var(--color-error) !important;
+                }
+            }
+
+            &.menu-header {
+                color: var(--color-text-secondary) !important;
+            }
+        }
+
+        .mat-mdc-menu-item-text {
             color: var(--color-text) !important;
         }
     }
 
-    .mat-paginator-range-actions {
-        .mat-paginator-range-label {
-            color: var(--color-text) !important;
+    .mat-divider,
+    mat-divider {
+        border-top-color: var(--color-border) !important;
+    }
+}
+
+// App-specific menu class
+.app-menu {
+
+    &.mat-mdc-menu-panel,
+    &.mat-menu-panel {
+        background-color: var(--color-surface) !important;
+    }
+}
+
+// ====================================
+// Slider
+// ====================================
+.mat-mdc-slider {
+    .mdc-slider__track {
+        background-color: var(--color-border) !important;
+    }
+
+    .mdc-slider__thumb-knob {
+        border-color: var(--color-primary) !important;
+        background-color: var(--color-primary) !important;
+    }
+
+    &.mdc-slider--focus-ring .mdc-slider__thumb-knob {
+        box-shadow: 0 0 1px 6px rgba(99, 102, 241, 0.15) !important;
+    }
+}
+
+// ====================================
+// Datepicker & Timepicker
+// ====================================
+.mat-datepicker-content {
+    background-color: var(--color-surface) !important;
+    color: var(--color-text) !important;
+}
+
+.mat-calendar {
+    background-color: var(--color-surface) !important;
+    color: var(--color-text) !important;
+
+    .mat-calendar-body {
+        color: var(--color-text) !important;
+    }
+
+    .mat-calendar-body-label {
+        color: #ffffff !important;
+        font-weight: 500 !important;
+    }
+
+    .mat-calendar-body-cell {
+        color: #ffffff !important;
+
+        &.mat-calendar-body-selected {
+            background-color: var(--color-primary) !important;
+            color: white !important;
         }
+
+        &.mat-calendar-body-disabled {
+            color: rgba(255, 255, 255, 0.5) !important;
+        }
+
+        &:hover {
+            background-color: rgba(99, 102, 241, 0.1) !important;
+        }
+    }
+
+    .mat-calendar-body-today {
+        border-color: var(--color-primary) !important;
+        color: #ffffff !important;
+    }
+
+    .mat-calendar-body-preview {
+        background-color: rgba(99, 102, 241, 0.1) !important;
+        color: #ffffff !important;
+    }
+}
+
+.mat-calendar-body-label {
+    color: #ffffff !important;
+}
+
+// Weekday header (day names like Mon, Tue, etc.)
+.mat-calendar-body-cell-content {
+    color: #ffffff !important;
+}
+
+thead th,
+.mat-calendar-body th {
+    color: #ffffff !important;
+    background-color: transparent !important;
+}
+
+// Calendar header
+.mat-calendar-header {
+    background-color: var(--color-surface) !important;
+    color: #ffffff !important;
+
+    button {
+        color: #ffffff !important;
+
+        &:hover {
+            background-color: rgba(99, 102, 241, 0.1) !important;
+        }
+    }
+}
+
+.mat-calendar-period-button {
+    color: #ffffff !important;
+}
+
+// Datepicker input styling
+.mat-datepicker-toggle-default-icon {
+    color: var(--color-text) !important;
+}
+
+// Additional calendar text color overrides
+.mat-calendar-body table tbody tr td {
+    color: #ffffff !important;
+}
+
+.mat-calendar-body table thead tr th {
+    color: #ffffff !important;
+}
+
+// ====================================
+// Tooltip
+// ====================================
+.mat-tooltip {
+    background-color: var(--color-surface) !important;
+    color: var(--color-text) !important;
+    border: 1px solid var(--color-border) !important;
+}
+
+// ====================================
+// Chips
+// ====================================
+.mat-mdc-chip {
+    background-color: var(--color-surface) !important;
+    color: var(--color-text) !important;
+    border-color: var(--color-border) !important;
+
+    &.mat-mdc-chip-selected {
+        background-color: rgba(99, 102, 241, 0.15) !important;
+        border-color: var(--color-primary) !important;
+    }
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.08) !important;
+    }
+}
+
+.mdc-chip__text {
+    color: var(--color-text) !important;
+}
+
+.mdc-chip-set__chip {
+    background-color: var(--color-surface) !important;
+    color: var(--color-text) !important;
+}
+
+// ====================================
+// Paginator
+// ====================================
+.mat-paginator {
+    background-color: var(--color-surface) !important;
+    color: var(--color-text) !important;
+    border-top: 1px solid var(--color-border) !important;
+}
+
+.mat-paginator-container {
+    background-color: var(--color-surface) !important;
+    color: var(--color-text) !important;
+    justify-content: flex-end;
+}
+
+.mat-paginator-page-size {
+    color: var(--color-text) !important;
+
+    .mat-paginator-page-size-label {
+        color: var(--color-text) !important;
+    }
+}
+
+.mat-paginator-range-actions {
+    .mat-paginator-range-label {
+        color: var(--color-text) !important;
     }
 
     .mat-mdc-paginator-container {

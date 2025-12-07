@@ -29,7 +29,7 @@
                 </div>
 
                 <!-- Generated Form Preview -->
-                <div *ngIf="generatedForm && !isGenerating" class="preview-section">
+                <div *ngIf="generatedForm && !isGenerating" class="preview-section" #previewSection>
                     <mat-divider *ngIf="!isEditMode"></mat-divider>
                     <div class="section-header">
                         <h2>{{ isEditMode ? 'Edit Form' : 'Form Preview' }}</h2>

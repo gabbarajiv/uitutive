@@ -1,4 +1,5 @@
-import { Component, Input, ChangeDetectionStrategy, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, OnInit, ChangeDetectorRef, SimpleChanges, OnChanges } from '@angular/core';
+import { Location } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -38,7 +39,7 @@ import { FormConfig, FormField } from '../../../../shared/models/form.model';
     styleUrl: './form-preview.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FormPreviewComponent implements OnInit {
+export class FormPreviewComponent implements OnInit, OnChanges {
     @Input() formConfig!: FormConfig;
 
     form: FormGroup;
@@ -51,13 +52,21 @@ export class FormPreviewComponent implements OnInit {
 
     constructor(
         private fb: FormBuilder,
-        private cdr: ChangeDetectorRef
+        private cdr: ChangeDetectorRef,
+        private location: Location
     ) {
         this.form = this.fb.group({});
     }
 
     ngOnInit(): void {
         this.buildForm();
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['formConfig'] && !changes['formConfig'].firstChange) {
+            this.buildForm();
+            this.cdr.markForCheck();
+        }
     }
 
     /**
@@ -191,5 +200,12 @@ export class FormPreviewComponent implements OnInit {
                 this.markFormGroupTouched(control);
             }
         });
+    }
+
+    /**
+     * Navigate back to previous page
+     */
+    goBack(): void {
+        this.location.back();
     }
 }
