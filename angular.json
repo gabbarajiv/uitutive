@@ -34,7 +34,8 @@
             "outputMode": "server",
             "ssr": {
               "entry": "src/server.ts"
-            }
+            },
+            "prerender": true
           },
           "configurations": {
             "production": {
@@ -76,6 +77,19 @@
             "docker": {
               "optimization": true,
               "sourceMap": false,
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "outputMode": "static",
+              "server": false,
+              "ssr": false
+            },
+            "mobile": {
+              "optimization": true,
               "outputHashing": "all",
               "fileReplacements": [
                 {
