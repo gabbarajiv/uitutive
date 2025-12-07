@@ -13,5 +13,5 @@ export const environment = {
         apiUrl: 'https://api.openai.com/v1',
         model: 'gpt-3.5-turbo',
     },
-    apiTimeout: 30000,
+    apiTimeout: 60000,
 };

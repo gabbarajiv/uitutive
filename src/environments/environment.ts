@@ -17,5 +17,5 @@ export const environment = {
         model: 'gpt-3.5-turbo',
     },
     // API timeout in milliseconds
-    apiTimeout: 30000,
+    apiTimeout: 60000,
 };

@@ -9,11 +9,6 @@ services:
       - OLLAMA_HOST=0.0.0.0:11434
     volumes:
       - ollama-data:/root/.ollama
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:11434/api/tags" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     networks:
       - uitutive-network
 
@@ -58,7 +53,7 @@ services:
       # Ollama config
       - OLLAMA_BASE_URL=http://ollama:11434
       - OLLAMA_MODEL=${OLLAMA_MODEL:-llama2}
-      - OLLAMA_TIMEOUT=30000
+      - OLLAMA_TIMEOUT=60000
       # CORS
       - CORS_ORIGIN=http://localhost:4200
     ports:
@@ -66,8 +61,6 @@ services:
     volumes:
       - ./backend/data:/app/backend/data
     depends_on:
-      ollama:
-        condition: service_healthy
       postgres:
         condition: service_healthy
     networks:

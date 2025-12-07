@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3';
 import { Pool } from 'pg';
-import { config } from '../config/config.ts';
+import { config } from '../config/config.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import fs from 'fs';

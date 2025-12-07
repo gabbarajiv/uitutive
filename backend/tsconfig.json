@@ -18,9 +18,7 @@
         "sourceMap": true,
         "noImplicitAny": true,
         "strictNullChecks": true,
-        "strictFunctionTypes": true,
-        "allowImportingTsExtensions": true,
-        "noEmit": true
+        "strictFunctionTypes": true
     },
     "ts-node": {
         "esm": true,
