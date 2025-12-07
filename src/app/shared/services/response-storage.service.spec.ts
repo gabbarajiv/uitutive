@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ResponseStorageService } from './response-storage.service';
 import { SubmissionRecord } from '../models/submission.model';
 
@@ -7,6 +8,7 @@ describe('ResponseStorageService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule],
             providers: [ResponseStorageService]
         });
         service = TestBed.inject(ResponseStorageService);
@@ -23,14 +25,19 @@ describe('ResponseStorageService', () => {
             const formId = 'test-form-1';
             const data = { name: 'John', email: 'john@example.com' };
 
-            service.createSubmission(formId, data).subscribe((submission) => {
-                expect(submission).toBeDefined();
-                expect(submission.id).toBeDefined();
-                expect(submission.formId).toBe(formId);
-                expect(submission.data).toEqual(data);
-                expect(submission.status).toBe('new');
-                expect(submission.submittedAt).toBeDefined();
-                done();
+            service.createSubmission(formId, data).subscribe({
+                next: (submission) => {
+                    expect(submission).toBeDefined();
+                    expect(submission.id).toBeDefined();
+                    expect(submission.formId).toBe(formId);
+                    expect(submission.data).toEqual(data);
+                    expect(submission.status).toBe('new');
+                    expect(submission.submittedAt).toBeDefined();
+                    done();
+                },
+                error: (err) => {
+                    fail('Should not error: ' + err);
+                }
             });
         });
 
@@ -38,11 +45,17 @@ describe('ResponseStorageService', () => {
             const formId = 'test-form-1';
             const data = { name: 'John' };
 
-            service.createSubmission(formId, data).subscribe(() => {
-                service.getSubmissions().subscribe((result) => {
-                    expect(result.items.length).toBeGreaterThan(0);
-                    done();
-                });
+            service.createSubmission(formId, data).subscribe({
+                next: () => {
+                    service.getSubmissions().subscribe({
+                        next: (result) => {
+                            expect(result.items.length).toBeGreaterThan(0);
+                            done();
+                        },
+                        error: (err) => fail('Should not error: ' + err)
+                    });
+                },
+                error: (err) => fail('Should not error: ' + err)
             });
         });
     });
@@ -103,11 +116,17 @@ describe('ResponseStorageService', () => {
             const formId = 'test-form-1';
             const data = { name: 'John' };
 
-            service.createSubmission(formId, data).subscribe((submission) => {
-                service.updateSubmission(submission.id, { status: 'reviewed' }).subscribe((updated) => {
-                    expect(updated.status).toBe('reviewed');
-                    done();
-                });
+            service.createSubmission(formId, data).subscribe({
+                next: (submission) => {
+                    service.updateSubmission(submission.id, { status: 'reviewed' }).subscribe({
+                        next: (updated) => {
+                            expect(updated.status).toBe('reviewed');
+                            done();
+                        },
+                        error: (err) => fail('Should not error: ' + err)
+                    });
+                },
+                error: (err) => fail('Should not error: ' + err)
             });
         });
 
@@ -115,11 +134,17 @@ describe('ResponseStorageService', () => {
             const formId = 'test-form-1';
             const data = { name: 'John' };
 
-            service.createSubmission(formId, data).subscribe((submission) => {
-                service.updateSubmission(submission.id, { notes: 'Test note' }).subscribe((updated) => {
-                    expect(updated.notes).toBe('Test note');
-                    done();
-                });
+            service.createSubmission(formId, data).subscribe({
+                next: (submission) => {
+                    service.updateSubmission(submission.id, { notes: 'Test note' }).subscribe({
+                        next: (updated) => {
+                            expect(updated.notes).toBe('Test note');
+                            done();
+                        },
+                        error: (err) => fail('Should not error: ' + err)
+                    });
+                },
+                error: (err) => fail('Should not error: ' + err)
             });
         });
     });
@@ -129,13 +154,22 @@ describe('ResponseStorageService', () => {
             const formId = 'test-form-1';
             const data = { name: 'John' };
 
-            service.createSubmission(formId, data).subscribe((submission) => {
-                service.deleteSubmission(submission.id).subscribe(() => {
-                    service.getSubmissions().subscribe((result) => {
-                        expect(result.items.length).toBe(0);
-                        done();
+            service.createSubmission(formId, data).subscribe({
+                next: (submission) => {
+                    service.deleteSubmission(submission.id).subscribe({
+                        next: () => {
+                            service.getSubmissions().subscribe({
+                                next: (result) => {
+                                    expect(result.items.length).toBe(0);
+                                    done();
+                                },
+                                error: (err) => fail('Should not error: ' + err)
+                            });
+                        },
+                        error: (err) => fail('Should not error: ' + err)
                     });
-                });
+                },
+                error: (err) => fail('Should not error: ' + err)
             });
         });
     });
@@ -145,10 +179,13 @@ describe('ResponseStorageService', () => {
             const formId = 'test-form-1';
             const data = { name: 'John' };
 
-            service.createSubmission(formId, data).subscribe((submission) => {
-                const json = service.exportAsJson([submission]);
-                expect(json).toContain('"name":"John"');
-                done();
+            service.createSubmission(formId, data).subscribe({
+                next: (submission) => {
+                    const json = service.exportAsJson([submission]);
+                    expect(json).toContain('"name":"John"');
+                    done();
+                },
+                error: (err) => fail('Should not error: ' + err)
             });
         });
     });
@@ -158,11 +195,14 @@ describe('ResponseStorageService', () => {
             const formId = 'test-form-1';
             const data = { name: 'John', email: 'john@example.com' };
 
-            service.createSubmission(formId, data).subscribe((submission) => {
-                const csv = service.exportAsCsv([submission], Object.keys(data));
-                expect(csv).toContain('name,email');
-                expect(csv).toContain('John');
-                done();
+            service.createSubmission(formId, data).subscribe({
+                next: (submission) => {
+                    const csv = service.exportAsCsv([submission], Object.keys(data));
+                    expect(csv).toContain('name,email');
+                    expect(csv).toContain('John');
+                    done();
+                },
+                error: (err) => fail('Should not error: ' + err)
             });
         });
     });
@@ -174,15 +214,21 @@ describe('ResponseStorageService', () => {
 
             for (let i = 0; i < 5; i++) {
                 promises.push(new Promise((resolve) => {
-                    service.createSubmission(formId, { index: i }).subscribe(resolve);
+                    service.createSubmission(formId, { index: i }).subscribe({
+                        next: resolve,
+                        error: (err) => fail('Should not error: ' + err)
+                    });
                 }));
             }
 
             Promise.all(promises).then(() => {
-                service.getMetadata().subscribe((metadata) => {
-                    expect(metadata.totalCount).toBe(5);
-                    expect(metadata.newCount).toBe(5);
-                    done();
+                service.getMetadata().subscribe({
+                    next: (metadata) => {
+                        expect(metadata.totalCount).toBe(5);
+                        expect(metadata.newCount).toBe(5);
+                        done();
+                    },
+                    error: (err) => fail('Should not error: ' + err)
                 });
             });
         });

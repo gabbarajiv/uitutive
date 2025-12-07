@@ -66,6 +66,22 @@
             color: white;
             font-weight: 800;
         }
+
+        .app-description {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            opacity: 0.9;
+            transition: opacity var(--transition-fast), color var(--transition-fast);
+            margin-left: 0.25rem;
+            white-space: nowrap;
+
+            &:hover {
+                opacity: 1;
+                color: rgba(255, 255, 255, 1);
+            }
+        }
     }
 
     .spacer {
