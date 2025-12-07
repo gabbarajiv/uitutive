@@ -39,6 +39,46 @@ export class PromptSuggestionsService {
             id: '5',
             text: 'Generate a contact form with name, email, subject, and message fields'
         },
+        {
+            id: '6',
+            text: 'Design an event registration form with date, time, capacity, and dietary preferences'
+        },
+        {
+            id: '7',
+            text: 'Create a newsletter subscription form with email and interest categories'
+        },
+        {
+            id: '8',
+            text: 'Build a support ticket form with priority level, category, and detailed description'
+        },
+        {
+            id: '9',
+            text: 'Generate a booking form with date, time, services, and customer details'
+        },
+        {
+            id: '10',
+            text: 'Create a course enrollment form with student info, course selection, and payment method'
+        },
+        {
+            id: '11',
+            text: 'Design a property rental inquiry form with location, budget, and move-in date'
+        },
+        {
+            id: '12',
+            text: 'Build a vendor/supplier form with company details, products/services, and contact info'
+        },
+        {
+            id: '13',
+            text: 'Create a health/wellness form with medical history, goals, and preferred services'
+        },
+        {
+            id: '14',
+            text: 'Generate an employee onboarding form with personal info, role, and emergency contacts'
+        },
+        {
+            id: '15',
+            text: 'Build a membership form with membership tier, benefits selection, and billing info'
+        },
     ];
 
     private suggestionsSubject: BehaviorSubject<PromptSuggestion[]>;

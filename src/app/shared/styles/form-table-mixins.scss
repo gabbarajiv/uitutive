@@ -1,0 +1,401 @@
+// ====================================
+// Form & Table Component Mixins
+// ====================================
+// Centralized styling mixins for consistent dark mode support
+// across form fields, tables, and related components
+
+// ====================================
+// Form Field Mixins
+// ====================================
+
+/// Standard form field styling with dark mode support
+@mixin form-field-base {
+    width: 100%;
+
+    .mat-form-field-label,
+    .mat-floating-label,
+    .mdc-floating-label {
+        color: var(--color-text-secondary) !important;
+    }
+
+    .mat-input-element,
+    textarea,
+    .mdc-text-field__input {
+        color: var(--color-text);
+        background-color: transparent;
+        border-radius: var(--radius-md);
+        padding: 0.75rem;
+        font-family: var(--font-family);
+        font-size: 1rem;
+        transition: all var(--transition-fast);
+
+        &::placeholder {
+            color: var(--color-text-secondary);
+            opacity: 0.6;
+        }
+
+        &:hover {
+            background-color: rgba(99, 102, 241, 0.05);
+        }
+
+        &:focus {
+            background-color: rgba(99, 102, 241, 0.08);
+            outline: none;
+        }
+
+        @media (max-width: 768px) {
+            font-size: 16px; // Prevents iOS auto-zoom
+        }
+    }
+
+    .mat-form-field-outline,
+    .mat-form-field-outline-thick,
+    .mdc-notched-outline {
+        color: var(--color-border) !important;
+    }
+
+    &.mat-focused,
+    &.mdc-text-field--focused {
+
+        .mat-form-field-outline-thick,
+        .mdc-notched-outline {
+            color: var(--color-primary) !important;
+        }
+    }
+}
+
+/// Form field dark mode overrides
+@mixin form-field-dark {
+
+    .mat-form-field-label,
+    .mat-floating-label,
+    .mdc-floating-label {
+        color: var(--color-text-secondary) !important;
+    }
+
+    .mat-input-element,
+    textarea,
+    .mdc-text-field__input {
+        color: var(--color-text) !important;
+        background-color: rgba(255, 255, 255, 0.05) !important;
+
+        &::placeholder {
+            color: var(--color-text-secondary) !important;
+            opacity: 1 !important;
+        }
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.08) !important;
+        }
+
+        &:focus {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            color: var(--color-text) !important;
+        }
+    }
+
+    .mat-form-field-outline,
+    .mat-form-field-outline-thick,
+    .mdc-notched-outline {
+        color: var(--color-border) !important;
+    }
+
+    &.mat-focused,
+    &.mdc-text-field--focused {
+
+        .mat-form-field-outline-thick,
+        .mdc-notched-outline {
+            color: var(--color-primary) !important;
+        }
+    }
+}
+
+// ====================================
+// Table Mixins
+// ====================================
+
+/// Standard table styling with dark mode support
+@mixin table-base {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--color-surface);
+
+    thead {
+        th {
+            background-color: var(--color-surface);
+            font-weight: 600;
+            color: var(--color-text);
+            padding: 12px;
+            text-align: left;
+            border-bottom: 2px solid var(--color-border);
+            transition: background-color var(--transition-fast);
+        }
+    }
+
+    tbody {
+        tr {
+            transition: background-color var(--transition-fast);
+            border-bottom: 1px solid var(--color-border);
+
+            &:hover {
+                background-color: rgba(99, 102, 241, 0.05);
+            }
+
+            &:last-child {
+                border-bottom: none;
+            }
+        }
+
+        td {
+            padding: 12px;
+            color: var(--color-text);
+
+            code {
+                background-color: rgba(99, 102, 241, 0.1);
+                color: var(--color-text);
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-family: var(--font-mono);
+                font-size: var(--font-size-xs);
+            }
+        }
+    }
+}
+
+/// Table dark mode overrides
+@mixin table-dark {
+    background-color: var(--color-surface);
+
+    thead {
+        th {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0.08) 100%);
+            color: var(--color-text);
+            border-bottom-color: var(--color-border);
+        }
+    }
+
+    tbody {
+        tr {
+            border-bottom-color: var(--color-border);
+
+            &:hover {
+                background-color: rgba(99, 102, 241, 0.12);
+            }
+        }
+
+        td {
+            color: var(--color-text);
+
+            code {
+                background-color: rgba(99, 102, 241, 0.15);
+                color: var(--color-text);
+            }
+        }
+    }
+}
+
+// ====================================
+// Data Cell Status Mixins
+// ====================================
+
+/// Apply status color to data cell
+@mixin cell-status($type: 'default') {
+    font-weight: 600;
+
+    @if $type =='success' {
+        color: #4caf50;
+
+        body.dark-theme & {
+            color: #81c784;
+        }
+    }
+
+    @else if $type =='error' {
+        color: #f44336;
+
+        body.dark-theme & {
+            color: #ef5350;
+        }
+    }
+
+    @else if $type =='warning' {
+        color: #ff9800;
+
+        body.dark-theme & {
+            color: #ffb74d;
+        }
+    }
+
+    @else if $type =='info' {
+        color: #2196f3;
+
+        body.dark-theme & {
+            color: #64b5f6;
+        }
+    }
+}
+
+/// Status chips with dark mode support
+@mixin status-chip($type: 'default') {
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    white-space: nowrap;
+
+    @if $type =='success' {
+        background-color: #c8e6c9;
+        color: #2e7d32;
+
+        body.dark-theme & {
+            background-color: rgba(76, 175, 80, 0.25);
+            color: #81c784;
+        }
+    }
+
+    @else if $type =='error' {
+        background-color: #ffcdd2;
+        color: #c62828;
+
+        body.dark-theme & {
+            background-color: rgba(244, 67, 54, 0.25);
+            color: #ef5350;
+        }
+    }
+
+    @else if $type =='warning' {
+        background-color: #ffe0b2;
+        color: #e65100;
+
+        body.dark-theme & {
+            background-color: rgba(255, 152, 0, 0.25);
+            color: #ffb74d;
+        }
+    }
+
+    @else if $type =='info' {
+        background-color: #bbdefb;
+        color: #1565c0;
+
+        body.dark-theme & {
+            background-color: rgba(33, 150, 243, 0.25);
+            color: #64b5f6;
+        }
+    }
+}
+
+// ====================================
+// Metric Display Mixins
+// ====================================
+
+/// Standard metric card styling
+@mixin metric-card {
+    background-color: var(--color-surface);
+    padding: 16px;
+    border-radius: var(--radius-md);
+    border-left: 4px solid var(--color-primary);
+    transition: all var(--transition-fast);
+
+    &:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+    }
+}
+
+/// Metric label styling
+@mixin metric-label {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+/// Metric value styling
+@mixin metric-value {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+// ====================================
+// Grid Layouts
+// ====================================
+
+/// Responsive grid for metrics
+@mixin metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+}
+
+/// Responsive grid for status items
+@mixin status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px;
+
+    @media (max-width: 768px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/// Responsive grid for details
+@mixin details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+// ====================================
+// Container & Wrapper Mixins
+// ====================================
+
+/// Standard card container styling
+@mixin card-container {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+
+    &:hover {
+        box-shadow: var(--shadow-md);
+    }
+}
+
+/// Loading state styling
+@mixin loading-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+    background-color: var(--color-surface);
+    border-radius: var(--radius-md);
+}
+
+/// Empty state styling
+@mixin empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: var(--color-surface);
+    border-radius: var(--radius-md);
+
+    p {
+        color: var(--color-text-secondary);
+        font-size: var(--font-size-base);
+        margin: 0;
+    }
+}

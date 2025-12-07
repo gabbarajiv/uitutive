@@ -176,6 +176,19 @@ export class AIService {
     }
 
     /**
+     * Get AI-powered text completion for prompt suggestions
+     */
+    getTextCompletion(partialPrompt: string): Observable<string> {
+        return from(this.completeText(partialPrompt)).pipe(
+            timeout(5000),
+            catchError((error) => {
+                console.error('Error getting text completion:', error);
+                return throwError(() => new Error('Failed to get completion suggestion'));
+            })
+        );
+    }
+
+    /**
      * Call backend API to generate form structure
      */
     private callBackend(prompt: string): Promise<GeneratedFormResponse> {

@@ -70,6 +70,11 @@
                     <mat-icon matListItemIcon class="nav-icon">analytics</mat-icon>
                     <span matListItemTitle class="nav-label">Analytics</span>
                 </mat-list-item>
+                <mat-list-item routerLink="/api-tracking" routerLinkActive="active" (click)="sidenav.close()"
+                    class="nav-item">
+                    <mat-icon matListItemIcon class="nav-icon">api</mat-icon>
+                    <span matListItemTitle class="nav-label">API Tracking</span>
+                </mat-list-item>
                 <mat-divider class="nav-divider"></mat-divider>
                 <mat-list-item routerLink="/settings" routerLinkActive="active" (click)="sidenav.close()"
                     class="nav-item">

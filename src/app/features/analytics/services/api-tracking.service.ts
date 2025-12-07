@@ -13,7 +13,7 @@ import {
     providedIn: 'root'
 })
 export class ApiTrackingService {
-    private readonly API_BASE = '/api/v1/analytics';
+    private readonly API_BASE = 'http://localhost:3000/api/v1/analytics';
 
     constructor(private http: HttpClient) { }
 

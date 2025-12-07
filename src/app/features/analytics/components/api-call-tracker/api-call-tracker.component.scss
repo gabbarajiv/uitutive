@@ -1,6 +1,9 @@
+@import '../../../../shared/styles/form-table-mixins.scss';
+
 .api-tracking-container {
     padding: 20px;
-    background-color: #f5f5f5;
+    background-color: var(--color-background);
+    color: var(--color-text);
     min-height: 100vh;
 
     .header {
@@ -11,7 +14,7 @@
 
         h2 {
             margin: 0;
-            color: #333;
+            color: var(--color-text);
             font-weight: 500;
         }
 
@@ -28,9 +31,15 @@
     }
 
     mat-tab-group {
-        background-color: white;
+        background-color: var(--color-surface);
         border-radius: 4px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+        // Dark theme support for tab group
+        body.dark-theme & {
+            background-color: var(--color-surface);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
     }
 
     .tab-content {
@@ -39,6 +48,7 @@
 
     .filters-card {
         margin-bottom: 20px;
+        @include card-container;
 
         .filter-form {
             display: grid;
@@ -46,74 +56,63 @@
             gap: 16px;
 
             mat-form-field {
-                width: 100%;
+                @include form-field-base;
+
+                body.dark-theme & {
+                    @include form-field-dark;
+                }
             }
         }
     }
 
     .metrics-card,
-    .model-details,
-    .loading-card {
+    .model-details {
         margin-bottom: 20px;
+        @include card-container;
     }
 
     .loading-card {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 300px;
+        margin-bottom: 20px;
+        @include loading-state;
     }
 
     .metrics-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 20px;
+        @include metrics-grid;
         margin-bottom: 30px;
 
         .metric {
-            background-color: #f9f9f9;
-            padding: 16px;
-            border-radius: 4px;
-            border-left: 4px solid #3f51b5;
+            @include metric-card;
 
             .metric-label {
-                font-size: 12px;
-                color: #999;
-                text-transform: uppercase;
-                margin-bottom: 8px;
+                @include metric-label;
             }
 
             .metric-value {
-                font-size: 28px;
-                font-weight: 600;
-                color: #333;
+                @include metric-value;
 
                 &.success {
-                    color: #4caf50;
+                    @include cell-status('success');
                 }
 
                 &.error {
-                    color: #f44336;
+                    @include cell-status('error');
                 }
             }
         }
     }
 
     .status-codes {
-        background-color: #f9f9f9;
+        @include card-container;
         padding: 20px;
-        border-radius: 4px;
 
         h3 {
             margin-top: 0;
             margin-bottom: 16px;
-            color: #333;
+            color: var(--color-text);
         }
 
         .status-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 10px;
+            @include status-grid;
 
             .status-item {
                 mat-chip {
@@ -131,70 +130,66 @@
     }
 
     .analytics-table {
-        width: 100%;
-        border-collapse: collapse;
+        @include table-base;
+
+        body.dark-theme & {
+            @include table-dark;
+        }
 
         th {
-            background-color: #f5f5f5;
-            font-weight: 600;
-            color: #333;
-            padding: 12px;
-            text-align: left;
-            border-bottom: 2px solid #ddd;
+            @media (max-width: 768px) {
+                font-size: var(--font-size-xs);
+                padding: 8px;
+            }
         }
 
         td {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-
             code {
-                background-color: #f5f5f5;
-                padding: 2px 6px;
-                border-radius: 3px;
-                font-family: 'Courier New', monospace;
-                font-size: 12px;
+                font-family: var(--font-mono);
+                font-size: var(--font-size-xs);
             }
 
             mat-chip {
-                font-size: 12px;
+                font-size: var(--font-size-xs);
 
                 &.success {
-                    background-color: #c8e6c9 !important;
-                    color: #2e7d32 !important;
+                    @include status-chip('success');
                 }
 
                 &.warning {
-                    background-color: #ffe0b2 !important;
-                    color: #e65100 !important;
+                    @include status-chip('warning');
                 }
 
                 &.error {
-                    background-color: #ffcdd2 !important;
-                    color: #c62828 !important;
+                    @include status-chip('error');
                 }
 
                 &.info {
-                    background-color: #bbdefb !important;
-                    color: #1565c0 !important;
+                    @include status-chip('info');
                 }
             }
 
             &.success {
-                color: #4caf50;
-                font-weight: 600;
+                @include cell-status('success');
             }
 
             &.error {
-                color: #f44336;
-                font-weight: 600;
+                @include cell-status('error');
+            }
+
+            &.warning {
+                @include cell-status('warning');
+            }
+
+            &.info {
+                @include cell-status('info');
             }
         }
 
-        tr {
-            transition: background-color 0.2s;
-
-            &:hover {
-                background-color: #f9f9f9;
+        @media (max-width: 768px) {
+            td {
+                padding: 8px;
+                font-size: var(--font-size-sm);
             }
         }
     }
@@ -204,59 +199,73 @@
     }
 
     .details-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 16px;
+        @include details-grid;
 
         .detail-item {
+            @include card-container;
             display: flex;
             justify-content: space-between;
-            padding: 12px;
-            background-color: #f9f9f9;
-            border-radius: 4px;
+            flex-direction: column;
+            gap: 8px;
 
             .detail-label {
                 font-weight: 600;
-                color: #666;
-                margin-right: 10px;
+                color: var(--color-text-secondary);
             }
 
             .detail-value {
-                color: #333;
+                color: var(--color-text);
                 font-weight: 600;
 
                 &.success {
-                    color: #4caf50;
+                    @include cell-status('success');
                 }
 
                 &.error {
-                    color: #f44336;
+                    @include cell-status('error');
+                }
+
+                &.warning {
+                    @include cell-status('warning');
+                }
+
+                &.info {
+                    @include cell-status('info');
                 }
             }
         }
     }
 
     .empty-state {
-        text-align: center;
-        padding: 40px 20px;
-
-        p {
-            color: #999;
-            font-size: 16px;
-        }
+        @include empty-state;
     }
 
     // Responsive Design
     @media (max-width: 768px) {
+        padding: var(--spacing-md);
+
         .header {
             flex-direction: column;
             gap: 16px;
             align-items: flex-start;
 
+            h2 {
+                font-size: var(--font-size-lg);
+            }
+
             .header-actions {
                 width: 100%;
                 flex-wrap: wrap;
+
+                button {
+                    flex: 1;
+                    min-width: 150px;
+                }
             }
+        }
+
+        .tab-content {
+            padding: var(--spacing-md);
         }
 
         .metrics-grid {
@@ -269,10 +278,6 @@
 
         .details-grid {
             grid-template-columns: 1fr;
-        }
-
-        .callsDisplayColumns {
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
         }
     }
 }
