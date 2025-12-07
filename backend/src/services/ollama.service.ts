@@ -13,6 +13,17 @@ export interface OllamaResponse {
     done: boolean;
 }
 
+export interface ModelInfo {
+    name: string;
+    modified_at: string;
+    size: number;
+    digest: string;
+}
+
+export interface ModelsResponse {
+    models: ModelInfo[];
+}
+
 export class OllamaService {
     private client: AxiosInstance;
     private model: string;
@@ -163,6 +174,33 @@ Be concise and focus on actionable insights.`;
             console.error('Ollama health check failed:', error);
             return false;
         }
+    }
+
+    /**
+     * Get list of available models from Ollama
+     */
+    async getAvailableModels(): Promise<ModelInfo[]> {
+        try {
+            const response = await this.client.get<ModelsResponse>('/api/tags');
+            return response.data.models || [];
+        } catch (error: any) {
+            console.error('Failed to fetch available models:', error.message);
+            throw new Error(`Failed to fetch available models: ${error.message}`);
+        }
+    }
+
+    /**
+     * Set the model to use for generation
+     */
+    setModel(modelName: string): void {
+        this.model = modelName;
+    }
+
+    /**
+     * Get the current model
+     */
+    getModel(): string {
+        return this.model;
     }
 }
 

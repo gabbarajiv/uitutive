@@ -10,6 +10,15 @@
             </mat-form-field>
 
             <div class="input-actions">
+                <mat-form-field appearance="outline" class="model-select-field">
+                    <mat-label>Model</mat-label>
+                    <mat-select [value]="selectedModel" (selectionChange)="changeModel($event.value)"
+                        [disabled]="loadingModels || modelChangeInProgress">
+                        <mat-option *ngFor="let model of availableModels" [value]="model.name">
+                            {{ model.name }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
                 <button mat-raised-button color="primary" (click)="submit()" [disabled]="!prompt.trim() || isLoading">
                     <mat-icon>auto_awesome</mat-icon>
                     Generate Form

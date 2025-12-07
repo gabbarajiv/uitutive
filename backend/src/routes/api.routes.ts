@@ -181,4 +181,34 @@ router.post('/ai/generate-metadata', asyncHandler(async (req: Request, res: Resp
     });
 }));
 
+// Model selection endpoints
+router.get('/models', asyncHandler(async (req: Request, res: Response) => {
+    const models = await ollamaService.getAvailableModels();
+    const currentModel = ollamaService.getModel();
+
+    res.json({
+        success: true,
+        data: {
+            models,
+            currentModel
+        }
+    });
+}));
+
+router.post('/models/select', asyncHandler(async (req: Request, res: Response) => {
+    const { model } = req.body;
+
+    if (!model) {
+        throw new AppError(400, 'Model name is required');
+    }
+
+    ollamaService.setModel(model);
+
+    res.json({
+        success: true,
+        message: `Model switched to ${model}`,
+        currentModel: ollamaService.getModel()
+    });
+}));
+
 export default router;

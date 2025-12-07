@@ -99,6 +99,11 @@
         }
     }
 
+    .model-select-field {
+        min-width: 150px;
+        max-width: 220px;
+    }
+
     button {
         display: flex;
         align-items: center;

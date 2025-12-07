@@ -11,8 +11,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ThemeService, Theme } from '../../../shared/services/theme.service';
-import { AIService } from '../../../shared/services/ai.service';
+import { AIService, ModelInfo } from '../../../shared/services/ai.service';
 
 @Component({
     selector: 'app-settings',
@@ -30,6 +31,7 @@ import { AIService } from '../../../shared/services/ai.service';
         MatInputModule,
         MatListModule,
         MatTooltipModule,
+        MatProgressSpinnerModule,
     ],
     templateUrl: './settings.component.html',
     styleUrl: './settings.component.scss',
@@ -45,6 +47,12 @@ export class SettingsComponent implements OnInit {
     isSaving: boolean = false;
     hasUnsavedChanges: boolean = false;
 
+    // Model selection
+    availableModels: ModelInfo[] = [];
+    currentModel: string = 'llama2';
+    loadingModels: boolean = false;
+    modelChangeInProgress: boolean = false;
+
     constructor(
         private themeService: ThemeService,
         private aiService: AIService,
@@ -56,6 +64,57 @@ export class SettingsComponent implements OnInit {
     ngOnInit(): void {
         this.availableThemes = this.themeService.getAvailableThemes();
         this.loadApiKey();
+        this.loadAvailableModels();
+    }
+
+    /**
+     * Load available models from backend
+     */
+    private loadAvailableModels(): void {
+        this.loadingModels = true;
+        this.cdr.markForCheck();
+
+        this.aiService.getAvailableModels().subscribe({
+            next: (data) => {
+                this.availableModels = data.models;
+                this.currentModel = data.currentModel;
+                this.loadingModels = false;
+                this.cdr.markForCheck();
+            },
+            error: (error) => {
+                console.error('Error loading models:', error);
+                this.showErrorMessage('Failed to load available models');
+                this.loadingModels = false;
+                this.cdr.markForCheck();
+            }
+        });
+    }
+
+    /**
+     * Change the AI model
+     */
+    changeModel(model: string): void {
+        if (model === this.currentModel) return;
+
+        this.modelChangeInProgress = true;
+        this.cdr.markForCheck();
+
+        this.aiService.setModel(model).subscribe({
+            next: () => {
+                this.currentModel = model;
+                this.modelChangeInProgress = false;
+                this.showSuccessMessage(`Model switched to ${model}`);
+                this.markAsChanged();
+                this.cdr.markForCheck();
+            },
+            error: (error) => {
+                console.error('Error changing model:', error);
+                this.showErrorMessage(`Failed to switch to model: ${model}`);
+                this.modelChangeInProgress = false;
+                this.loadAvailableModels(); // Reload to get correct current model
+                this.cdr.markForCheck();
+            }
+        });
     }
 
     /**

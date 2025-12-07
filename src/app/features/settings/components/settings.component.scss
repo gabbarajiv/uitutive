@@ -183,6 +183,24 @@
     min-width: 200px;
 }
 
+.model-selector {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: flex-end;
+    flex-wrap: wrap;
+
+    .model-select {
+        flex: 1;
+        min-width: 250px;
+    }
+
+    .spinner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
 .api-key-container {
     display: flex;
     gap: var(--spacing-md);

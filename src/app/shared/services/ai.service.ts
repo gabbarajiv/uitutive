@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, from, throwError, timeout } from 'rxjs';
+import { Observable, from, throwError, timeout, BehaviorSubject } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { FormConfig, FormField, FieldType } from '../models/form.model';
 import { environment } from '../../../environments/environment';
@@ -40,15 +40,109 @@ interface OllamaResponse {
     done: boolean;
 }
 
+export interface ModelInfo {
+    name: string;
+    modified_at: string;
+    size: number;
+    digest: string;
+}
+
 @Injectable({
     providedIn: 'root',
 })
 export class AIService {
     private backendApiUrl = 'http://localhost:3000/api/v1';
     private apiTimeout = environment.apiTimeout;
+    private currentModel = new BehaviorSubject<string>('llama2');
 
     constructor() {
         console.log(`AI Service initialized with backend API: ${this.backendApiUrl}`);
+        this.loadCurrentModel();
+    }
+
+    /**
+     * Load the current model from backend
+     */
+    private loadCurrentModel(): void {
+        this.getAvailableModels().subscribe({
+            next: (data) => {
+                if (data.currentModel) {
+                    this.currentModel.next(data.currentModel);
+                }
+            },
+            error: (error) => console.error('Failed to load current model:', error)
+        });
+    }
+
+    /**
+     * Get available models from backend
+     */
+    getAvailableModels(): Observable<{ models: ModelInfo[]; currentModel: string }> {
+        return from(
+            fetch(`${this.backendApiUrl}/models`).then((response) => {
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch models: ${response.status}`);
+                }
+                return response.json();
+            })
+        ).pipe(
+            timeout(this.apiTimeout),
+            map((data: any) => ({
+                models: data.data?.models || [],
+                currentModel: data.data?.currentModel || 'llama2'
+            })),
+            catchError((error) => {
+                console.error('Error fetching models:', error);
+                return throwError(() => new Error('Failed to fetch available models'));
+            })
+        );
+    }
+
+    /**
+     * Set the model to use
+     */
+    setModel(modelName: string): Observable<{ message: string; currentModel: string }> {
+        return from(
+            fetch(`${this.backendApiUrl}/models/select`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ model: modelName }),
+            }).then((response) => {
+                if (!response.ok) {
+                    throw new Error(`Failed to set model: ${response.status}`);
+                }
+                return response.json();
+            })
+        ).pipe(
+            timeout(this.apiTimeout),
+            map((data: any) => {
+                this.currentModel.next(modelName);
+                return {
+                    message: data.data?.message || `Model set to ${modelName}`,
+                    currentModel: modelName
+                };
+            }),
+            catchError((error) => {
+                console.error('Error setting model:', error);
+                return throwError(() => new Error('Failed to set model'));
+            })
+        );
+    }
+
+    /**
+     * Get the current model as observable
+     */
+    getCurrentModel$(): Observable<string> {
+        return this.currentModel.asObservable();
+    }
+
+    /**
+     * Get the current model value
+     */
+    getCurrentModel(): string {
+        return this.currentModel.value;
     }
 
     /**

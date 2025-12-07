@@ -101,6 +101,33 @@
 
                 <div class="setting-item">
                     <div class="setting-label">
+                        <h3>AI Model</h3>
+                        <p class="description">Select the AI model to use for form generation</p>
+                    </div>
+                    <div class="model-selector">
+                        <mat-form-field appearance="outline" class="model-select">
+                            <mat-label>Model</mat-label>
+                            <mat-select [value]="currentModel" (selectionChange)="changeModel($event.value)"
+                                [disabled]="loadingModels || modelChangeInProgress">
+                                <mat-option *ngIf="loadingModels" disabled>
+                                    <mat-icon>hourglass_empty</mat-icon>
+                                    Loading models...
+                                </mat-option>
+                                <mat-option *ngFor="let model of availableModels" [value]="model.name">
+                                    {{ model.name }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-icon *ngIf="modelChangeInProgress" class="spinner">
+                            <mat-spinner diameter="20"></mat-spinner>
+                        </mat-icon>
+                    </div>
+                </div>
+
+                <mat-divider class="inner-divider"></mat-divider>
+
+                <div class="setting-item">
+                    <div class="setting-label">
                         <h3>API Status</h3>
                         <p class="description">Connection status to AI services</p>
                     </div>
