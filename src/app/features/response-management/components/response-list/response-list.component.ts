@@ -19,6 +19,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 
 import {
     SubmissionRecord,
@@ -49,7 +50,8 @@ import { ResponseStorageService } from '../../../../shared/services/response-sto
         MatSnackBarModule,
         MatDialogModule,
         MatMenuModule,
-        MatDividerModule
+        MatDividerModule,
+        PageHeaderComponent
     ],
     templateUrl: './response-list.component.html',
     styleUrls: ['./response-list.component.scss'],

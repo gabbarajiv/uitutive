@@ -1,7 +1,9 @@
 <div class="response-list-container">
+    <app-page-header title="Form Responses (View)" icon="description"
+        description="View and manage all form submissions. Filter, sort, search, and export responses.">
+    </app-page-header>
     <!-- Header Section -->
     <div class="response-header">
-        <h1>Form Responses</h1>
         <div class="header-actions">
             <button mat-stroked-button color="accent" [disabled]="selectedRows.size === 0" (click)="bulkDelete()"
                 class="action-button">

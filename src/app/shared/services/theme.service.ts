@@ -26,7 +26,7 @@ export interface ThemeConfig {
     providedIn: 'root',
 })
 export class ThemeService {
-    private currentThemeSubject = new BehaviorSubject<Theme>('light');
+    private currentThemeSubject = new BehaviorSubject<Theme>('dark');
     public currentTheme$ = this.currentThemeSubject.asObservable();
 
     private themes: Record<Theme, ThemeConfig> = {
@@ -147,8 +147,8 @@ export class ThemeService {
             if (saved && saved in this.themes) {
                 this.setTheme(saved);
             } else {
-                // Default to light theme
-                this.setTheme('light');
+                // Default to dark theme
+                this.setTheme('dark');
             }
         }
     }

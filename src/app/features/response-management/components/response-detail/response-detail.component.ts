@@ -17,6 +17,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 
 import { SubmissionRecord } from '../../../../shared/models/submission.model';
 import { ResponseStorageService } from '../../../../shared/services/response-storage.service';
@@ -39,7 +40,8 @@ import { ResponseStorageService } from '../../../../shared/services/response-sto
         MatChipsModule,
         MatDatepickerModule,
         MatNativeDateModule,
-        MatSelectModule
+        MatSelectModule,
+        PageHeaderComponent
     ],
     templateUrl: './response-detail.component.html',
     styleUrls: ['./response-detail.component.scss'],

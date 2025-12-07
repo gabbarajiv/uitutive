@@ -451,6 +451,85 @@
 body.dark-theme {
 
     // ====================================
+    // Buttons
+    // ====================================
+    .mat-button,
+    .mat-raised-button,
+    .mat-stroked-button,
+    .mat-flat-button {
+        color: var(--color-text) !important;
+
+        &.mat-primary {
+            color: white !important;
+        }
+
+        &.mat-accent {
+            color: white !important;
+        }
+
+        &.mat-warn {
+            color: white !important;
+        }
+    }
+
+    button {
+        color: var(--color-text) !important;
+    }
+
+    // ====================================
+    // Icons
+    // ====================================
+    mat-icon {
+        color: var(--color-text) !important;
+    }
+
+    .mat-icon-button {
+        color: var(--color-text) !important;
+
+        &:hover {
+            background-color: rgba(99, 102, 241, 0.1) !important;
+        }
+
+        mat-icon {
+            color: var(--color-text) !important;
+        }
+    }
+
+    button[mat-icon-button] {
+        color: var(--color-text) !important;
+
+        mat-icon {
+            color: var(--color-text) !important;
+        }
+
+        &:hover {
+            background-color: rgba(99, 102, 241, 0.1) !important;
+        }
+    }
+
+    .mat-icon-label {
+        color: var(--color-text) !important;
+    }
+
+    [matTooltip] {
+        color: var(--color-text) !important;
+    }
+
+    .mat-toolbar {
+        mat-icon {
+            color: white !important;
+        }
+
+        button[mat-icon-button] {
+            color: white !important;
+
+            mat-icon {
+                color: white !important;
+            }
+        }
+    }
+
+    // ====================================
     // Text Inputs & Textareas
     // ====================================
     .mat-form-field {
@@ -865,6 +944,48 @@ body.dark-theme {
         background-color: var(--color-surface) !important;
         color: var(--color-text) !important;
     }
+
+    // ====================================
+    // Paginator
+    // ====================================
+    .mat-paginator {
+        background-color: var(--color-surface) !important;
+        color: var(--color-text) !important;
+        border-top: 1px solid var(--color-border) !important;
+    }
+
+    .mat-paginator-container {
+        background-color: var(--color-surface) !important;
+        color: var(--color-text) !important;
+        justify-content: flex-end;
+    }
+
+    .mat-paginator-page-size {
+        color: var(--color-text) !important;
+
+        .mat-paginator-page-size-label {
+            color: var(--color-text) !important;
+        }
+    }
+
+    .mat-paginator-range-actions {
+        .mat-paginator-range-label {
+            color: var(--color-text) !important;
+        }
+    }
+
+    .mat-mdc-paginator-container {
+        background-color: var(--color-surface) !important;
+        color: var(--color-text) !important;
+
+        .mat-mdc-paginator-page-size {
+            color: var(--color-text) !important;
+        }
+
+        .mat-mdc-paginator-range-label {
+            color: var(--color-text) !important;
+        }
+    }
 }
 
 
@@ -895,6 +1016,101 @@ body.dark-theme {
 
         .mat-form-field-wrapper {
             padding-bottom: 1em;
+        }
+    }
+}
+
+// ====================================
+// Material Table Dark Theme
+// ====================================
+body.dark-theme,
+body[data-theme="dark"] {
+    .mat-mdc-table {
+        background: var(--color-surface) !important;
+
+        .mat-mdc-header-cell {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0.08) 100%) !important;
+            color: #ffffff !important;
+        }
+
+        .mat-mdc-cell {
+            color: #ffffff !important;
+        }
+
+        .mat-mdc-row {
+            border-bottom-color: var(--color-border) !important;
+
+            &:hover {
+                background-color: rgba(99, 102, 241, 0.12) !important;
+            }
+        }
+    }
+
+    // ====================================
+    // Form Fields Dark Theme
+    // ====================================
+    .mat-form-field {
+
+        .mat-form-field-label,
+        .mat-floating-label {
+            color: #a0aec0 !important;
+        }
+
+        .mat-input-element,
+        textarea {
+            color: #ffffff !important;
+            background-color: rgba(255, 255, 255, 0.05) !important;
+
+            &::placeholder {
+                color: #a0aec0 !important;
+            }
+
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.08) !important;
+            }
+
+            &:focus {
+                background-color: rgba(255, 255, 255, 0.1) !important;
+                color: #ffffff !important;
+            }
+        }
+
+        .mat-form-field-outline {
+            color: var(--color-border) !important;
+        }
+
+        .mat-form-field-outline-thick {
+            color: var(--color-border) !important;
+        }
+
+        &.mat-focused {
+            .mat-form-field-outline-thick {
+                color: var(--color-primary) !important;
+            }
+        }
+    }
+
+    .mat-mdc-form-field {
+        .mdc-floating-label {
+            color: #a0aec0 !important;
+        }
+
+        .mdc-text-field__input {
+            color: #ffffff !important;
+
+            &::placeholder {
+                color: #a0aec0 !important;
+            }
+        }
+
+        .mdc-notched-outline {
+            border-color: var(--color-border) !important;
+        }
+
+        &.mdc-text-field--focused {
+            .mdc-notched-outline {
+                border-color: var(--color-primary) !important;
+            }
         }
     }
 }

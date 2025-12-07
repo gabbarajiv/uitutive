@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Renderer2, HostBinding, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { RouterOutlet, RouterLink } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -29,19 +30,38 @@ import { ThemeService } from './shared/services/theme.service';
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
+  host: {
+    '[class.dark-theme]': 'isDarkTheme'
+  }
 })
 export class App implements OnInit {
-  isDarkTheme = false;
+  isDarkTheme = true;
 
-  constructor(private themeService: ThemeService) { }
+  constructor(
+    private themeService: ThemeService,
+    private renderer: Renderer2,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    // Apply dark theme immediately to document (browser only)
+    if (isPlatformBrowser(this.platformId)) {
+      this.renderer.setAttribute(document.documentElement, 'data-theme', 'dark');
+      this.renderer.addClass(document.body, 'dark-theme');
+    }
+  }
 
   ngOnInit(): void {
-    // Initialize theme service (loads saved theme from localStorage)
+    // Initialize theme service (loads saved theme from localStorage, defaults to dark)
     this.isDarkTheme = this.themeService.getCurrentTheme() === 'dark';
+    if (isPlatformBrowser(this.platformId)) {
+      this.renderer.setAttribute(document.documentElement, 'data-theme', this.isDarkTheme ? 'dark' : 'light');
+    }
   }
 
   toggleTheme(): void {
     this.themeService.toggleTheme();
     this.isDarkTheme = this.themeService.getCurrentTheme() === 'dark';
+    if (isPlatformBrowser(this.platformId)) {
+      this.renderer.setAttribute(document.documentElement, 'data-theme', this.isDarkTheme ? 'dark' : 'light');
+    }
   }
 }

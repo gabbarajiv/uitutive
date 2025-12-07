@@ -1,0 +1,43 @@
+.page-header {
+    padding: 0;
+    margin-bottom: 1.5rem;
+
+    .header-content {
+        padding: 1rem 0;
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+
+            .header-icon {
+                font-size: 2rem;
+                width: 2rem;
+                height: 2rem;
+                color: var(--color-primary, #6366f1);
+                flex-shrink: 0;
+            }
+        }
+
+        .page-title {
+            margin: 0;
+            font-size: 1.875rem;
+            font-weight: 600;
+            color: var(--color-text, #212121);
+            line-height: 1.2;
+        }
+
+        .page-description {
+            margin: 0;
+            font-size: 0.95rem;
+            color: var(--color-text-secondary, #666);
+            line-height: 1.5;
+            font-weight: 400;
+        }
+    }
+
+    .header-divider {
+        margin: 1rem 0 0 0;
+    }
+}

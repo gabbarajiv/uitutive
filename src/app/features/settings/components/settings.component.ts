@@ -12,8 +12,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ThemeService, Theme } from '../../../shared/services/theme.service';
 import { AIService, ModelInfo } from '../../../shared/services/ai.service';
+import { PromptSuggestionsService, PromptSuggestion } from '../../../shared/services/prompt-suggestions.service';
+import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 
 @Component({
     selector: 'app-settings',
@@ -32,6 +36,9 @@ import { AIService, ModelInfo } from '../../../shared/services/ai.service';
         MatListModule,
         MatTooltipModule,
         MatProgressSpinnerModule,
+        MatChipsModule,
+        MatDialogModule,
+        PageHeaderComponent,
     ],
     templateUrl: './settings.component.html',
     styleUrl: './settings.component.scss',
@@ -53,10 +60,18 @@ export class SettingsComponent implements OnInit {
     loadingModels: boolean = false;
     modelChangeInProgress: boolean = false;
 
+    // Prompt suggestions
+    suggestions: PromptSuggestion[] = [];
+    newSuggestion: string = '';
+    editingSuggestionId: string | null = null;
+    editingSuggestionText: string = '';
+
     constructor(
         private themeService: ThemeService,
         private aiService: AIService,
-        private cdr: ChangeDetectorRef
+        private promptSuggestionsService: PromptSuggestionsService,
+        private cdr: ChangeDetectorRef,
+        private dialog: MatDialog
     ) {
         this.currentTheme = this.themeService.getCurrentTheme();
     }
@@ -65,6 +80,7 @@ export class SettingsComponent implements OnInit {
         this.availableThemes = this.themeService.getAvailableThemes();
         this.loadApiKey();
         this.loadAvailableModels();
+        this.loadPromptSuggestions();
     }
 
     /**
@@ -281,4 +297,84 @@ export class SettingsComponent implements OnInit {
         };
         reader.readAsText(file);
     }
+
+    // ============= Prompt Suggestions Management =============
+
+    /**
+     * Load prompt suggestions
+     */
+    private loadPromptSuggestions(): void {
+        this.suggestions = this.promptSuggestionsService.getSuggestionsSync();
+        this.cdr.markForCheck();
+    }
+
+    /**
+     * Add a new prompt suggestion
+     */
+    addPromptSuggestion(): void {
+        if (this.newSuggestion.trim()) {
+            this.promptSuggestionsService.addSuggestion(this.newSuggestion);
+            this.loadPromptSuggestions();
+            this.newSuggestion = '';
+            this.showSuccessMessage('Suggestion added!');
+            this.markAsChanged();
+        }
+    }
+
+    /**
+     * Start editing a suggestion
+     */
+    startEditSuggestion(id: string, text: string): void {
+        this.editingSuggestionId = id;
+        this.editingSuggestionText = text;
+        this.cdr.markForCheck();
+    }
+
+    /**
+     * Save edited suggestion
+     */
+    saveEditSuggestion(): void {
+        if (this.editingSuggestionId && this.editingSuggestionText.trim()) {
+            this.promptSuggestionsService.updateSuggestion(this.editingSuggestionId, this.editingSuggestionText);
+            this.loadPromptSuggestions();
+            this.editingSuggestionId = null;
+            this.editingSuggestionText = '';
+            this.showSuccessMessage('Suggestion updated!');
+            this.markAsChanged();
+        }
+    }
+
+    /**
+     * Cancel editing suggestion
+     */
+    cancelEditSuggestion(): void {
+        this.editingSuggestionId = null;
+        this.editingSuggestionText = '';
+        this.cdr.markForCheck();
+    }
+
+    /**
+     * Delete a suggestion
+     */
+    deletePromptSuggestion(id: string): void {
+        if (confirm('Are you sure you want to delete this suggestion?')) {
+            this.promptSuggestionsService.removeSuggestion(id);
+            this.loadPromptSuggestions();
+            this.showSuccessMessage('Suggestion deleted!');
+            this.markAsChanged();
+        }
+    }
+
+    /**
+     * Reset suggestions to defaults
+     */
+    resetSuggestionsToDefaults(): void {
+        if (confirm('Are you sure you want to reset all suggestions to defaults?')) {
+            this.promptSuggestionsService.resetToDefaults();
+            this.loadPromptSuggestions();
+            this.showSuccessMessage('Suggestions reset to defaults!');
+            this.markAsChanged();
+        }
+    }
 }
+

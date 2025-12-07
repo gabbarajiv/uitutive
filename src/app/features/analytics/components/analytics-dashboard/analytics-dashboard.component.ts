@@ -13,6 +13,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTableModule } from '@angular/material/table';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { PageHeaderComponent } from '../../../../shared/components/page-header/page-header.component';
 
 import { SubmissionRecord } from '../../../../shared/models/submission.model';
 import { ResponseStorageService } from '../../../../shared/services/response-storage.service';
@@ -38,7 +39,8 @@ import {
         MatSnackBarModule,
         MatSelectModule,
         MatFormFieldModule,
-        MatTableModule
+        MatTableModule,
+        PageHeaderComponent
     ],
     templateUrl: './analytics-dashboard.component.html',
     styleUrls: ['./analytics-dashboard.component.scss'],

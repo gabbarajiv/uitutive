@@ -1,12 +1,7 @@
 <div class="settings-container">
-    <!-- Header -->
-    <div class="settings-header">
-        <h1>
-            <mat-icon>settings</mat-icon>
-            Settings
-        </h1>
-        <p class="subtitle">Manage your application preferences and configuration</p>
-    </div>
+    <app-page-header title="Settings (Configure)" icon="tune"
+        description="Manage your application preferences, theme, and AI model configuration.">
+    </app-page-header>
 
     <!-- Error Message -->
     <div *ngIf="errorMessage" class="error-message">
@@ -188,6 +183,94 @@
                             Import
                         </button>
                     </div>
+                </div>
+            </mat-card-content>
+        </mat-card>
+
+        <!-- Prompt Suggestions Settings -->
+        <mat-card class="settings-card">
+            <mat-card-header>
+                <mat-icon class="section-icon">lightbulb_outline</mat-icon>
+                <h2>Prompt Suggestions</h2>
+            </mat-card-header>
+            <mat-divider></mat-divider>
+            <mat-card-content>
+                <p class="section-description">Manage configurable prompt suggestions that appear in the form generator.
+                    Users can click these suggestions to quickly populate the input field.</p>
+
+                <!-- Add New Suggestion -->
+                <div class="suggestion-form">
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Add a new suggestion</mat-label>
+                        <textarea matInput [(ngModel)]="newSuggestion"
+                            placeholder="e.g., Create a customer feedback form with rating and comments"
+                            rows="2"></textarea>
+                        <mat-hint>Enter a form description that users might want to use</mat-hint>
+                    </mat-form-field>
+                    <button mat-raised-button color="primary" (click)="addPromptSuggestion()"
+                        [disabled]="!newSuggestion.trim()">
+                        <mat-icon>add</mat-icon>
+                        Add Suggestion
+                    </button>
+                </div>
+
+                <mat-divider class="inner-divider"></mat-divider>
+
+                <!-- Current Suggestions List -->
+                <div class="suggestions-list">
+                    <h3 class="suggestions-title">Current Suggestions ({{ suggestions.length }})</h3>
+                    <div *ngIf="suggestions.length === 0" class="empty-suggestions">
+                        <mat-icon>folder_open</mat-icon>
+                        <p>No suggestions yet. Add your first suggestion above.</p>
+                    </div>
+
+                    <div *ngFor="let suggestion of suggestions" class="suggestion-item">
+                        <div class="suggestion-content">
+                            <div *ngIf="editingSuggestionId !== suggestion.id" class="suggestion-text">
+                                {{ suggestion.text }}
+                            </div>
+                            <div *ngIf="editingSuggestionId === suggestion.id" class="suggestion-edit">
+                                <mat-form-field appearance="outline" class="full-width">
+                                    <mat-label>Edit suggestion</mat-label>
+                                    <textarea matInput [(ngModel)]="editingSuggestionText" rows="2"></textarea>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="suggestion-actions">
+                            <button *ngIf="editingSuggestionId !== suggestion.id" mat-icon-button
+                                (click)="startEditSuggestion(suggestion.id, suggestion.text)"
+                                matTooltip="Edit suggestion">
+                                <mat-icon>edit</mat-icon>
+                            </button>
+                            <button *ngIf="editingSuggestionId !== suggestion.id" mat-icon-button color="warn"
+                                (click)="deletePromptSuggestion(suggestion.id)" matTooltip="Delete suggestion">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                            <button *ngIf="editingSuggestionId === suggestion.id" mat-icon-button color="primary"
+                                (click)="saveEditSuggestion()" matTooltip="Save changes">
+                                <mat-icon>check</mat-icon>
+                            </button>
+                            <button *ngIf="editingSuggestionId === suggestion.id" mat-icon-button
+                                (click)="cancelEditSuggestion()" matTooltip="Cancel editing">
+                                <mat-icon>close</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <mat-divider class="inner-divider"></mat-divider>
+
+                <!-- Reset Suggestions -->
+                <div class="setting-item">
+                    <div class="setting-label">
+                        <h3>Reset to Defaults</h3>
+                        <p class="description">Reset suggestions to their default values</p>
+                    </div>
+                    <button mat-stroked-button color="warn" (click)="resetSuggestionsToDefaults()"
+                        [matTooltip]="'This will replace all suggestions with defaults'">
+                        <mat-icon>refresh</mat-icon>
+                        Reset to Defaults
+                    </button>
                 </div>
             </mat-card-content>
         </mat-card>

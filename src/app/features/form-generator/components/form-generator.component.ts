@@ -16,6 +16,7 @@ import { FormService } from '../../../shared/services/form.service';
 import { FormConfig } from '../../../shared/models/form.model';
 import { PromptInputComponent } from './prompt-input/prompt-input.component';
 import { FormPreviewComponent } from './form-preview/form-preview.component';
+import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 
 @Component({
     selector: 'app-form-generator',
@@ -34,6 +35,7 @@ import { FormPreviewComponent } from './form-preview/form-preview.component';
         MatDividerModule,
         PromptInputComponent,
         FormPreviewComponent,
+        PageHeaderComponent,
     ],
     templateUrl: './form-generator.component.html',
     styleUrl: './form-generator.component.scss',

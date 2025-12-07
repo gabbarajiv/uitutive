@@ -19,7 +19,7 @@
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
-                <button mat-raised-button color="primary" (click)="submit()" [disabled]="!prompt.trim() || isLoading">
+                <button mat-button color="primary" (click)="submit()" [disabled]="!prompt.trim() || isLoading">
                     <mat-icon>auto_awesome</mat-icon>
                     Generate Form
                 </button>
@@ -29,13 +29,21 @@
                 </button>
             </div>
 
-            <div class="prompt-examples">
-                <strong>Examples:</strong>
-                <ul>
-                    <li>Create a contact form with name, email, message, and phone number</li>
-                    <li>Generate a product feedback form with rating, comments, and email</li>
-                    <li>Build a job application form with skills, experience, and resume upload</li>
-                </ul>
+            <!-- Suggestions Section -->
+            <div class="suggestions-section" *ngIf="suggestions.length > 0">
+                <div class="suggestions-header">
+                    <mat-icon class="suggestions-icon">lightbulb_outline</mat-icon>
+                    <span class="suggestions-label">Try a suggestion:</span>
+                </div>
+                <div class="suggestions-list">
+                    <mat-chip-set aria-label="Prompt suggestions">
+                        <button mat-chip *ngFor="let suggestion of suggestions" (click)="selectSuggestion(suggestion)"
+                            class="suggestion-chip" [disabled]="isLoading">
+                            <mat-icon>add</mat-icon>
+                            {{ suggestion.text }}
+                        </button>
+                    </mat-chip-set>
+                </div>
             </div>
         </div>
     </mat-card-content>

@@ -1,0 +1,382 @@
+@use '../../../../shared/styles/page-common' as common;
+
+:host {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.my-forms-container {
+    @include common.page-container;
+}
+
+// ====================================
+// Create Form Section
+// ====================================
+
+.create-form-section {
+    margin-bottom: 1.5rem;
+
+    .create-button {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+}
+
+// ====================================
+// Empty State
+// ====================================
+
+.empty-state {
+    @include common.empty-state;
+
+    .empty-icon {
+        font-size: 4rem;
+        width: 4rem;
+        height: 4rem;
+        color: rgba(99, 102, 241, 0.3);
+        margin-bottom: 1.5rem;
+    }
+
+    h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--color-text);
+        margin: 1rem 0;
+    }
+
+    p {
+        font-size: 1rem;
+        margin: 0.5rem 0 2rem 0;
+        max-width: 400px;
+    }
+
+    button {
+        margin-top: 1rem;
+    }
+}
+
+// ====================================
+// Loading State
+// ====================================
+
+.loading-spinner {
+    @include common.loading-state;
+}
+
+// ====================================
+// Forms Table
+// ====================================
+
+.forms-table-wrapper {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    .table-card {
+        @include common.table-card;
+
+        table {
+            width: 100%;
+
+            thead {
+                background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(99, 102, 241, 0.02) 100%);
+
+                th {
+                    font-weight: 600;
+                    font-size: 0.85rem;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    color: var(--color-text-secondary);
+                    padding: 1.25rem;
+                    border-bottom: 2px solid var(--color-border);
+                    position: relative;
+
+                    &[mat-sort-header]:hover {
+                        background: rgba(99, 102, 241, 0.1);
+                    }
+                }
+            }
+
+            tbody {
+                flex: 1;
+                overflow-y: auto;
+
+                tr {
+                    border-bottom: 1px solid var(--color-border);
+                    transition: background-color 0.2s ease;
+
+                    &:hover {
+                        background-color: rgba(99, 102, 241, 0.04);
+                    }
+
+                    &:last-child {
+                        border-bottom: none;
+                    }
+                }
+
+                td {
+                    padding: 1rem 1.25rem;
+                    color: var(--color-text);
+                    font-size: 0.95rem;
+
+                    strong {
+                        color: var(--color-text);
+                        font-weight: 600;
+                    }
+
+                    mat-chip {
+                        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0.05) 100%);
+                        color: var(--color-primary);
+                        font-size: 0.8rem;
+                        padding: 0.25rem 0.75rem;
+                        border-radius: 4px;
+                    }
+                }
+            }
+        }
+
+        mat-paginator {
+            border-top: 1px solid var(--color-border);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.02) 0%, rgba(99, 102, 241, 0) 100%);
+        }
+    }
+}
+
+// ====================================
+// Action Buttons
+// ====================================
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+
+    button {
+        color: var(--color-primary);
+        transition: all 0.2s ease;
+
+        &:hover {
+            background-color: rgba(99, 102, 241, 0.1);
+        }
+
+        mat-icon {
+            font-size: 1.25rem;
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+    }
+}
+
+// ====================================
+// Dark Theme Support
+// ====================================
+
+body.dark-theme,
+body[data-theme="dark"] {
+    .my-forms-container {
+        background: var(--color-background);
+
+        .table-card {
+            background: var(--color-surface) !important;
+            border-color: var(--color-border) !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        .create-form-section {
+            button {
+                &:hover {
+                    background-color: rgba(99, 102, 241, 0.2);
+                }
+            }
+        }
+
+        .empty-state {
+            color: var(--color-text-secondary);
+
+            h3 {
+                color: #ffffff;
+            }
+
+            .empty-icon {
+                color: rgba(99, 102, 241, 0.4);
+            }
+        }
+
+        .forms-table-wrapper {
+            .table-card {
+                background: var(--color-surface) !important;
+                border-color: var(--color-border) !important;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+
+                table {
+                    thead {
+                        background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0.08) 100%) !important;
+
+                        th {
+                            color: #ffffff !important;
+                            border-bottom-color: var(--color-border) !important;
+
+                            &[mat-sort-header]:hover {
+                                background: rgba(99, 102, 241, 0.2) !important;
+                            }
+                        }
+                    }
+
+                    tbody {
+                        tr {
+                            border-bottom-color: var(--color-border) !important;
+                            background: var(--color-surface) !important;
+
+                            &:hover {
+                                background-color: rgba(99, 102, 241, 0.12) !important;
+                            }
+
+                            td {
+                                color: #ffffff !important;
+
+                                strong {
+                                    color: #ffffff !important;
+                                }
+
+                                mat-chip {
+                                    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0.1) 100%) !important;
+                                    color: #a5b4fc !important;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                mat-paginator {
+                    border-top-color: var(--color-border) !important;
+                    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(99, 102, 241, 0) 100%) !important;
+
+                    ::ng-deep {
+                        .mat-mdc-paginator-container {
+                            background: transparent !important;
+                        }
+
+                        .mat-mdc-paginator-button {
+                            color: #ffffff !important;
+                        }
+
+                        .mat-mdc-paginator-label {
+                            color: #ffffff !important;
+                        }
+                    }
+                }
+            }
+        }
+
+        .action-buttons {
+            button {
+                color: #a5b4fc;
+
+                &:hover {
+                    background-color: rgba(99, 102, 241, 0.15);
+                }
+            }
+        }
+    }
+}
+
+:host-context(body[data-theme='dark']),
+:host-context(body.dark-theme) {
+    .my-forms-container {
+        background: var(--color-background);
+    }
+
+    .create-form-section {
+        button {
+            &:hover {
+                background-color: rgba(99, 102, 241, 0.2);
+            }
+        }
+    }
+
+    .empty-state {
+        color: var(--color-text-secondary);
+
+        h3 {
+            color: #ffffff;
+        }
+
+        .empty-icon {
+            color: rgba(99, 102, 241, 0.4);
+        }
+    }
+
+    .forms-table-wrapper {
+        .table-card {
+            background: var(--color-surface);
+            border-color: var(--color-border);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+            table {
+                thead {
+                    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0.08) 100%);
+
+                    th {
+                        color: #ffffff;
+                        border-bottom-color: var(--color-border);
+
+                        &[mat-sort-header]:hover {
+                            background: rgba(99, 102, 241, 0.2);
+                        }
+                    }
+                }
+
+                tbody {
+                    tr {
+                        border-bottom-color: var(--color-border);
+
+                        &:hover {
+                            background-color: rgba(99, 102, 241, 0.12);
+                        }
+
+                        td {
+                            color: #ffffff;
+
+                            strong {
+                                color: #ffffff;
+                            }
+
+                            mat-chip {
+                                background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0.1) 100%);
+                                color: #a5b4fc;
+                            }
+                        }
+                    }
+                }
+            }
+
+            mat-paginator {
+                border-top-color: var(--color-border);
+                background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(99, 102, 241, 0) 100%);
+
+                ::ng-deep {
+                    .mat-mdc-paginator-container {
+                        background: transparent;
+                    }
+
+                    .mat-mdc-paginator-button {
+                        color: #ffffff;
+                    }
+                }
+            }
+        }
+    }
+
+    .action-buttons {
+        button {
+            color: #a5b4fc;
+
+            &:hover {
+                background-color: rgba(99, 102, 241, 0.15);
+            }
+        }
+    }
+}

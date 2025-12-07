@@ -7,6 +7,19 @@
     flex-direction: column;
     height: 100%;
     background: var(--color-background);
+    overflow: hidden;
+}
+
+// Wrapper for all content including header
+.form-generator-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+    overflow-y: auto;
 }
 
 // ====================================
@@ -15,11 +28,8 @@
 
 .page-content {
     flex: 1;
-    padding: 2rem 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
+    padding: 0 0 2rem 0;
     width: 100%;
-    overflow-y: auto;
     animation: fadeIn 0.4s ease-out 0.2s backwards;
     background: linear-gradient(180deg, var(--color-background) 0%, rgba(99, 102, 241, 0.02) 100%);
 

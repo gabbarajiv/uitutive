@@ -1,51 +1,57 @@
 <div class="form-generator-container">
-    <div class="page-content">
-        <!-- Main Content -->
-        <mat-card class="main-card">
-            <!-- Prompt Input Section -->
-            <mat-card-content>
-                <app-prompt-input (promptSubmit)="onPromptSubmit($event)" [isLoading]="isGenerating"></app-prompt-input>
-            </mat-card-content>
+    <div class="form-generator-wrapper">
+        <app-page-header title="Form Generator (Create)" icon="edit_note"
+            description="Create dynamic forms by entering natural language prompts. The AI will generate a form structure based on your description.">
+        </app-page-header>
+        <div class="page-content">
+            <!-- Main Content -->
+            <mat-card class="main-card">
+                <!-- Prompt Input Section -->
+                <mat-card-content>
+                    <app-prompt-input (promptSubmit)="onPromptSubmit($event)"
+                        [isLoading]="isGenerating"></app-prompt-input>
+                </mat-card-content>
 
-            <!-- Loading Progress -->
-            <div *ngIf="isGenerating" class="loading-progress">
-                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-            </div>
-
-            <!-- Error/Success Message -->
-            <div *ngIf="error" class="message-container" [class.success]="error.includes('successfully')">
-                <div class="message">
-                    <mat-icon [class]="error.includes('successfully') ? 'success-icon' : 'error-icon'">
-                        {{ error.includes('successfully') ? 'check_circle' : 'error' }}
-                    </mat-icon>
-                    <span>{{ error }}</span>
+                <!-- Loading Progress -->
+                <div *ngIf="isGenerating" class="loading-progress">
+                    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
                 </div>
-            </div>
 
-            <!-- Generated Form Preview -->
-            <div *ngIf="generatedForm && !isGenerating" class="preview-section">
-                <mat-divider></mat-divider>
-                <div class="section-header">
-                    <h2>Form Preview</h2>
-                    <div class="header-actions">
-                        <button mat-raised-button color="primary" (click)="saveForm()">
-                            <mat-icon>save</mat-icon>
-                            Save Form
-                        </button>
-                        <button mat-stroked-button (click)="discardForm()">
-                            <mat-icon>close</mat-icon>
-                            Discard
-                        </button>
+                <!-- Error/Success Message -->
+                <div *ngIf="error" class="message-container" [class.success]="error.includes('successfully')">
+                    <div class="message">
+                        <mat-icon [class]="error.includes('successfully') ? 'success-icon' : 'error-icon'">
+                            {{ error.includes('successfully') ? 'check_circle' : 'error' }}
+                        </mat-icon>
+                        <span>{{ error }}</span>
                     </div>
                 </div>
-                <app-form-preview [formConfig]="generatedForm"></app-form-preview>
-            </div>
 
-            <!-- Empty State -->
-            <div *ngIf="!generatedForm && !isGenerating" class="empty-state">
-                <mat-icon class="empty-icon">description</mat-icon>
-                <p>Enter a prompt above to generate your first form</p>
-            </div>
-        </mat-card>
+                <!-- Generated Form Preview -->
+                <div *ngIf="generatedForm && !isGenerating" class="preview-section">
+                    <mat-divider></mat-divider>
+                    <div class="section-header">
+                        <h2>Form Preview</h2>
+                        <div class="header-actions">
+                            <button mat-raised-button color="primary" (click)="saveForm()">
+                                <mat-icon>save</mat-icon>
+                                Save Form
+                            </button>
+                            <button mat-stroked-button (click)="discardForm()">
+                                <mat-icon>close</mat-icon>
+                                Discard
+                            </button>
+                        </div>
+                    </div>
+                    <app-form-preview [formConfig]="generatedForm"></app-form-preview>
+                </div>
+
+                <!-- Empty State -->
+                <div *ngIf="!generatedForm && !isGenerating" class="empty-state">
+                    <mat-icon class="empty-icon">description</mat-icon>
+                    <p>Enter a prompt above to generate your first form</p>
+                </div>
+            </mat-card>
+        </div>
     </div>
 </div>

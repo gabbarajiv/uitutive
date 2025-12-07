@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,7 +8,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSelectModule } from '@angular/material/select';
+import { MatChipsModule } from '@angular/material/chips';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { AIService, ModelInfo } from '../../../../shared/services/ai.service';
+import { PromptSuggestionsService, PromptSuggestion } from '../../../../shared/services/prompt-suggestions.service';
 
 @Component({
     selector: 'app-prompt-input',
@@ -23,12 +27,13 @@ import { AIService, ModelInfo } from '../../../../shared/services/ai.service';
         MatIconModule,
         MatTooltipModule,
         MatSelectModule,
+        MatChipsModule,
     ],
     templateUrl: './prompt-input.component.html',
     styleUrl: './prompt-input.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PromptInputComponent implements OnInit {
+export class PromptInputComponent implements OnInit, OnDestroy {
     @Input() isLoading = false;
     @Output() promptSubmit = new EventEmitter<string>();
 
@@ -38,10 +43,28 @@ export class PromptInputComponent implements OnInit {
     loadingModels: boolean = false;
     modelChangeInProgress: boolean = false;
 
-    constructor(private aiService: AIService, private cdr: ChangeDetectorRef) { }
+    suggestions: PromptSuggestion[] = [];
+    private destroy$ = new Subject<void>();
+
+    constructor(
+        private aiService: AIService,
+        private promptSuggestionsService: PromptSuggestionsService,
+        private cdr: ChangeDetectorRef
+    ) { }
 
     ngOnInit(): void {
         this.loadAvailableModels();
+        this.promptSuggestionsService.getSuggestions()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(suggestions => {
+                this.suggestions = suggestions;
+                this.cdr.markForCheck();
+            });
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     /**
@@ -94,6 +117,14 @@ export class PromptInputComponent implements OnInit {
         if (this.prompt.trim()) {
             this.promptSubmit.emit(this.prompt);
         }
+    }
+
+    /**
+     * Select a suggestion and populate the prompt
+     */
+    selectSuggestion(suggestion: PromptSuggestion): void {
+        this.prompt = suggestion.text;
+        this.cdr.markForCheck();
     }
 
     clearPrompt(): void {

@@ -1,7 +1,9 @@
 <div class="analytics-container">
+    <app-page-header title="Analytics Dashboard (Insights)" icon="bar_chart"
+        description="View comprehensive analytics and insights about your form submissions and responses.">
+    </app-page-header>
     <!-- Header -->
     <div class="analytics-header">
-        <h1>Analytics Dashboard</h1>
         <button mat-raised-button color="primary" (click)="exportAnalytics()" [disabled]="isLoading">
             <mat-icon>download</mat-icon>
             Export Report

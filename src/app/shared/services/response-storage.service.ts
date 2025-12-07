@@ -221,8 +221,10 @@ export class ResponseStorageService {
      * Clear all submissions (local storage only)
      */
     clearAll(): void {
-        localStorage.removeItem(this.LOCAL_STORAGE_KEY);
-        localStorage.removeItem(this.METADATA_KEY);
+        if (typeof localStorage !== 'undefined') {
+            localStorage.removeItem(this.LOCAL_STORAGE_KEY);
+            localStorage.removeItem(this.METADATA_KEY);
+        }
         this.submissions$.next([]);
         this.updateMetadata();
     }
@@ -253,6 +255,8 @@ export class ResponseStorageService {
     }
 
     private loadSubmissionsFromStorage(): void {
+        if (typeof localStorage === 'undefined') return;
+
         const stored = localStorage.getItem(this.LOCAL_STORAGE_KEY);
         if (stored) {
             try {
@@ -270,6 +274,8 @@ export class ResponseStorageService {
     }
 
     private saveToLocalStorage(): void {
+        if (typeof localStorage === 'undefined') return;
+
         localStorage.setItem(
             this.LOCAL_STORAGE_KEY,
             JSON.stringify(this.submissions$.value)
@@ -291,7 +297,10 @@ export class ResponseStorageService {
                 : undefined
         };
         this.metadata$.next(metadata);
-        localStorage.setItem(this.METADATA_KEY, JSON.stringify(metadata));
+
+        if (typeof localStorage !== 'undefined') {
+            localStorage.setItem(this.METADATA_KEY, JSON.stringify(metadata));
+        }
     }
 
     private getPaginatedSubmissionsLocal(

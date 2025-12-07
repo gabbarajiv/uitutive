@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { FormGeneratorComponent } from './features/form-generator/components/form-generator.component';
+import { MyFormsComponent } from './features/form-generator/components/my-forms/my-forms.component';
 import { SettingsComponent } from './features/settings/components/settings.component';
 import { ResponseListComponent } from './features/response-management/components/response-list/response-list.component';
 import { ResponseDetailComponent } from './features/response-management/components/response-detail/response-detail.component';
@@ -13,11 +14,13 @@ export const routes: Routes = [
     },
     {
         path: 'form-generator',
-        component: FormGeneratorComponent
+        component: FormGeneratorComponent,
+        data: { title: 'AI Form Generator' }
     },
     {
         path: 'forms',
-        component: FormGeneratorComponent
+        component: MyFormsComponent,
+        data: { title: 'My Forms' }
     },
     {
         path: 'responses',
@@ -36,7 +39,8 @@ export const routes: Routes = [
     },
     {
         path: 'settings',
-        component: SettingsComponent
+        component: SettingsComponent,
+        data: { title: 'Settings' }
     },
     {
         path: '**',
