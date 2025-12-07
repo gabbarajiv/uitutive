@@ -1,0 +1,99 @@
+version: '3.8'
+
+services:
+  # Ollama - Local AI Service
+  ollama:
+    image: ollama/ollama:latest
+    container_name: uitutive-ollama
+    ports:
+      - "11434:11434"
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+    volumes:
+      - ollama-data:/root/.ollama
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:11434/api/tags" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - uitutive-network
+
+  # PostgreSQL - Optional Database (comment out to use SQLite)
+  postgres:
+    image: postgres:16-alpine
+    container_name: uitutive-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-uitutive}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - uitutive-network
+
+  # Backend API
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: uitutive-backend
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DB_TYPE=${DB_TYPE:-sqlite}
+      # PostgreSQL config (if using postgres)
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - POSTGRES_DB=${POSTGRES_DB:-uitutive}
+      # SQLite config (if using sqlite)
+      - SQLITE_PATH=./data/uitutive.db
+      # Ollama config
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-llama2}
+      - OLLAMA_TIMEOUT=30000
+      # CORS
+      - CORS_ORIGIN=http://localhost:4200
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend/data:/app/backend/data
+    depends_on:
+      ollama:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - uitutive-network
+    restart: unless-stopped
+
+  # Frontend (Angular)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: uitutive-frontend
+    ports:
+      - "4200:4200"
+    depends_on:
+      - backend
+    networks:
+      - uitutive-network
+    restart: unless-stopped
+
+networks:
+  uitutive-network:
+    driver: bridge
+
+volumes:
+  ollama-data:
+  postgres-data:

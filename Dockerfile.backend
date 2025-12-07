@@ -1,0 +1,23 @@
+FROM node:20-alpine
+
+WORKDIR /app/backend
+
+# Copy backend package files
+COPY backend/package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy backend source
+COPY backend/src ./src
+COPY backend/tsconfig*.json ./
+
+# Create data directory for SQLite
+RUN mkdir -p data
+
+# Build TypeScript
+RUN npm run build
+
+EXPOSE 3000
+
+CMD ["npm", "start"]

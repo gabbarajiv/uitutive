@@ -1,0 +1,90 @@
+# Development version with hot-reload for backend
+version: '3.8'
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: uitutive-ollama-dev
+    ports:
+      - "11434:11434"
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+    volumes:
+      - ollama-data-dev:/root/.ollama
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:11434/api/tags" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - uitutive-network-dev
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: uitutive-postgres-dev
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: uitutive
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data-dev:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - uitutive-network-dev
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: uitutive-backend-dev
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - DB_TYPE=sqlite
+      - SQLITE_PATH=./data/uitutive.db
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_MODEL=llama2
+      - CORS_ORIGIN=http://localhost:4200
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend/src:/app/backend/src
+      - ./backend/data:/app/backend/data
+    command: npm run dev
+    depends_on:
+      ollama:
+        condition: service_healthy
+    networks:
+      - uitutive-network-dev
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: uitutive-frontend-dev
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+    command: ng serve --host 0.0.0.0 --poll 2000
+    depends_on:
+      - backend
+    networks:
+      - uitutive-network-dev
+    restart: unless-stopped
+
+networks:
+  uitutive-network-dev:
+    driver: bridge
+
+volumes:
+  ollama-data-dev:
+  postgres-data-dev:
