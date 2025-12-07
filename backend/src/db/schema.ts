@@ -76,6 +76,38 @@ CREATE TABLE forms (
 */
 
 /* ============================================================ */
+/* API CALLS TRACKING TABLE */
+/* ============================================================ */
+
+/*
+CREATE TABLE api_calls (
+  id TEXT PRIMARY KEY,
+  timestamp DATETIME NOT NULL,
+  endpoint TEXT NOT NULL,
+  method TEXT NOT NULL,
+  model TEXT,
+  service TEXT NOT NULL CHECK(service IN ('ollama', 'internal', 'external')),
+  status_code INTEGER NOT NULL,
+  request_size INTEGER NOT NULL,
+  response_size INTEGER NOT NULL,
+  response_time_ms INTEGER NOT NULL,
+  error_message TEXT,
+  user_agent TEXT,
+  ip_address TEXT,
+  request_body TEXT,
+  response_body TEXT,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_timestamp (timestamp),
+  INDEX idx_model (model),
+  INDEX idx_service (service),
+  INDEX idx_endpoint (endpoint),
+  INDEX idx_status_code (status_code),
+  INDEX idx_model_timestamp (model, timestamp),
+  INDEX idx_endpoint_timestamp (endpoint, timestamp)
+);
+*/
+
+/* ============================================================ */
 /* TYPESCRIPT MODELS FOR ORM */
 /* ============================================================ */
 
@@ -241,25 +273,25 @@ CREATE TABLE templates (
 */
 
 export interface DatabaseSchema {
-    submissions: {
-        tableName: 'submissions';
-        fields: [
-            'id', 'formId', 'data', 'submittedAt', 'status',
-            'notes', 'userAgent', 'ipAddress', 'sessionId', 'tags',
-            'rating', 'createdAt', 'updatedAt'
-        ];
-        indexes: ['formId', 'status', 'submittedAt', 'sessionId'];
-        foreignKeys: [{ field: 'formId', references: 'forms.id' }];
-    };
-    templates: {
-        tableName: 'templates';
-        fields: [
-            'id', 'formId', 'name', 'description', 'type',
-            'content', 'isDefault', 'version', 'createdBy',
-            'createdAt', 'updatedAt'
-        ];
-        indexes: ['formId', 'isDefault', 'type'];
-        foreignKeys: [{ field: 'formId', references: 'forms.id' }];
-        unique: [['formId', 'name']];
-    };
+  submissions: {
+    tableName: 'submissions';
+    fields: [
+      'id', 'formId', 'data', 'submittedAt', 'status',
+      'notes', 'userAgent', 'ipAddress', 'sessionId', 'tags',
+      'rating', 'createdAt', 'updatedAt'
+    ];
+    indexes: ['formId', 'status', 'submittedAt', 'sessionId'];
+    foreignKeys: [{ field: 'formId', references: 'forms.id' }];
+  };
+  templates: {
+    tableName: 'templates';
+    fields: [
+      'id', 'formId', 'name', 'description', 'type',
+      'content', 'isDefault', 'version', 'createdBy',
+      'createdAt', 'updatedAt'
+    ];
+    indexes: ['formId', 'isDefault', 'type'];
+    foreignKeys: [{ field: 'formId', references: 'forms.id' }];
+    unique: [['formId', 'name']];
+  };
 }

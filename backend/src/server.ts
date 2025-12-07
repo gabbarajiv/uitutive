@@ -3,6 +3,7 @@ import cors from 'cors';
 import { config } from './config/config.js';
 import { initializeDatabase, setDatabase } from './db/database.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import apiTrackingMiddleware from './middleware/api-tracking.middleware.js';
 import apiRoutes from './routes/api.routes.js';
 
 const app = express();
@@ -11,6 +12,9 @@ const app = express();
 app.use(cors(config.cors));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// API Tracking Middleware - track all API calls
+app.use(apiTrackingMiddleware);
 
 // Request logging
 app.use((req, express, next) => {

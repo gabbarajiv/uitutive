@@ -111,6 +111,21 @@
                             {{ timeline.dates[0].date }} to {{ timeline.dates[timeline.dates.length - 1].date }}
                         </div>
                     </div>
+
+                    <div class="summary-item">
+                        <div class="summary-label">Most Common Value</div>
+                        <div class="summary-value">{{ summaryStats.mostCommonValue || 'N/A' }}</div>
+                    </div>
+
+                    <div class="summary-item">
+                        <div class="summary-label">Empty Fields</div>
+                        <div class="summary-value">{{ summaryStats.totalEmptyFields || 0 }}</div>
+                    </div>
+
+                    <div class="summary-item">
+                        <div class="summary-label">Response Rate</div>
+                        <div class="summary-value">{{ summaryStats.responseRate | number : '1.0-1' }}%</div>
+                    </div>
                 </div>
             </mat-card-content>
         </mat-card>

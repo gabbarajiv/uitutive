@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { formService } from '../services/form.service.js';
 import { ollamaService } from '../services/ollama.service.js';
+import { apiTrackingService } from '../services/api-tracking.service.js';
 
 const router = Router();
 
@@ -213,6 +214,102 @@ router.post('/models/select', asyncHandler(async (req: Request, res: Response) =
         success: true,
         message: `Model switched to ${model}`,
         currentModel: ollamaService.getModel()
+    });
+}));
+
+/* ============================================================ */
+/* ANALYTICS ENDPOINTS */
+/* ============================================================ */
+
+// Get all API calls with optional filters
+router.get('/analytics/api-calls', asyncHandler(async (req: Request, res: Response) => {
+    const limit = parseInt(req.query.limit as string) || 100;
+    const offset = parseInt(req.query.offset as string) || 0;
+
+    const filters = {
+        model: req.query.model as string | undefined,
+        service: req.query.service as string | undefined,
+        endpoint: req.query.endpoint as string | undefined,
+        status_code: req.query.status_code ? parseInt(req.query.status_code as string) : undefined,
+        startDate: req.query.startDate ? new Date(req.query.startDate as string) : undefined,
+        endDate: req.query.endDate ? new Date(req.query.endDate as string) : undefined
+    };
+
+    const { calls, total } = await apiTrackingService.getApiCalls(limit, offset, filters);
+
+    res.json({
+        success: true,
+        data: calls,
+        pagination: {
+            total,
+            limit,
+            offset,
+            pages: Math.ceil(total / limit)
+        }
+    });
+}));
+
+// Get overall API metrics
+router.get('/analytics/summary', asyncHandler(async (req: Request, res: Response) => {
+    const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
+    const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
+
+    const metrics = await apiTrackingService.getApiMetrics({ startDate, endDate });
+
+    res.json({
+        success: true,
+        data: metrics
+    });
+}));
+
+// Get analytics for all models
+router.get('/analytics/models', asyncHandler(async (req: Request, res: Response) => {
+    const analytics = await apiTrackingService.getModelAnalytics();
+
+    res.json({
+        success: true,
+        data: analytics
+    });
+}));
+
+// Get analytics for a specific model
+router.get('/analytics/models/:model', asyncHandler(async (req: Request, res: Response) => {
+    const { model } = req.params;
+
+    const analytics = await apiTrackingService.getModelAnalyticsByName(model);
+
+    if (!analytics) {
+        throw new AppError(404, 'No analytics found for this model');
+    }
+
+    res.json({
+        success: true,
+        data: analytics
+    });
+}));
+
+// Get analytics for a specific endpoint
+router.get('/analytics/endpoints/:endpoint', asyncHandler(async (req: Request, res: Response) => {
+    const { endpoint } = req.params;
+
+    const metrics = await apiTrackingService.getEndpointAnalytics(endpoint);
+
+    res.json({
+        success: true,
+        data: metrics
+    });
+}));
+
+// Clear old API call records (for data retention)
+router.delete('/analytics/cleanup', asyncHandler(async (req: Request, res: Response) => {
+    const daysToKeep = parseInt(req.query.daysToKeep as string) || 30;
+
+    const deletedCount = await apiTrackingService.clearOldRecords(daysToKeep);
+
+    res.json({
+        success: true,
+        message: `Deleted ${deletedCount} old API call records`,
+        deletedCount
     });
 }));
 

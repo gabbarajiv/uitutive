@@ -136,10 +136,37 @@ async function createSqliteTables(db: any): Promise<void> {
       FOREIGN KEY(form_id) REFERENCES forms(id) ON DELETE CASCADE
     );
 
+    -- API Calls Tracking table
+    CREATE TABLE IF NOT EXISTS api_calls (
+      id TEXT PRIMARY KEY,
+      timestamp DATETIME NOT NULL,
+      endpoint TEXT NOT NULL,
+      method TEXT NOT NULL,
+      model TEXT,
+      service TEXT NOT NULL,
+      status_code INTEGER NOT NULL,
+      request_size INTEGER NOT NULL,
+      response_size INTEGER NOT NULL,
+      response_time_ms INTEGER NOT NULL,
+      error_message TEXT,
+      user_agent TEXT,
+      ip_address TEXT,
+      request_body TEXT,
+      response_body TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
     -- Create indices
     CREATE INDEX IF NOT EXISTS idx_submissions_form_id ON submissions(form_id);
     CREATE INDEX IF NOT EXISTS idx_templates_form_id ON templates(form_id);
     CREATE INDEX IF NOT EXISTS idx_analytics_form_id ON analytics(form_id);
+    CREATE INDEX IF NOT EXISTS idx_api_calls_timestamp ON api_calls(timestamp);
+    CREATE INDEX IF NOT EXISTS idx_api_calls_model ON api_calls(model);
+    CREATE INDEX IF NOT EXISTS idx_api_calls_service ON api_calls(service);
+    CREATE INDEX IF NOT EXISTS idx_api_calls_endpoint ON api_calls(endpoint);
+    CREATE INDEX IF NOT EXISTS idx_api_calls_status_code ON api_calls(status_code);
+    CREATE INDEX IF NOT EXISTS idx_api_calls_model_timestamp ON api_calls(model, timestamp);
+    CREATE INDEX IF NOT EXISTS idx_api_calls_endpoint_timestamp ON api_calls(endpoint, timestamp);
   `;
 
     db.exec(schema);
@@ -193,10 +220,37 @@ async function createPostgresTables(pool: Pool): Promise<void> {
       FOREIGN KEY(form_id) REFERENCES forms(id) ON DELETE CASCADE
     );
 
+    -- API Calls Tracking table
+    CREATE TABLE IF NOT EXISTS api_calls (
+      id TEXT PRIMARY KEY,
+      timestamp TIMESTAMP NOT NULL,
+      endpoint TEXT NOT NULL,
+      method TEXT NOT NULL,
+      model TEXT,
+      service TEXT NOT NULL,
+      status_code INTEGER NOT NULL,
+      request_size INTEGER NOT NULL,
+      response_size INTEGER NOT NULL,
+      response_time_ms INTEGER NOT NULL,
+      error_message TEXT,
+      user_agent TEXT,
+      ip_address TEXT,
+      request_body TEXT,
+      response_body TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
     -- Create indices
     CREATE INDEX IF NOT EXISTS idx_submissions_form_id ON submissions(form_id);
     CREATE INDEX IF NOT EXISTS idx_templates_form_id ON templates(form_id);
     CREATE INDEX IF NOT EXISTS idx_analytics_form_id ON analytics(form_id);
+    CREATE INDEX IF NOT EXISTS idx_api_calls_timestamp ON api_calls(timestamp);
+    CREATE INDEX IF NOT EXISTS idx_api_calls_model ON api_calls(model);
+    CREATE INDEX IF NOT EXISTS idx_api_calls_service ON api_calls(service);
+    CREATE INDEX IF NOT EXISTS idx_api_calls_endpoint ON api_calls(endpoint);
+    CREATE INDEX IF NOT EXISTS idx_api_calls_status_code ON api_calls(status_code);
+    CREATE INDEX IF NOT EXISTS idx_api_calls_model_timestamp ON api_calls(model, timestamp);
+    CREATE INDEX IF NOT EXISTS idx_api_calls_endpoint_timestamp ON api_calls(endpoint, timestamp);
   `;
 
     try {

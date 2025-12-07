@@ -5,6 +5,7 @@ import { SettingsComponent } from './features/settings/components/settings.compo
 import { ResponseListComponent } from './features/response-management/components/response-list/response-list.component';
 import { ResponseDetailComponent } from './features/response-management/components/response-detail/response-detail.component';
 import { AnalyticsDashboardComponent } from './features/analytics/components/analytics-dashboard/analytics-dashboard.component';
+import { ApiCallTrackerComponent } from './features/analytics/components/api-call-tracker/api-call-tracker.component';
 
 export const routes: Routes = [
     {
@@ -36,6 +37,11 @@ export const routes: Routes = [
         path: 'analytics',
         component: AnalyticsDashboardComponent,
         data: { title: 'Analytics' }
+    },
+    {
+        path: 'api-tracking',
+        component: ApiCallTrackerComponent,
+        data: { title: 'API Call Tracking' }
     },
     {
         path: 'settings',

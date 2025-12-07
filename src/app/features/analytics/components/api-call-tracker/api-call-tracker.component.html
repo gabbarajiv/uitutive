@@ -1,0 +1,382 @@
+<div class="api-tracking-container">
+    <div class="header">
+        <h2>API Call Analytics</h2>
+        <div class="header-actions">
+            <button mat-raised-button color="primary" (click)="onRefresh()">
+                <mat-icon>refresh</mat-icon>
+                Refresh
+            </button>
+            <button mat-raised-button (click)="onClearFilters()">
+                <mat-icon>clear</mat-icon>
+                Clear Filters
+            </button>
+        </div>
+    </div>
+
+    <mat-tab-group>
+        <!-- Summary Tab -->
+        <mat-tab label="Summary">
+            <div class="tab-content">
+                <mat-card *ngIf="isSummaryLoading" class="loading-card">
+                    <mat-spinner diameter="40"></mat-spinner>
+                </mat-card>
+
+                <mat-card *ngIf="summaryMetrics && !isSummaryLoading" class="metrics-card">
+                    <mat-card-header>
+                        <mat-card-title>Overall API Metrics</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <div class="metrics-grid">
+                            <div class="metric">
+                                <div class="metric-label">Total Calls</div>
+                                <div class="metric-value">{{ summaryMetrics.total_calls }}</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Successful Calls</div>
+                                <div class="metric-value success">{{ summaryMetrics.successful_calls }}</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Failed Calls</div>
+                                <div class="metric-value error">{{ summaryMetrics.failed_calls }}</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Success Rate</div>
+                                <div class="metric-value">{{ summaryMetrics.success_rate.toFixed(2) }}%</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Avg Response Time</div>
+                                <div class="metric-value">{{ summaryMetrics.average_response_time_ms.toFixed(2) }}ms
+                                </div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Min Response Time</div>
+                                <div class="metric-value">{{ summaryMetrics.min_response_time_ms }}ms</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Max Response Time</div>
+                                <div class="metric-value">{{ summaryMetrics.max_response_time_ms }}ms</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Total Request Size</div>
+                                <div class="metric-value">{{ formatBytes(summaryMetrics.total_request_bytes) }}</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Total Response Size</div>
+                                <div class="metric-value">{{ formatBytes(summaryMetrics.total_response_bytes) }}</div>
+                            </div>
+                        </div>
+
+                        <div class="status-codes" *ngIf="summaryMetrics.calls_by_status | keyvalue as statusCodes">
+                            <h3>Calls by Status Code</h3>
+                            <div class="status-grid">
+                                <div *ngFor="let item of statusCodes" class="status-item">
+                                    <mat-chip>
+                                        {{ item.key }}: {{ item.value }}
+                                    </mat-chip>
+                                </div>
+                            </div>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+        </mat-tab>
+
+        <!-- Model Analytics Tab -->
+        <mat-tab label="Models">
+            <div class="tab-content">
+                <mat-card *ngIf="isLoadingModels" class="loading-card">
+                    <mat-spinner diameter="40"></mat-spinner>
+                </mat-card>
+
+                <mat-card *ngIf="!isLoadingModels && modelAnalytics.length > 0">
+                    <mat-card-header>
+                        <mat-card-title>Model Analytics</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <div class="table-container">
+                            <table mat-table [dataSource]="modelAnalytics" class="analytics-table">
+                                <!-- Model Column -->
+                                <ng-container matColumnDef="model">
+                                    <th mat-header-cell *matHeaderCellDef>Model</th>
+                                    <td mat-cell *matCellDef="let element">
+                                        <strong>{{ element.model }}</strong>
+                                    </td>
+                                </ng-container>
+
+                                <!-- Total Calls Column -->
+                                <ng-container matColumnDef="total_calls">
+                                    <th mat-header-cell *matHeaderCellDef>Total Calls</th>
+                                    <td mat-cell *matCellDef="let element">{{ element.total_calls }}</td>
+                                </ng-container>
+
+                                <!-- Successful Calls Column -->
+                                <ng-container matColumnDef="successful_calls">
+                                    <th mat-header-cell *matHeaderCellDef>Successful</th>
+                                    <td mat-cell *matCellDef="let element" class="success">
+                                        {{ element.successful_calls }}
+                                    </td>
+                                </ng-container>
+
+                                <!-- Failed Calls Column -->
+                                <ng-container matColumnDef="failed_calls">
+                                    <th mat-header-cell *matHeaderCellDef>Failed</th>
+                                    <td mat-cell *matCellDef="let element" class="error">
+                                        {{ element.failed_calls }}
+                                    </td>
+                                </ng-container>
+
+                                <!-- Avg Response Time Column -->
+                                <ng-container matColumnDef="average_response_time_ms">
+                                    <th mat-header-cell *matHeaderCellDef>Avg Response Time</th>
+                                    <td mat-cell *matCellDef="let element">
+                                        {{ element.average_response_time_ms.toFixed(2) }}ms
+                                    </td>
+                                </ng-container>
+
+                                <!-- Success Rate Column -->
+                                <ng-container matColumnDef="success_rate">
+                                    <th mat-header-cell *matHeaderCellDef>Success Rate</th>
+                                    <td mat-cell *matCellDef="let element">
+                                        {{ element.success_rate.toFixed(2) }}%
+                                    </td>
+                                </ng-container>
+
+                                <!-- Last Call Column -->
+                                <ng-container matColumnDef="last_call">
+                                    <th mat-header-cell *matHeaderCellDef>Last Call</th>
+                                    <td mat-cell *matCellDef="let element">
+                                        {{ formatDate(element.last_call) }}
+                                    </td>
+                                </ng-container>
+
+                                <tr mat-header-row *matHeaderRowDef="modelsDisplayColumns"></tr>
+                                <tr mat-row *matRowDef="let row; columns: modelsDisplayColumns;"
+                                    (click)="onModelSelect(row)"></tr>
+                            </table>
+                        </div>
+
+                        <!-- Selected Model Details -->
+                        <mat-divider *ngIf="selectedModelAnalytics" class="divider"></mat-divider>
+                        <mat-card *ngIf="selectedModelAnalytics" class="model-details">
+                            <mat-card-header>
+                                <mat-card-title>Model Details: {{ selectedModelAnalytics.model }}</mat-card-title>
+                            </mat-card-header>
+                            <mat-card-content>
+                                <div class="details-grid">
+                                    <div class="detail-item">
+                                        <span class="detail-label">Total Calls:</span>
+                                        <span class="detail-value">{{ selectedModelAnalytics.total_calls }}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Successful Calls:</span>
+                                        <span class="detail-value success">{{ selectedModelAnalytics.successful_calls
+                                            }}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Failed Calls:</span>
+                                        <span class="detail-value error">{{ selectedModelAnalytics.failed_calls
+                                            }}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Success Rate:</span>
+                                        <span class="detail-value">{{ selectedModelAnalytics.success_rate.toFixed(2)
+                                            }}%</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Average Response Time:</span>
+                                        <span class="detail-value">{{
+                                            selectedModelAnalytics.average_response_time_ms.toFixed(2) }}ms</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Min Response Time:</span>
+                                        <span class="detail-value">{{ selectedModelAnalytics.min_response_time_ms
+                                            }}ms</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Max Response Time:</span>
+                                        <span class="detail-value">{{ selectedModelAnalytics.max_response_time_ms
+                                            }}ms</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Total Request Bytes:</span>
+                                        <span class="detail-value">{{
+                                            formatBytes(selectedModelAnalytics.total_request_bytes) }}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Total Response Bytes:</span>
+                                        <span class="detail-value">{{
+                                            formatBytes(selectedModelAnalytics.total_response_bytes) }}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Last Call:</span>
+                                        <span class="detail-value">{{ formatDate(selectedModelAnalytics.last_call)
+                                            }}</span>
+                                    </div>
+                                </div>
+                            </mat-card-content>
+                        </mat-card>
+                    </mat-card-content>
+                </mat-card>
+
+                <mat-card *ngIf="!isLoadingModels && modelAnalytics.length === 0" class="empty-state">
+                    <mat-card-content>
+                        <p>No model analytics data available yet.</p>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+        </mat-tab>
+
+        <!-- API Calls Tab -->
+        <mat-tab label="API Calls">
+            <div class="tab-content">
+                <!-- Filters -->
+                <mat-card class="filters-card">
+                    <mat-card-header>
+                        <mat-card-title>Filters</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <form [formGroup]="filterForm" class="filter-form">
+                            <mat-form-field>
+                                <mat-label>Model</mat-label>
+                                <input matInput formControlName="model" (change)="onFilterChange()" />
+                            </mat-form-field>
+
+                            <mat-form-field>
+                                <mat-label>Service</mat-label>
+                                <mat-select formControlName="service" (selectionChange)="onFilterChange()">
+                                    <mat-option value="">All</mat-option>
+                                    <mat-option value="ollama">Ollama</mat-option>
+                                    <mat-option value="internal">Internal</mat-option>
+                                    <mat-option value="external">External</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+
+                            <mat-form-field>
+                                <mat-label>Endpoint</mat-label>
+                                <input matInput formControlName="endpoint" (change)="onFilterChange()" />
+                            </mat-form-field>
+
+                            <mat-form-field>
+                                <mat-label>Status Code</mat-label>
+                                <input matInput formControlName="status_code" type="number"
+                                    (change)="onFilterChange()" />
+                            </mat-form-field>
+
+                            <mat-form-field>
+                                <mat-label>Start Date</mat-label>
+                                <input matInput [matDatepicker]="startPicker" formControlName="startDate"
+                                    (change)="onFilterChange()" />
+                                <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                                <mat-datepicker #startPicker></mat-datepicker>
+                            </mat-form-field>
+
+                            <mat-form-field>
+                                <mat-label>End Date</mat-label>
+                                <input matInput [matDatepicker]="endPicker" formControlName="endDate"
+                                    (change)="onFilterChange()" />
+                                <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                                <mat-datepicker #endPicker></mat-datepicker>
+                            </mat-form-field>
+                        </form>
+                    </mat-card-content>
+                </mat-card>
+
+                <!-- API Calls Table -->
+                <mat-card *ngIf="isLoadingCalls" class="loading-card">
+                    <mat-spinner diameter="40"></mat-spinner>
+                </mat-card>
+
+                <mat-card *ngIf="!isLoadingCalls && apiCalls.length > 0">
+                    <mat-card-header>
+                        <mat-card-title>API Calls ({{ totalCalls }} total)</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <div class="table-container">
+                            <table mat-table [dataSource]="apiCalls" class="analytics-table">
+                                <!-- Timestamp Column -->
+                                <ng-container matColumnDef="timestamp">
+                                    <th mat-header-cell *matHeaderCellDef>Timestamp</th>
+                                    <td mat-cell *matCellDef="let element">
+                                        {{ formatDate(element.timestamp) }}
+                                    </td>
+                                </ng-container>
+
+                                <!-- Endpoint Column -->
+                                <ng-container matColumnDef="endpoint">
+                                    <th mat-header-cell *matHeaderCellDef>Endpoint</th>
+                                    <td mat-cell *matCellDef="let element">
+                                        <code>{{ element.endpoint }}</code>
+                                    </td>
+                                </ng-container>
+
+                                <!-- Method Column -->
+                                <ng-container matColumnDef="method">
+                                    <th mat-header-cell *matHeaderCellDef>Method</th>
+                                    <td mat-cell *matCellDef="let element">
+                                        <mat-chip>{{ element.method }}</mat-chip>
+                                    </td>
+                                </ng-container>
+
+                                <!-- Model Column -->
+                                <ng-container matColumnDef="model">
+                                    <th mat-header-cell *matHeaderCellDef>Model</th>
+                                    <td mat-cell *matCellDef="let element">
+                                        {{ element.model || '-' }}
+                                    </td>
+                                </ng-container>
+
+                                <!-- Status Code Column -->
+                                <ng-container matColumnDef="status_code">
+                                    <th mat-header-cell *matHeaderCellDef>Status</th>
+                                    <td mat-cell *matCellDef="let element">
+                                        <mat-chip [ngClass]="getStatusClass(element.status_code)">
+                                            {{ element.status_code }}
+                                        </mat-chip>
+                                    </td>
+                                </ng-container>
+
+                                <!-- Response Time Column -->
+                                <ng-container matColumnDef="response_time_ms">
+                                    <th mat-header-cell *matHeaderCellDef>Response Time</th>
+                                    <td mat-cell *matCellDef="let element">
+                                        {{ element.response_time_ms }}ms
+                                    </td>
+                                </ng-container>
+
+                                <!-- Request Size Column -->
+                                <ng-container matColumnDef="request_size">
+                                    <th mat-header-cell *matHeaderCellDef>Request Size</th>
+                                    <td mat-cell *matCellDef="let element">
+                                        {{ formatBytes(element.request_size) }}
+                                    </td>
+                                </ng-container>
+
+                                <!-- Response Size Column -->
+                                <ng-container matColumnDef="response_size">
+                                    <th mat-header-cell *matHeaderCellDef>Response Size</th>
+                                    <td mat-cell *matCellDef="let element">
+                                        {{ formatBytes(element.response_size) }}
+                                    </td>
+                                </ng-container>
+
+                                <tr mat-header-row *matHeaderRowDef="callsDisplayColumns"></tr>
+                                <tr mat-row *matRowDef="let row; columns: callsDisplayColumns;"></tr>
+                            </table>
+                        </div>
+
+                        <!-- Paginator -->
+                        <mat-paginator [length]="totalCalls" [pageSize]="pageSize" [pageSizeOptions]="[10, 25, 50, 100]"
+                            (page)="onPageChange($event)">
+                        </mat-paginator>
+                    </mat-card-content>
+                </mat-card>
+
+                <mat-card *ngIf="!isLoadingCalls && apiCalls.length === 0" class="empty-state">
+                    <mat-card-content>
+                        <p>No API calls recorded yet.</p>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+</div>
