@@ -233,15 +233,21 @@ describe('AnalyticsDashboardComponent', () => {
         });
 
         it('should create download link with correct filename', () => {
-            const mockElement = {
-                href: '',
-                download: '',
-                click: jasmine.createSpy('click'),
-                setAttribute: jasmine.createSpy('setAttribute'),
-                appendChild: jasmine.createSpy('appendChild'),
-                removeChild: jasmine.createSpy('removeChild')
-            };
-            const createElementSpy = spyOn(document, 'createElement').and.returnValue(mockElement as any);
+            // Store the original createElement before spying
+            const originalCreateElement = document.createElement.bind(document);
+
+            // Create a real anchor element for the spy to return
+            const realAnchor = originalCreateElement('a');
+            const clickSpy = spyOn(realAnchor, 'click');
+
+            const createElementSpy = spyOn(document, 'createElement').and.callFake((tagName: string) => {
+                if (tagName === 'a') {
+                    return realAnchor;
+                }
+                // Call the original for other elements (needed by Angular)
+                return originalCreateElement(tagName);
+            });
+
             spyOn(window.URL, 'createObjectURL').and.returnValue('blob:mock-url');
             spyOn(window.URL, 'revokeObjectURL');
 
@@ -250,6 +256,7 @@ describe('AnalyticsDashboardComponent', () => {
             component.exportAnalytics();
 
             expect(createElementSpy).toHaveBeenCalledWith('a');
+            expect(clickSpy).toHaveBeenCalled();
         });
 
         it('should show snackbar message after export', () => {

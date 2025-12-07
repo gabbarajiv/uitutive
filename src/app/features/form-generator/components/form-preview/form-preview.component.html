@@ -25,18 +25,11 @@
     <form [formGroup]="form" class="preview-form" (ngSubmit)="onSubmit()">
         <div *ngFor="let field of formConfig.fields" class="form-field-wrapper" [class.hidden]="field.hidden"
             [class.has-error]="hasFieldError(field.name)">
-            <!-- Field Label with Required Indicator -->
-            <div class="field-label" *ngIf="!['checkbox', 'radio', 'file'].includes(field.type)">
-                <label [for]="field.name">
-                    {{ field.label }}
-                    <span *ngIf="field.required" class="required" aria-label="required">*</span>
-                </label>
-            </div>
 
             <!-- Text Input -->
             <mat-form-field *ngIf="field.type === 'text'" appearance="outline" class="full-width"
                 [class.has-error]="hasFieldError(field.name)">
-                <mat-label>{{ field.label }}</mat-label>
+                <mat-label>{{ field.label }}<span *ngIf="field.required" class="required">*</span></mat-label>
                 <input matInput [id]="field.name" [formControlName]="field.name" [placeholder]="field.placeholder || ''"
                     [attr.aria-label]="field.label"
                     [attr.aria-describedby]="field.description ? field.name + '-hint' : null" />
@@ -47,7 +40,7 @@
             <!-- Email Input -->
             <mat-form-field *ngIf="field.type === 'email'" appearance="outline" class="full-width"
                 [class.has-error]="hasFieldError(field.name)">
-                <mat-label>{{ field.label }}</mat-label>
+                <mat-label>{{ field.label }}<span *ngIf="field.required" class="required">*</span></mat-label>
                 <input matInput type="email" [id]="field.name" [formControlName]="field.name"
                     [placeholder]="field.placeholder || ''" [attr.aria-label]="field.label"
                     [attr.aria-describedby]="field.description ? field.name + '-hint' : null" />
@@ -58,7 +51,7 @@
             <!-- Password Input -->
             <mat-form-field *ngIf="field.type === 'password'" appearance="outline" class="full-width"
                 [class.has-error]="hasFieldError(field.name)">
-                <mat-label>{{ field.label }}</mat-label>
+                <mat-label>{{ field.label }}<span *ngIf="field.required" class="required">*</span></mat-label>
                 <input matInput type="password" [id]="field.name" [formControlName]="field.name"
                     [placeholder]="field.placeholder || ''" [attr.aria-label]="field.label"
                     [attr.aria-describedby]="field.description ? field.name + '-hint' : null" />
@@ -69,7 +62,7 @@
             <!-- Number Input -->
             <mat-form-field *ngIf="field.type === 'number'" appearance="outline" class="full-width"
                 [class.has-error]="hasFieldError(field.name)">
-                <mat-label>{{ field.label }}</mat-label>
+                <mat-label>{{ field.label }}<span *ngIf="field.required" class="required">*</span></mat-label>
                 <input matInput type="number" [id]="field.name" [formControlName]="field.name"
                     [placeholder]="field.placeholder || ''" [attr.aria-label]="field.label"
                     [attr.aria-describedby]="field.description ? field.name + '-hint' : null" />
@@ -80,7 +73,7 @@
             <!-- Date Input -->
             <mat-form-field *ngIf="field.type === 'date'" appearance="outline" class="full-width"
                 [class.has-error]="hasFieldError(field.name)">
-                <mat-label>{{ field.label }}</mat-label>
+                <mat-label>{{ field.label }}<span *ngIf="field.required" class="required">*</span></mat-label>
                 <input matInput [matDatepicker]="picker" [id]="field.name" [formControlName]="field.name"
                     [attr.aria-label]="field.label"
                     [attr.aria-describedby]="field.description ? field.name + '-hint' : null" />
@@ -93,7 +86,7 @@
             <!-- Textarea -->
             <mat-form-field *ngIf="field.type === 'textarea'" appearance="outline" class="full-width"
                 [class.has-error]="hasFieldError(field.name)">
-                <mat-label>{{ field.label }}</mat-label>
+                <mat-label>{{ field.label }}<span *ngIf="field.required" class="required">*</span></mat-label>
                 <textarea matInput [id]="field.name" [formControlName]="field.name" [rows]="field.rows || 4"
                     [placeholder]="field.placeholder || ''" [attr.aria-label]="field.label"
                     [attr.aria-describedby]="field.description ? field.name + '-hint' : null"></textarea>
@@ -104,7 +97,7 @@
             <!-- Select -->
             <mat-form-field *ngIf="field.type === 'select'" appearance="outline" class="full-width"
                 [class.has-error]="hasFieldError(field.name)">
-                <mat-label>{{ field.label }}</mat-label>
+                <mat-label>{{ field.label }}<span *ngIf="field.required" class="required">*</span></mat-label>
                 <mat-select [id]="field.name" [formControlName]="field.name" [attr.aria-label]="field.label"
                     [attr.aria-describedby]="field.description ? field.name + '-hint' : null">
                     <mat-option value="">-- Select --</mat-option>

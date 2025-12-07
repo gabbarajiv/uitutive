@@ -39,7 +39,6 @@
                     <mat-chip-set aria-label="Prompt suggestions">
                         <button mat-chip *ngFor="let suggestion of suggestions" (click)="selectSuggestion(suggestion)"
                             class="suggestion-chip" [disabled]="isLoading">
-                            <mat-icon>add</mat-icon>
                             {{ suggestion.text }}
                         </button>
                     </mat-chip-set>

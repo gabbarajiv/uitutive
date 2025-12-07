@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -45,13 +46,17 @@ export class FormGeneratorComponent implements OnInit, OnDestroy {
     generatedForm: FormConfig | null = null;
     isGenerating = false;
     error: string | null = null;
+    isEditMode = false;
+    editFormId: string | null = null;
 
     private destroy$ = new Subject<void>();
 
     constructor(
         private aiService: AIService,
         private formService: FormService,
-        private cdr: ChangeDetectorRef
+        private cdr: ChangeDetectorRef,
+        private route: ActivatedRoute,
+        private router: Router
     ) { }
 
     ngOnInit(): void {
@@ -59,6 +64,31 @@ export class FormGeneratorComponent implements OnInit, OnDestroy {
             this.error = 'OpenAI API key not configured. Please configure it in settings.';
             this.cdr.markForCheck();
         }
+
+        // Check for edit mode from query params
+        this.route.queryParams
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(params => {
+                const formId = params['formId'];
+                const mode = params['mode'];
+
+                if (formId && (mode === 'edit' || mode === 'view')) {
+                    this.isEditMode = mode === 'edit';
+                    this.editFormId = formId;
+                    const form = this.formService.getForm(formId);
+                    if (form) {
+                        this.generatedForm = { ...form };
+                        this.cdr.markForCheck();
+                    } else {
+                        this.error = 'Form not found';
+                        this.cdr.markForCheck();
+                    }
+                } else {
+                    // Reset edit mode when navigating without params
+                    this.isEditMode = false;
+                    this.editFormId = null;
+                }
+            });
     }
 
     onPromptSubmit(prompt: string): void {
@@ -91,20 +121,33 @@ export class FormGeneratorComponent implements OnInit, OnDestroy {
 
     saveForm(): void {
         if (this.generatedForm) {
-            this.formService.createForm(this.generatedForm);
-            this.generatedForm = null;
-            this.error = 'Form saved successfully!';
+            if (this.isEditMode && this.editFormId) {
+                // Update existing form
+                this.generatedForm.updatedAt = new Date();
+                this.formService.updateForm(this.generatedForm);
+                this.error = 'Form updated successfully!';
+            } else {
+                // Create new form
+                this.formService.createForm(this.generatedForm);
+                this.error = 'Form saved successfully!';
+            }
             this.cdr.markForCheck();
             setTimeout(() => {
                 this.error = null;
                 this.cdr.markForCheck();
-            }, 3000);
+                // Navigate back to forms list after save
+                this.router.navigate(['/forms']);
+            }, 1500);
         }
     }
 
     discardForm(): void {
         this.generatedForm = null;
         this.error = null;
+        this.isEditMode = false;
+        this.editFormId = null;
+        // Clear query params
+        this.router.navigate(['/form-generator']);
         this.cdr.markForCheck();
     }
 

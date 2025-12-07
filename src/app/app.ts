@@ -1,4 +1,4 @@
-import { Component, OnInit, Renderer2, HostBinding, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, Renderer2, HostBinding, Inject, PLATFORM_ID, ChangeDetectionStrategy, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { RouterOutlet, RouterLink } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -30,12 +30,13 @@ import { ThemeService } from './shared/services/theme.service';
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '[class.dark-theme]': 'isDarkTheme'
+    '[class.dark-theme]': 'isDarkTheme()'
   }
 })
 export class App implements OnInit {
-  isDarkTheme = true;
+  isDarkTheme = signal(true);
 
   constructor(
     private themeService: ThemeService,
@@ -51,17 +52,19 @@ export class App implements OnInit {
 
   ngOnInit(): void {
     // Initialize theme service (loads saved theme from localStorage, defaults to dark)
-    this.isDarkTheme = this.themeService.getCurrentTheme() === 'dark';
+    const isDarkThemeValue = this.themeService.getCurrentTheme() === 'dark';
+    this.isDarkTheme.set(isDarkThemeValue);
     if (isPlatformBrowser(this.platformId)) {
-      this.renderer.setAttribute(document.documentElement, 'data-theme', this.isDarkTheme ? 'dark' : 'light');
+      this.renderer.setAttribute(document.documentElement, 'data-theme', isDarkThemeValue ? 'dark' : 'light');
     }
   }
 
   toggleTheme(): void {
     this.themeService.toggleTheme();
-    this.isDarkTheme = this.themeService.getCurrentTheme() === 'dark';
+    const isDarkThemeValue = this.themeService.getCurrentTheme() === 'dark';
+    this.isDarkTheme.set(isDarkThemeValue);
     if (isPlatformBrowser(this.platformId)) {
-      this.renderer.setAttribute(document.documentElement, 'data-theme', this.isDarkTheme ? 'dark' : 'light');
+      this.renderer.setAttribute(document.documentElement, 'data-theme', isDarkThemeValue ? 'dark' : 'light');
     }
   }
 }

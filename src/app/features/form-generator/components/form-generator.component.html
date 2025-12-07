@@ -1,13 +1,14 @@
 <div class="form-generator-container">
     <div class="form-generator-wrapper">
-        <app-page-header title="Form Generator (Create)" icon="edit_note"
-            description="Create dynamic forms by entering natural language prompts. The AI will generate a form structure based on your description.">
+        <app-page-header [title]="isEditMode ? 'Edit Form' : 'Form Generator (Create)'"
+            [icon]="isEditMode ? 'edit' : 'edit_note'"
+            [description]="isEditMode ? 'Edit your existing form. Make changes and save to update.' : 'Create dynamic forms by entering natural language prompts. The AI will generate a form structure based on your description.'">
         </app-page-header>
         <div class="page-content">
             <!-- Main Content -->
             <mat-card class="main-card">
-                <!-- Prompt Input Section -->
-                <mat-card-content>
+                <!-- Prompt Input Section (hide when editing existing form) -->
+                <mat-card-content *ngIf="!isEditMode">
                     <app-prompt-input (promptSubmit)="onPromptSubmit($event)"
                         [isLoading]="isGenerating"></app-prompt-input>
                 </mat-card-content>
@@ -29,25 +30,25 @@
 
                 <!-- Generated Form Preview -->
                 <div *ngIf="generatedForm && !isGenerating" class="preview-section">
-                    <mat-divider></mat-divider>
+                    <mat-divider *ngIf="!isEditMode"></mat-divider>
                     <div class="section-header">
-                        <h2>Form Preview</h2>
+                        <h2>{{ isEditMode ? 'Edit Form' : 'Form Preview' }}</h2>
                         <div class="header-actions">
                             <button mat-raised-button color="primary" (click)="saveForm()">
                                 <mat-icon>save</mat-icon>
-                                Save Form
+                                {{ isEditMode ? 'Update Form' : 'Save Form' }}
                             </button>
                             <button mat-stroked-button (click)="discardForm()">
                                 <mat-icon>close</mat-icon>
-                                Discard
+                                {{ isEditMode ? 'Cancel' : 'Discard' }}
                             </button>
                         </div>
                     </div>
                     <app-form-preview [formConfig]="generatedForm"></app-form-preview>
                 </div>
 
-                <!-- Empty State -->
-                <div *ngIf="!generatedForm && !isGenerating" class="empty-state">
+                <!-- Empty State (only show when not editing) -->
+                <div *ngIf="!generatedForm && !isGenerating && !isEditMode" class="empty-state">
                     <mat-icon class="empty-icon">description</mat-icon>
                     <p>Enter a prompt above to generate your first form</p>
                 </div>

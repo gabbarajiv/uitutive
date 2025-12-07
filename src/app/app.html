@@ -15,7 +15,7 @@
 
     <div class="toolbar-end">
         <button mat-icon-button (click)="toggleTheme()" class="theme-toggle" matTooltip="Toggle theme">
-            <mat-icon class="theme-icon">{{ isDarkTheme ? 'light_mode' : 'dark_mode' }}</mat-icon>
+            <mat-icon class="theme-icon">{{ isDarkTheme() ? 'light_mode' : 'dark_mode' }}</mat-icon>
         </button>
         <button mat-icon-button [matMenuTriggerFor]="menu" class="user-menu" matTooltip="Menu">
             <mat-icon class="menu-icon">account_circle</mat-icon>

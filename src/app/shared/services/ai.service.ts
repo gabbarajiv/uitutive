@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal, effect } from '@angular/core';
 import { Observable, from, throwError, timeout, BehaviorSubject } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { FormConfig, FormField, FieldType } from '../models/form.model';
@@ -53,10 +53,23 @@ export interface ModelInfo {
 export class AIService {
     private backendApiUrl = 'http://localhost:3000/api/v1';
     private apiTimeout = environment.apiTimeout;
-    private currentModel = new BehaviorSubject<string>('llama2');
+
+    // ✅ Modern signal-based state management
+    private currentModelSignal = signal<string>('llama2');
+    public readonly currentModel$ = this.currentModelSignal.asReadonly();
+
+    // Backward compatibility: expose as observable
+    private currentModelSubject = new BehaviorSubject<string>('llama2');
+    public readonly currentModelObs$ = this.currentModelSubject.asObservable();
 
     constructor() {
         console.log(`AI Service initialized with backend API: ${this.backendApiUrl}`);
+
+        // Sync signal to observable for backward compatibility
+        effect(() => {
+            this.currentModelSubject.next(this.currentModelSignal());
+        });
+
         this.loadCurrentModel();
     }
 
@@ -67,7 +80,7 @@ export class AIService {
         this.getAvailableModels().subscribe({
             next: (data) => {
                 if (data.currentModel) {
-                    this.currentModel.next(data.currentModel);
+                    this.currentModelSignal.set(data.currentModel);
                 }
             },
             error: (error) => console.error('Failed to load current model:', error)
@@ -118,7 +131,7 @@ export class AIService {
         ).pipe(
             timeout(this.apiTimeout),
             map((data: any) => {
-                this.currentModel.next(modelName);
+                this.currentModelSignal.set(modelName);
                 return {
                     message: data.data?.message || `Model set to ${modelName}`,
                     currentModel: modelName
@@ -132,17 +145,17 @@ export class AIService {
     }
 
     /**
-     * Get the current model as observable
+     * Get the current model as observable (for backward compatibility)
      */
     getCurrentModel$(): Observable<string> {
-        return this.currentModel.asObservable();
+        return this.currentModelObs$;
     }
 
     /**
-     * Get the current model value
+     * Get the current model value (signal-based)
      */
     getCurrentModel(): string {
-        return this.currentModel.value;
+        return this.currentModelSignal();
     }
 
     /**
@@ -173,7 +186,7 @@ export class AIService {
             },
             body: JSON.stringify({
                 description: prompt,
-                model: this.currentModel.value
+                model: this.currentModelSignal()
             }),
         })
             .then((response) => {

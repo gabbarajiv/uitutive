@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal, computed, effect } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { FormConfig, FormSubmission, FormValidationError, FormState } from '../models/form.model';
 
@@ -6,6 +6,29 @@ import { FormConfig, FormSubmission, FormValidationError, FormState } from '../m
     providedIn: 'root',
 })
 export class FormService {
+    // Signals for optimal performance with zoneless change detection
+    private formsSignal = signal<FormConfig[]>([]);
+    private currentFormSignal = signal<FormConfig | null>(null);
+    private formStateSignal = signal<FormState>({
+        formConfig: null,
+        formData: {},
+        errors: [],
+        touched: new Set(),
+        isDirty: false,
+        isSubmitting: false,
+    });
+
+    // Public readonly signals (best practice with zoneless)
+    public readonly forms = this.formsSignal.asReadonly();
+    public readonly currentForm = this.currentFormSignal.asReadonly();
+    public readonly formState = this.formStateSignal.asReadonly();
+
+    // Computed signals for derived state (auto-update when dependencies change)
+    public readonly isFormValid = computed(() => this.formState().errors.length === 0);
+    public readonly isFormDirty = computed(() => this.formState().isDirty);
+    public readonly formFieldCount = computed(() => this.formState().formConfig?.fields.length ?? 0);
+
+    // Observable versions for backward compatibility (can be removed once all components use signals)
     private formsSubject = new BehaviorSubject<FormConfig[]>([]);
     private currentFormSubject = new BehaviorSubject<FormConfig | null>(null);
     private formStateSubject = new BehaviorSubject<FormState>({
@@ -25,15 +48,26 @@ export class FormService {
 
     constructor() {
         this.loadFormsFromStorage();
+
+        // Sync signals to observables for backward compatibility
+        effect(() => {
+            this.formsSubject.next(this.formsSignal());
+        });
+        effect(() => {
+            this.currentFormSubject.next(this.currentFormSignal());
+        });
+        effect(() => {
+            this.formStateSubject.next(this.formStateSignal());
+        });
     }
 
     /**
      * Create a new form
      */
     createForm(formConfig: FormConfig): void {
-        const forms = this.formsSubject.value;
+        const forms = [...this.formsSignal()];
         forms.push(formConfig);
-        this.formsSubject.next([...forms]);
+        this.formsSignal.set(forms);
         this.saveFormsToStorage();
     }
 
@@ -41,10 +75,10 @@ export class FormService {
      * Update existing form
      */
     updateForm(formConfig: FormConfig): void {
-        const forms = this.formsSubject.value.map((form) => (form.id === formConfig.id ? formConfig : form));
-        this.formsSubject.next(forms);
-        if (this.currentFormSubject.value?.id === formConfig.id) {
-            this.currentFormSubject.next(formConfig);
+        const forms = this.formsSignal().map((form) => (form.id === formConfig.id ? formConfig : form));
+        this.formsSignal.set(forms);
+        if (this.currentFormSignal()?.id === formConfig.id) {
+            this.currentFormSignal.set(formConfig);
         }
         this.saveFormsToStorage();
     }
@@ -53,10 +87,10 @@ export class FormService {
      * Delete a form
      */
     deleteForm(formId: string): void {
-        const forms = this.formsSubject.value.filter((form) => form.id !== formId);
-        this.formsSubject.next(forms);
-        if (this.currentFormSubject.value?.id === formId) {
-            this.currentFormSubject.next(null);
+        const forms = this.formsSignal().filter((form) => form.id !== formId);
+        this.formsSignal.set(forms);
+        if (this.currentFormSignal()?.id === formId) {
+            this.currentFormSignal.set(null);
         }
         this.saveFormsToStorage();
     }
@@ -65,7 +99,7 @@ export class FormService {
      * Get form by ID
      */
     getForm(formId: string): FormConfig | null {
-        return this.formsSubject.value.find((form) => form.id === formId) || null;
+        return this.formsSignal().find((form) => form.id === formId) || null;
     }
 
     /**
@@ -73,7 +107,7 @@ export class FormService {
      */
     setCurrentForm(formId: string): void {
         const form = this.getForm(formId);
-        this.currentFormSubject.next(form);
+        this.currentFormSignal.set(form);
         if (form) {
             this.initializeFormState(form);
         }
@@ -88,7 +122,7 @@ export class FormService {
             formData[field.name] = field.value || '';
         });
 
-        this.formStateSubject.next({
+        this.formStateSignal.set({
             formConfig,
             formData,
             errors: [],
@@ -102,27 +136,27 @@ export class FormService {
      * Update form field value
      */
     updateFieldValue(fieldName: string, value: any): void {
-        const state = this.formStateSubject.value;
+        const state = { ...this.formStateSignal() };
         state.formData[fieldName] = value;
         state.isDirty = true;
         state.touched.add(fieldName);
-        this.formStateSubject.next({ ...state });
+        this.formStateSignal.set(state);
     }
 
     /**
      * Mark field as touched
      */
     touchField(fieldName: string): void {
-        const state = this.formStateSubject.value;
+        const state = { ...this.formStateSignal() };
         state.touched.add(fieldName);
-        this.formStateSubject.next({ ...state });
+        this.formStateSignal.set(state);
     }
 
     /**
      * Validate form
      */
     validateForm(): FormValidationError[] {
-        const state = this.formStateSubject.value;
+        const state = this.formStateSignal();
         const errors: FormValidationError[] = [];
 
         if (!state.formConfig) {
@@ -189,9 +223,9 @@ export class FormService {
         });
 
         // Update errors in state
-        const newState = this.formStateSubject.value;
+        const newState = { ...this.formStateSignal() };
         newState.errors = errors;
-        this.formStateSubject.next({ ...newState });
+        this.formStateSignal.set(newState);
 
         return errors;
     }
@@ -208,8 +242,8 @@ export class FormService {
                 return;
             }
 
-            const state = this.formStateSubject.value;
-            const currentForm = this.currentFormSubject.value;
+            const state = this.formStateSignal();
+            const currentForm = this.currentFormSignal();
 
             if (!currentForm) {
                 observer.error(new Error('No form loaded'));
@@ -247,7 +281,7 @@ export class FormService {
      * Reset form
      */
     resetForm(): void {
-        const currentForm = this.currentFormSubject.value;
+        const currentForm = this.currentFormSignal();
         if (currentForm) {
             this.initializeFormState(currentForm);
         }

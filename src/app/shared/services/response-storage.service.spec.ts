@@ -1,22 +1,27 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ResponseStorageService } from './response-storage.service';
 import { SubmissionRecord } from '../models/submission.model';
 
 describe('ResponseStorageService', () => {
     let service: ResponseStorageService;
+    let httpMock: HttpTestingController;
 
     beforeEach(() => {
+        // Clear local storage before configuring TestBed
+        localStorage.clear();
+
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
             providers: [ResponseStorageService]
         });
         service = TestBed.inject(ResponseStorageService);
-        // Clear local storage before each test
-        localStorage.clear();
+        httpMock = TestBed.inject(HttpTestingController);
     });
 
     afterEach(() => {
+        // Verify no outstanding HTTP requests and clear storage
+        httpMock.verify();
         localStorage.clear();
     });
 
@@ -39,6 +44,10 @@ describe('ResponseStorageService', () => {
                     fail('Should not error: ' + err);
                 }
             });
+
+            // Flush HTTP request with error to trigger local storage fallback
+            const req = httpMock.expectOne('/api/submissions');
+            req.flush('Error', { status: 500, statusText: 'Server Error' });
         });
 
         it('should store submission in local storage', (done) => {
@@ -54,9 +63,17 @@ describe('ResponseStorageService', () => {
                         },
                         error: (err) => fail('Should not error: ' + err)
                     });
+
+                    // Flush the getSubmissions request
+                    const getReq = httpMock.expectOne(req => req.url === '/api/submissions' && req.method === 'GET');
+                    getReq.flush('Error', { status: 500, statusText: 'Server Error' });
                 },
                 error: (err) => fail('Should not error: ' + err)
             });
+
+            // Flush the createSubmission request
+            const req = httpMock.expectOne(req => req.url === '/api/submissions' && req.method === 'POST');
+            req.flush('Error', { status: 500, statusText: 'Server Error' });
         });
     });
 
@@ -66,14 +83,29 @@ describe('ResponseStorageService', () => {
             const data1 = { name: 'John' };
             const data2 = { name: 'Jane' };
 
+            // Create first submission
             service.createSubmission(formId, data1).subscribe(() => {
+                // Create second submission
                 service.createSubmission(formId, data2).subscribe(() => {
+                    // Get all submissions
                     service.getSubmissions().subscribe((result) => {
                         expect(result.items.length).toBe(2);
                         done();
                     });
+
+                    // Flush get request
+                    const getReq = httpMock.expectOne(req => req.url === '/api/submissions' && req.method === 'GET');
+                    getReq.flush('Error', { status: 500, statusText: 'Server Error' });
                 });
+
+                // Flush second create request
+                const req2 = httpMock.expectOne(req => req.url === '/api/submissions' && req.method === 'POST');
+                req2.flush('Error', { status: 500, statusText: 'Server Error' });
             });
+
+            // Flush first create request
+            const req1 = httpMock.expectOne(req => req.url === '/api/submissions' && req.method === 'POST');
+            req1.flush('Error', { status: 500, statusText: 'Server Error' });
         });
 
         it('should filter submissions by status', (done) => {
@@ -87,27 +119,48 @@ describe('ResponseStorageService', () => {
                         expect(result.items[0].status).toBe('reviewed');
                         done();
                     });
+
+                    // Flush get request
+                    const getReq = httpMock.expectOne(req => req.url === '/api/submissions' && req.method === 'GET');
+                    getReq.flush('Error', { status: 500, statusText: 'Server Error' });
                 });
+
+                // Flush update request after calling updateStatus
+                const patchReq = httpMock.expectOne(req => req.url.includes('/api/submissions/') && req.method === 'PATCH');
+                patchReq.flush('Error', { status: 500, statusText: 'Server Error' });
             });
+
+            // Flush create request
+            const req = httpMock.expectOne(req => req.url === '/api/submissions' && req.method === 'POST');
+            req.flush('Error', { status: 500, statusText: 'Server Error' });
         });
 
         it('should paginate submissions', (done) => {
             const formId = 'test-form-1';
-            const promises = [];
+            const totalSubmissions = 15;
+            let completedCount = 0;
 
-            for (let i = 0; i < 15; i++) {
-                promises.push(new Promise((resolve) => {
-                    service.createSubmission(formId, { index: i }).subscribe(resolve);
-                }));
+            // Create all subscriptions
+            for (let i = 0; i < totalSubmissions; i++) {
+                service.createSubmission(formId, { index: i }).subscribe(() => {
+                    completedCount++;
+                    if (completedCount === totalSubmissions) {
+                        // All created, now test pagination
+                        service.getSubmissions(undefined, undefined, 1, 10).subscribe((result) => {
+                            expect(result.items.length).toBe(10);
+                            expect(result.total).toBe(15);
+                            done();
+                        });
+
+                        const getReq = httpMock.expectOne(req => req.url === '/api/submissions' && req.method === 'GET');
+                        getReq.flush('Error', { status: 500, statusText: 'Server Error' });
+                    }
+                });
             }
 
-            Promise.all(promises).then(() => {
-                service.getSubmissions(undefined, undefined, 1, 10).subscribe((result) => {
-                    expect(result.items.length).toBe(10);
-                    expect(result.total).toBe(15);
-                    done();
-                });
-            });
+            // Flush all POST requests
+            const requests = httpMock.match(req => req.url === '/api/submissions' && req.method === 'POST');
+            requests.forEach(req => req.flush('Error', { status: 500, statusText: 'Server Error' }));
         });
     });
 
@@ -125,9 +178,17 @@ describe('ResponseStorageService', () => {
                         },
                         error: (err) => fail('Should not error: ' + err)
                     });
+
+                    // Flush patch request after calling updateSubmission
+                    const patchReq = httpMock.expectOne(req => req.url.includes('/api/submissions/') && req.method === 'PATCH');
+                    patchReq.flush('Error', { status: 500, statusText: 'Server Error' });
                 },
                 error: (err) => fail('Should not error: ' + err)
             });
+
+            // Flush create request
+            const req = httpMock.expectOne(req => req.url === '/api/submissions' && req.method === 'POST');
+            req.flush('Error', { status: 500, statusText: 'Server Error' });
         });
 
         it('should update submission notes', (done) => {
@@ -143,9 +204,17 @@ describe('ResponseStorageService', () => {
                         },
                         error: (err) => fail('Should not error: ' + err)
                     });
+
+                    // Flush patch request after calling updateSubmission
+                    const patchReq = httpMock.expectOne(req => req.url.includes('/api/submissions/') && req.method === 'PATCH');
+                    patchReq.flush('Error', { status: 500, statusText: 'Server Error' });
                 },
                 error: (err) => fail('Should not error: ' + err)
             });
+
+            // Flush create request
+            const req = httpMock.expectOne(req => req.url === '/api/submissions' && req.method === 'POST');
+            req.flush('Error', { status: 500, statusText: 'Server Error' });
         });
     });
 
@@ -165,12 +234,24 @@ describe('ResponseStorageService', () => {
                                 },
                                 error: (err) => fail('Should not error: ' + err)
                             });
+
+                            // Flush get request
+                            const getReq = httpMock.expectOne(req => req.url === '/api/submissions' && req.method === 'GET');
+                            getReq.flush('Error', { status: 500, statusText: 'Server Error' });
                         },
                         error: (err) => fail('Should not error: ' + err)
                     });
+
+                    // Flush delete request after calling deleteSubmission
+                    const deleteReq = httpMock.expectOne(req => req.url.includes('/api/submissions/') && req.method === 'DELETE');
+                    deleteReq.flush('Error', { status: 500, statusText: 'Server Error' });
                 },
                 error: (err) => fail('Should not error: ' + err)
             });
+
+            // Flush create request
+            const req = httpMock.expectOne(req => req.url === '/api/submissions' && req.method === 'POST');
+            req.flush('Error', { status: 500, statusText: 'Server Error' });
         });
     });
 
@@ -182,11 +263,15 @@ describe('ResponseStorageService', () => {
             service.createSubmission(formId, data).subscribe({
                 next: (submission) => {
                     const json = service.exportAsJson([submission]);
-                    expect(json).toContain('"name":"John"');
+                    expect(json).toContain('"name": "John"');
                     done();
                 },
                 error: (err) => fail('Should not error: ' + err)
             });
+
+            // Flush create request
+            const req = httpMock.expectOne(req => req.url === '/api/submissions' && req.method === 'POST');
+            req.flush('Error', { status: 500, statusText: 'Server Error' });
         });
     });
 
@@ -204,33 +289,43 @@ describe('ResponseStorageService', () => {
                 },
                 error: (err) => fail('Should not error: ' + err)
             });
+
+            // Flush create request
+            const req = httpMock.expectOne(req => req.url === '/api/submissions' && req.method === 'POST');
+            req.flush('Error', { status: 500, statusText: 'Server Error' });
         });
     });
 
     describe('getMetadata', () => {
         it('should calculate correct metadata', (done) => {
             const formId = 'test-form-1';
-            const promises = [];
+            const totalSubmissions = 5;
+            let completedCount = 0;
 
-            for (let i = 0; i < 5; i++) {
-                promises.push(new Promise((resolve) => {
-                    service.createSubmission(formId, { index: i }).subscribe({
-                        next: resolve,
-                        error: (err) => fail('Should not error: ' + err)
-                    });
-                }));
-            }
-
-            Promise.all(promises).then(() => {
-                service.getMetadata().subscribe({
-                    next: (metadata) => {
-                        expect(metadata.totalCount).toBe(5);
-                        expect(metadata.newCount).toBe(5);
-                        done();
+            // Create all subscriptions first
+            for (let i = 0; i < totalSubmissions; i++) {
+                service.createSubmission(formId, { index: i }).subscribe({
+                    next: () => {
+                        completedCount++;
+                        if (completedCount === totalSubmissions) {
+                            // All created, now test metadata
+                            service.getMetadata().subscribe({
+                                next: (metadata) => {
+                                    expect(metadata.totalCount).toBe(5);
+                                    expect(metadata.newCount).toBe(5);
+                                    done();
+                                },
+                                error: (err) => fail('Should not error: ' + err)
+                            });
+                        }
                     },
                     error: (err) => fail('Should not error: ' + err)
                 });
-            });
+            }
+
+            // Flush all POST requests (they trigger catchError to use local storage)
+            const requests = httpMock.match(req => req.url === '/api/submissions' && req.method === 'POST');
+            requests.forEach(req => req.flush('Error', { status: 500, statusText: 'Server Error' }));
         });
     });
 });
