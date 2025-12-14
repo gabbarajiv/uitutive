@@ -127,23 +127,33 @@ export class FormGeneratorComponent implements OnInit, OnDestroy {
 
     saveForm(): void {
         if (this.generatedForm) {
-            if (this.isEditMode && this.editFormId) {
-                // Update existing form
-                this.generatedForm.updatedAt = new Date();
-                this.formService.updateForm(this.generatedForm);
-                this.error = 'Form updated successfully!';
-            } else {
-                // Create new form
-                this.formService.createForm(this.generatedForm);
-                this.error = 'Form saved successfully!';
-            }
+            this.isGenerating = true;
             this.cdr.markForCheck();
-            setTimeout(() => {
-                this.error = null;
-                this.cdr.markForCheck();
-                // Navigate back to forms list after save
-                this.router.navigate(['/forms']);
-            }, 1500);
+
+            const saveOperation = this.isEditMode && this.editFormId
+                ? this.formService.updateForm(this.generatedForm)
+                : this.formService.createForm(this.generatedForm);
+
+            saveOperation
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                    next: () => {
+                        this.isGenerating = false;
+                        this.error = this.isEditMode ? 'Form updated successfully!' : 'Form saved successfully!';
+                        this.cdr.markForCheck();
+                        setTimeout(() => {
+                            this.error = null;
+                            this.cdr.markForCheck();
+                            // Navigate back to forms list after save
+                            this.router.navigate(['/forms']);
+                        }, 1500);
+                    },
+                    error: (err: any) => {
+                        this.isGenerating = false;
+                        this.error = err.message || 'Failed to save form. Please try again.';
+                        this.cdr.markForCheck();
+                    }
+                });
         }
     }
 

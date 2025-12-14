@@ -12,84 +12,84 @@ const __dirname = dirname(__filename);
 let dbConnection: any;
 
 export interface DbConnection {
-    query: (sql: string, params?: any[]) => Promise<any>;
-    run: (sql: string, params?: any[]) => Promise<any>;
-    close: () => Promise<void>;
+  query: (sql: string, params?: any[]) => Promise<any>;
+  run: (sql: string, params?: any[]) => Promise<any>;
+  close: () => Promise<void>;
 }
 
 export async function initializeDatabase(): Promise<DbConnection> {
-    if (config.db.type === 'postgres') {
-        return initializePostgres();
-    } else {
-        return initializeSqlite();
-    }
+  if (config.db.type === 'postgres') {
+    return initializePostgres();
+  } else {
+    return initializeSqlite();
+  }
 }
 
 async function initializeSqlite(): Promise<DbConnection> {
-    const dbPath = config.db.sqlite.path;
-    const dbDir = path.dirname(dbPath);
+  const dbPath = config.db.sqlite.path;
+  const dbDir = path.dirname(dbPath);
 
-    // Ensure data directory exists
-    if (!fs.existsSync(dbDir)) {
-        fs.mkdirSync(dbDir, { recursive: true });
+  // Ensure data directory exists
+  if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
+  }
+
+  // Using better-sqlite3 for synchronous operations
+  // In production, consider using sqlite3 or sql.js for async support
+  const db = new Database(dbPath);
+
+  // Enable foreign keys
+  db.pragma('foreign_keys = ON');
+
+  // Create tables
+  await createSqliteTables(db);
+
+  return {
+    query: async (sql: string, params: any[] = []) => {
+      const stmt = db.prepare(sql);
+      if (sql.trim().toUpperCase().startsWith('SELECT')) {
+        return stmt.all(...params);
+      }
+      return stmt.run(...params);
+    },
+    run: async (sql: string, params: any[] = []) => {
+      const stmt = db.prepare(sql);
+      return stmt.run(...params);
+    },
+    close: async () => {
+      db.close();
     }
-
-    // Using better-sqlite3 for synchronous operations
-    // In production, consider using sqlite3 or sql.js for async support
-    const db = new Database(dbPath);
-
-    // Enable foreign keys
-    db.pragma('foreign_keys = ON');
-
-    // Create tables
-    await createSqliteTables(db);
-
-    return {
-        query: async (sql: string, params: any[] = []) => {
-            const stmt = db.prepare(sql);
-            if (sql.trim().toUpperCase().startsWith('SELECT')) {
-                return stmt.all(...params);
-            }
-            return stmt.run(...params);
-        },
-        run: async (sql: string, params: any[] = []) => {
-            const stmt = db.prepare(sql);
-            return stmt.run(...params);
-        },
-        close: async () => {
-            db.close();
-        }
-    };
+  };
 }
 
 async function initializePostgres(): Promise<DbConnection> {
-    const pool = new Pool({
-        host: config.db.postgres.host,
-        port: config.db.postgres.port,
-        user: config.db.postgres.user,
-        password: config.db.postgres.password,
-        database: config.db.postgres.database
-    });
+  const pool = new Pool({
+    host: config.db.postgres.host,
+    port: config.db.postgres.port,
+    user: config.db.postgres.user,
+    password: config.db.postgres.password,
+    database: config.db.postgres.database
+  });
 
-    // Create tables
-    await createPostgresTables(pool);
+  // Create tables
+  await createPostgresTables(pool);
 
-    return {
-        query: async (sql: string, params: any[] = []) => {
-            const result = await pool.query(sql, params);
-            return result.rows;
-        },
-        run: async (sql: string, params: any[] = []) => {
-            return pool.query(sql, params);
-        },
-        close: async () => {
-            await pool.end();
-        }
-    };
+  return {
+    query: async (sql: string, params: any[] = []) => {
+      const result = await pool.query(sql, params);
+      return result.rows;
+    },
+    run: async (sql: string, params: any[] = []) => {
+      return pool.query(sql, params);
+    },
+    close: async () => {
+      await pool.end();
+    }
+  };
 }
 
 async function createSqliteTables(db: any): Promise<void> {
-    const schema = `
+  const schema = `
     -- Forms table
     CREATE TABLE IF NOT EXISTS forms (
       id TEXT PRIMARY KEY,
@@ -185,11 +185,37 @@ async function createSqliteTables(db: any): Promise<void> {
     CREATE INDEX IF NOT EXISTS idx_api_calls_endpoint_timestamp ON api_calls(endpoint, timestamp);
   `;
 
-    db.exec(schema);
+  db.exec(schema);
+
+  // Run migrations to add any missing columns
+  runSqliteMigrations(db);
+}
+
+async function runSqliteMigrations(db: any): Promise<void> {
+  try {
+    // Check if columns exist and add them if they don't
+    const tableInfo = db.pragma('table_info(forms)');
+    const columnNames = tableInfo.map((col: any) => col.name);
+
+    // Add isPublic column if it doesn't exist
+    if (!columnNames.includes('isPublic')) {
+      db.exec(`ALTER TABLE forms ADD COLUMN isPublic BOOLEAN DEFAULT 0;`);
+      console.log('Added isPublic column to forms table');
+    }
+
+    // Add shareableLink column if it doesn't exist
+    if (!columnNames.includes('shareableLink')) {
+      db.exec(`ALTER TABLE forms ADD COLUMN shareableLink TEXT UNIQUE;`);
+      console.log('Added shareableLink column to forms table');
+    }
+  } catch (error: any) {
+    console.warn('Migration warning (may be expected):', error.message);
+    // Migrations might fail if columns already exist, which is fine
+  }
 }
 
 async function createPostgresTables(pool: Pool): Promise<void> {
-    const schema = `
+  const schema = `
     -- Forms table
     CREATE TABLE IF NOT EXISTS forms (
       id TEXT PRIMARY KEY,
@@ -285,23 +311,23 @@ async function createPostgresTables(pool: Pool): Promise<void> {
     CREATE INDEX IF NOT EXISTS idx_api_calls_endpoint_timestamp ON api_calls(endpoint, timestamp);
   `;
 
-    try {
-        await pool.query(schema);
-    } catch (error: any) {
-        // Ignore table exists errors
-        if (!error.message.includes('already exists')) {
-            throw error;
-        }
+  try {
+    await pool.query(schema);
+  } catch (error: any) {
+    // Ignore table exists errors
+    if (!error.message.includes('already exists')) {
+      throw error;
     }
+  }
 }
 
 export function getDatabase(): DbConnection {
-    if (!dbConnection) {
-        throw new Error('Database not initialized');
-    }
-    return dbConnection;
+  if (!dbConnection) {
+    throw new Error('Database not initialized');
+  }
+  return dbConnection;
 }
 
 export async function setDatabase(connection: DbConnection): Promise<void> {
-    dbConnection = connection;
+  dbConnection = connection;
 }

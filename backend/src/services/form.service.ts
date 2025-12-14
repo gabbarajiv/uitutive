@@ -10,7 +10,7 @@ export class FormService {
         const id = uuidv4();
         const db = getDatabase();
 
-        const now = new Date();
+        const now = new Date().toISOString();
 
         try {
             await db.run(
@@ -24,8 +24,8 @@ export class FormService {
                 title,
                 description,
                 fields,
-                created_at: now,
-                updated_at: now
+                created_at: new Date(now),
+                updated_at: new Date(now)
             };
         } catch (error: any) {
             throw new Error(`Failed to create form: ${error.message}`);
@@ -87,9 +87,12 @@ export class FormService {
     /**
      * Update form
      */
+    /**
+     * Update form
+     */
     async updateForm(formId: string, updates: Partial<Form>): Promise<Form> {
         const db = getDatabase();
-        const now = new Date();
+        const now = new Date().toISOString();
 
         try {
             let updateQuery = 'UPDATE forms SET updated_at = ?';
@@ -147,7 +150,7 @@ export class FormService {
     ): Promise<FormSubmission> {
         const id = uuidv4();
         const db = getDatabase();
-        const now = new Date();
+        const now = new Date().toISOString();
 
         try {
             await db.run(
@@ -163,8 +166,8 @@ export class FormService {
                 status: 'new',
                 user_agent: userAgent,
                 ip_address: ipAddress,
-                submitted_at: now,
-                created_at: now
+                submitted_at: new Date(now),
+                created_at: new Date(now)
             };
         } catch (error: any) {
             throw new Error(`Failed to create submission: ${error.message}`);
@@ -299,21 +302,19 @@ export class FormService {
     /**
      * Generate shareable link for a form
      */
+    /**
+     * Generate shareable link for a form
+     */
     async generateShareableLink(formId: string): Promise<string> {
         const db = getDatabase();
         const shareableLink = uuidv4();
-        const now = new Date();
+        const now = new Date().toISOString();
 
         try {
-            const result = await db.run(
-                `UPDATE forms SET isPublic = true, shareableLink = ?, updated_at = ? WHERE id = ?`,
+            await db.run(
+                `UPDATE forms SET isPublic = 1, shareableLink = ?, updated_at = ? WHERE id = ?`,
                 [shareableLink, now, formId]
             );
-
-            // Verify the update was successful
-            if (!result || result.changes === 0) {
-                throw new Error(`Form with ID ${formId} not found or update failed`);
-            }
 
             return shareableLink;
         } catch (error: any) {
@@ -359,12 +360,12 @@ export class FormService {
      */
     async toggleFormPublic(formId: string, isPublic: boolean): Promise<Form> {
         const db = getDatabase();
-        const now = new Date();
+        const now = new Date().toISOString();
 
         try {
             await db.run(
                 `UPDATE forms SET isPublic = ?, updated_at = ? WHERE id = ?`,
-                [isPublic, now, formId]
+                [isPublic ? 1 : 0, now, formId]
             );
 
             const form = await this.getForm(formId);
@@ -389,7 +390,7 @@ export class FormService {
     ): Promise<any> {
         const id = uuidv4();
         const db = getDatabase();
-        const now = new Date();
+        const now = new Date().toISOString();
 
         try {
             // Store as public submission
@@ -427,11 +428,11 @@ export class FormService {
      */
     async removeShareableLink(formId: string): Promise<Form> {
         const db = getDatabase();
-        const now = new Date();
+        const now = new Date().toISOString();
 
         try {
             await db.run(
-                `UPDATE forms SET isPublic = false, shareableLink = NULL, updated_at = ? WHERE id = ?`,
+                `UPDATE forms SET isPublic = 0, shareableLink = NULL, updated_at = ? WHERE id = ?`,
                 [now, formId]
             );
 

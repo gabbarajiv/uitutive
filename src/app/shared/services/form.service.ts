@@ -51,6 +51,7 @@ export class FormService {
 
     constructor(private http: HttpClient) {
         this.loadFormsFromStorage();
+        this.loadFormsFromBackend();
 
         // Sync signals to observables for backward compatibility
         effect(() => {
@@ -65,25 +66,70 @@ export class FormService {
     }
 
     /**
-     * Create a new form
+     * Create a new form and sync to backend
      */
-    createForm(formConfig: FormConfig): void {
-        const forms = [...this.formsSignal()];
-        forms.push(formConfig);
-        this.formsSignal.set(forms);
-        this.saveFormsToStorage();
+    createForm(formConfig: FormConfig): Observable<any> {
+        return new Observable((observer) => {
+            this.http.post(`${this.apiUrl}/forms`, {
+                title: formConfig.title,
+                description: formConfig.description || '',
+                fields: formConfig.fields
+            }).subscribe({
+                next: (response: any) => {
+                    if (response.success && response.data) {
+                        // Update formConfig with backend-generated ID
+                        formConfig.id = response.data.id;
+
+                        // Update local state
+                        const forms = [...this.formsSignal()];
+                        forms.push(formConfig);
+                        this.formsSignal.set(forms);
+                        this.saveFormsToStorage();
+
+                        observer.next(response);
+                        observer.complete();
+                    } else {
+                        observer.error(new Error('Failed to create form'));
+                    }
+                },
+                error: (error) => {
+                    observer.error(error);
+                }
+            });
+        });
     }
 
     /**
-     * Update existing form
+     * Update existing form and sync to backend
      */
-    updateForm(formConfig: FormConfig): void {
-        const forms = this.formsSignal().map((form) => (form.id === formConfig.id ? formConfig : form));
-        this.formsSignal.set(forms);
-        if (this.currentFormSignal()?.id === formConfig.id) {
-            this.currentFormSignal.set(formConfig);
-        }
-        this.saveFormsToStorage();
+    updateForm(formConfig: FormConfig): Observable<any> {
+        return new Observable((observer) => {
+            this.http.patch(`${this.apiUrl}/forms/${formConfig.id}`, {
+                title: formConfig.title,
+                description: formConfig.description || '',
+                fields: formConfig.fields
+            }).subscribe({
+                next: (response: any) => {
+                    if (response.success) {
+                        // Update local state
+                        const forms = this.formsSignal().map((form) => (form.id === formConfig.id ? formConfig : form));
+                        this.formsSignal.set(forms);
+                        if (this.currentFormSignal()?.id === formConfig.id) {
+                            this.currentFormSignal.set(formConfig);
+                        }
+                        this.saveFormsToStorage();
+
+                        observer.next(response);
+                        observer.complete();
+                    } else {
+                        observer.error(new Error('Failed to update form'));
+                    }
+                },
+                error: (error) => {
+                    observer.error(error);
+                }
+            });
+        });
     }
 
     /**
@@ -315,6 +361,30 @@ export class FormService {
                 }
             }
         }
+    }
+
+    /**
+     * Load forms from backend API
+     */
+    private loadFormsFromBackend(): void {
+        this.http.get<any>(`${this.apiUrl}/forms`).subscribe({
+            next: (response) => {
+                if (response.success && Array.isArray(response.data)) {
+                    const backendForms = response.data;
+                    // Merge with localStorage forms, preferring backend data
+                    const localForms = this.formsSignal();
+                    const mergedForms = backendForms;
+
+                    this.formsSignal.set(mergedForms);
+                    this.formsSubject.next(mergedForms);
+                    this.saveFormsToStorage();
+                }
+            },
+            error: (error) => {
+                console.warn('Failed to load forms from backend:', error);
+                // Continue with localStorage forms if backend fails
+            }
+        });
     }
 
     /**
