@@ -30,15 +30,15 @@
             </div>
 
             <!-- Suggestions Section -->
-            <div class="suggestions-section" *ngIf="suggestions.length > 0">
+            <div class="suggestions-section" *ngIf="displayedSuggestions.length > 0">
                 <div class="suggestions-header">
                     <mat-icon class="suggestions-icon">lightbulb_outline</mat-icon>
                     <span class="suggestions-label">Try a suggestion:</span>
                 </div>
                 <div class="suggestions-list">
                     <mat-chip-set aria-label="Prompt suggestions">
-                        <button mat-chip *ngFor="let suggestion of suggestions" (click)="selectSuggestion(suggestion)"
-                            class="suggestion-chip" [disabled]="isLoading">
+                        <button mat-chip *ngFor="let suggestion of displayedSuggestions"
+                            (click)="selectSuggestion(suggestion)" class="suggestion-chip" [disabled]="isLoading">
                             {{ suggestion.text }}
                         </button>
                     </mat-chip-set>

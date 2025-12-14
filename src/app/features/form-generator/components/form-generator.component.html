@@ -7,25 +7,9 @@
         <div class="page-content">
             <!-- Main Content -->
             <mat-card class="main-card">
-                <!-- Prompt Input Section (hide when editing existing form) -->
-                <mat-card-content *ngIf="!isEditMode">
-                    <app-prompt-input (promptSubmit)="onPromptSubmit($event)"
-                        [isLoading]="isGenerating"></app-prompt-input>
-                </mat-card-content>
-
-                <!-- Loading Progress -->
-                <div *ngIf="isGenerating" class="loading-progress">
-                    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-                </div>
-
-                <!-- Error/Success Message -->
-                <div *ngIf="error" class="message-container" [class.success]="error.includes('successfully')">
-                    <div class="message">
-                        <mat-icon [class]="error.includes('successfully') ? 'success-icon' : 'error-icon'">
-                            {{ error.includes('successfully') ? 'check_circle' : 'error' }}
-                        </mat-icon>
-                        <span>{{ error }}</span>
-                    </div>
+                <!-- Form Generation Loader (appears on top when generating) -->
+                <div *ngIf="isGenerating" class="generating-section">
+                    <app-form-generation-loader></app-form-generation-loader>
                 </div>
 
                 <!-- Generated Form Preview -->
@@ -47,10 +31,20 @@
                     <app-form-preview [formConfig]="generatedForm"></app-form-preview>
                 </div>
 
-                <!-- Empty State (only show when not editing) -->
-                <div *ngIf="!generatedForm && !isGenerating && !isEditMode" class="empty-state">
-                    <mat-icon class="empty-icon">description</mat-icon>
-                    <p>Enter a prompt above to generate your first form</p>
+                <!-- Prompt Input Section (hide when form is showing or generating) -->
+                <mat-card-content *ngIf="!isEditMode && !generatedForm && !isGenerating">
+                    <app-prompt-input (promptSubmit)="onPromptSubmit($event)"
+                        [isLoading]="isGenerating"></app-prompt-input>
+                </mat-card-content>
+
+                <!-- Error/Success Message -->
+                <div *ngIf="error" class="message-container" [class.success]="error.includes('successfully')">
+                    <div class="message">
+                        <mat-icon [class]="error.includes('successfully') ? 'success-icon' : 'error-icon'">
+                            {{ error.includes('successfully') ? 'check_circle' : 'error' }}
+                        </mat-icon>
+                        <span>{{ error }}</span>
+                    </div>
                 </div>
             </mat-card>
         </div>

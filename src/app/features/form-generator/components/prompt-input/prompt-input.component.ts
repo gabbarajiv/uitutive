@@ -44,9 +44,11 @@ export class PromptInputComponent implements OnInit, OnDestroy {
     modelChangeInProgress: boolean = false;
 
     suggestions: PromptSuggestion[] = [];
+    displayedSuggestions: PromptSuggestion[] = [];
     autocompleteSuggestion: string = '';
     showAutocompleteSuggestion: boolean = false;
     completionLoading: boolean = false;
+    private readonly MAX_SUGGESTIONS = 6;
     private destroy$ = new Subject<void>();
 
     constructor(
@@ -61,6 +63,7 @@ export class PromptInputComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.destroy$))
             .subscribe(suggestions => {
                 this.suggestions = suggestions;
+                this.displayedSuggestions = suggestions.slice(0, this.MAX_SUGGESTIONS);
                 this.cdr.markForCheck();
             });
     }

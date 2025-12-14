@@ -18,6 +18,7 @@ import { FormConfig } from '../../../shared/models/form.model';
 import { PromptInputComponent } from './prompt-input/prompt-input.component';
 import { FormPreviewComponent } from './form-preview/form-preview.component';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
+import { FormGenerationLoaderComponent } from './form-generation-loader/form-generation-loader.component';
 
 @Component({
     selector: 'app-form-generator',
@@ -37,6 +38,7 @@ import { PageHeaderComponent } from '../../../shared/components/page-header/page
         PromptInputComponent,
         FormPreviewComponent,
         PageHeaderComponent,
+        FormGenerationLoaderComponent,
     ],
     templateUrl: './form-generator.component.html',
     styleUrl: './form-generator.component.scss',
