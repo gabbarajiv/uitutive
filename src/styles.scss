@@ -106,3 +106,99 @@ app-root {
         display: none !important;
     }
 }
+
+// ====================================
+// Mobile Responsive Enhancements
+// ====================================
+
+// Handle notch/safe area on mobile devices
+@supports (padding: max(0px)) {
+    body {
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    app-root {
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+    }
+}
+
+// Small phones (320px - 480px)
+@media (max-width: 480px) {
+
+    html,
+    body {
+        font-size: 14px;
+    }
+
+    * {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    button,
+    a {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    input,
+    textarea,
+    select {
+        font-size: 16px;
+    }
+}
+
+// Medium phones (481px - 768px)
+@media (min-width: 481px) and (max-width: 768px) {
+
+    html,
+    body {
+        font-size: 15px;
+    }
+}
+
+// Tablets and up
+@media (min-width: 769px) {
+
+    html,
+    body {
+        font-size: 16px;
+    }
+}
+
+// Prevent zoom on input focus (iOS)
+@media (max-width: 768px) {
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="tel"],
+    textarea,
+    select {
+        font-size: 16px;
+        padding: 12px;
+        border-radius: 8px;
+    }
+}
+
+// Optimize for landscape mode
+@media (max-height: 500px) and (orientation: landscape) {
+    .app-toolbar {
+        min-height: 48px;
+    }
+}
+
+// Landscape specific
+@media (orientation: landscape) {
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    app-root {
+        max-height: 100vh;
+    }
+}

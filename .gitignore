@@ -41,3 +41,27 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Capacitor & Mobile
+/android
+/ios
+.capacitorignore
+www/
+
+# Android Studio
+.gradle
+.idea
+*.iml
+*.keystore
+*.jks
+local.properties
+capacitor-nativeproject-log.txt
+
+# iOS
+Pods/
+*.xcworkspace
+*.xcodeproj/xcuserdata/
+.swiftpm/
+
+# Mobile build artifacts
+capac-plugin-build-cache/
