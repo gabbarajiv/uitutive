@@ -1,16 +1,15 @@
 import { Component, OnInit, Renderer2, HostBinding, Inject, PLATFORM_ID, ChangeDetectionStrategy, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { RouterOutlet, RouterLink } from '@angular/router';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
 import { ThemeService } from './shared/services/theme.service';
+import { ModernHeaderComponent } from './shared/components/modern-header/modern-header.component';
 
 @Component({
   selector: 'app-root',
@@ -19,14 +18,13 @@ import { ThemeService } from './shared/services/theme.service';
     CommonModule,
     RouterOutlet,
     RouterLink,
-    MatToolbarModule,
     MatSidenavModule,
     MatListModule,
     MatIconModule,
     MatButtonModule,
-    MatMenuModule,
     MatDividerModule,
     MatTooltipModule,
+    ModernHeaderComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss',

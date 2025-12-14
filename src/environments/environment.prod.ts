@@ -1,5 +1,7 @@
 export const environment = {
     production: true,
+    // API URL for backend services (update with your production server)
+    apiUrl: 'https://your-domain.com/api/v1',
     // Ollama API configuration (for production, use your server URL)
     ollama: {
         apiUrl: 'http://your-ollama-server:11434',

@@ -3,6 +3,7 @@ import { asyncHandler, AppError } from '../middleware/errorHandler.js';
 import { formService } from '../services/form.service.js';
 import { ollamaService } from '../services/ollama.service.js';
 import { apiTrackingService } from '../services/api-tracking.service.js';
+import { publicRoutes } from './public.routes.js';
 
 const router = Router();
 
@@ -70,6 +71,57 @@ router.delete('/forms/:formId', asyncHandler(async (req: Request, res: Response)
     res.json({
         success: true,
         message: 'Form deleted'
+    });
+}));
+
+// Public link management endpoints
+router.post('/forms/:formId/generate-link', asyncHandler(async (req: Request, res: Response) => {
+    const { formId } = req.params;
+
+    if (!formId) {
+        throw new AppError(400, 'Form ID is required');
+    }
+
+    const form = await formService.getForm(formId);
+    if (!form) {
+        throw new AppError(404, 'Form not found');
+    }
+
+    const shareableLink = await formService.generateShareableLink(formId);
+
+    res.json({
+        success: true,
+        data: {
+            shareableLink,
+            publicUrl: `/submit/${shareableLink}`
+        }
+    });
+}));
+
+router.post('/forms/:formId/toggle-public', asyncHandler(async (req: Request, res: Response) => {
+    const { formId } = req.params;
+    const { isPublic } = req.body;
+
+    if (typeof isPublic !== 'boolean') {
+        throw new AppError(400, 'isPublic must be a boolean');
+    }
+
+    const form = await formService.toggleFormPublic(formId, isPublic);
+
+    res.json({
+        success: true,
+        data: form
+    });
+}));
+
+router.delete('/forms/:formId/remove-link', asyncHandler(async (req: Request, res: Response) => {
+    const { formId } = req.params;
+
+    const form = await formService.removeShareableLink(formId);
+
+    res.json({
+        success: true,
+        data: form
     });
 }));
 
@@ -312,5 +364,8 @@ router.delete('/analytics/cleanup', asyncHandler(async (req: Request, res: Respo
         deletedCount
     });
 }));
+
+// Public routes (no authentication required)
+router.use('/public', publicRoutes);
 
 export default router;

@@ -6,6 +6,8 @@ import { ResponseListComponent } from './features/response-management/components
 import { ResponseDetailComponent } from './features/response-management/components/response-detail/response-detail.component';
 import { AnalyticsDashboardComponent } from './features/analytics/components/analytics-dashboard/analytics-dashboard.component';
 import { ApiCallTrackerComponent } from './features/analytics/components/api-call-tracker/api-call-tracker.component';
+import { FormSubmissionComponent } from './features/public-submission/components/form-submission/form-submission.component';
+import { SubmissionSuccessComponent } from './features/public-submission/components/submission-success/submission-success.component';
 
 export const routes: Routes = [
     {
@@ -47,6 +49,16 @@ export const routes: Routes = [
         path: 'settings',
         component: SettingsComponent,
         data: { title: 'Settings' }
+    },
+    {
+        path: 'submit/:link',
+        component: FormSubmissionComponent,
+        data: { title: 'Form Submission' }
+    },
+    {
+        path: 'submit/:link/success',
+        component: SubmissionSuccessComponent,
+        data: { title: 'Submission Success' }
     },
     {
         path: '**',

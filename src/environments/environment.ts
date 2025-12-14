@@ -3,6 +3,8 @@
 
 export const environment = {
     production: false,
+    // API URL for backend services
+    apiUrl: 'http://localhost:3000/api/v1',
     // Ollama local API configuration
     ollama: {
         apiUrl: 'http://localhost:11434',

@@ -2,6 +2,23 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 export type Theme = 'light' | 'dark';
+export type HeaderTheme = 'default' | 'christmas' | 'neon' | 'ocean' | 'sunset' | 'forest' | 'cyber' | 'minimal';
+
+export interface HeaderThemeConfig {
+    name: HeaderTheme;
+    gradient?: string;
+    icon?: string;
+    colors?: {
+        primary: string;
+        secondary: string;
+        accent: string;
+    };
+    effects?: {
+        hasGlow?: boolean;
+        hasPattern?: boolean;
+        hasAnimation?: boolean;
+    };
+}
 
 export interface ThemeConfig {
     name: Theme;
@@ -28,6 +45,9 @@ export interface ThemeConfig {
 export class ThemeService {
     private currentThemeSubject = new BehaviorSubject<Theme>('dark');
     public currentTheme$ = this.currentThemeSubject.asObservable();
+
+    private currentHeaderThemeSubject = new BehaviorSubject<HeaderTheme>('default');
+    public currentHeaderTheme$ = this.currentHeaderThemeSubject.asObservable();
 
     private themes: Record<Theme, ThemeConfig> = {
         light: {
@@ -68,8 +88,53 @@ export class ThemeService {
         },
     };
 
+    private headerThemes: Record<HeaderTheme, HeaderThemeConfig> = {
+        default: {
+            name: 'default',
+            gradient: 'linear-gradient(135deg, #818cf8 0%, #6366f1 100%)',
+            effects: { hasGlow: true, hasPattern: false, hasAnimation: false },
+        },
+        christmas: {
+            name: 'christmas',
+            gradient: 'linear-gradient(135deg, #dc2626 0%, #16a34a 50%, #dc2626 100%)',
+            icon: 'celebration',
+            effects: { hasGlow: true, hasPattern: true, hasAnimation: true },
+        },
+        neon: {
+            name: 'neon',
+            gradient: 'linear-gradient(135deg, #ff006e 0%, #00f5ff 100%)',
+            effects: { hasGlow: true, hasPattern: true, hasAnimation: true },
+        },
+        ocean: {
+            name: 'ocean',
+            gradient: 'linear-gradient(135deg, #0369a1 0%, #06b6d4 100%)',
+            effects: { hasGlow: true, hasPattern: false, hasAnimation: true },
+        },
+        sunset: {
+            name: 'sunset',
+            gradient: 'linear-gradient(135deg, #f97316 0%, #ec4899 50%, #a855f7 100%)',
+            effects: { hasGlow: true, hasPattern: false, hasAnimation: true },
+        },
+        forest: {
+            name: 'forest',
+            gradient: 'linear-gradient(135deg, #15803d 0%, #059669 100%)',
+            effects: { hasGlow: false, hasPattern: true, hasAnimation: false },
+        },
+        cyber: {
+            name: 'cyber',
+            gradient: 'linear-gradient(135deg, #1e1b4b 0%, #6d28d9 100%)',
+            effects: { hasGlow: true, hasPattern: true, hasAnimation: true },
+        },
+        minimal: {
+            name: 'minimal',
+            gradient: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)',
+            effects: { hasGlow: false, hasPattern: false, hasAnimation: false },
+        },
+    };
+
     constructor() {
         this.loadThemeFromStorage();
+        this.loadHeaderThemeFromStorage();
     }
 
     /**
@@ -80,10 +145,87 @@ export class ThemeService {
     }
 
     /**
+     * Get all available header themes
+     */
+    getAvailableHeaderThemes(): HeaderTheme[] {
+        return Object.keys(this.headerThemes) as HeaderTheme[];
+    }
+
+    /**
      * Get current theme
      */
     getCurrentTheme(): Theme {
         return this.currentThemeSubject.value;
+    }
+
+    /**
+     * Get current header theme
+     */
+    getCurrentHeaderTheme(): HeaderTheme {
+        return this.currentHeaderThemeSubject.value;
+    }
+
+    /**
+     * Set header theme
+     */
+    setHeaderTheme(theme: HeaderTheme): void {
+        if (!(theme in this.headerThemes)) {
+            console.warn(`Header theme "${theme}" not found, defaulting to default`);
+            theme = 'default';
+        }
+
+        this.currentHeaderThemeSubject.next(theme);
+        this.applyHeaderTheme(theme);
+        this.saveHeaderThemeToStorage(theme);
+    }
+
+    /**
+     * Apply header theme to DOM using CSS custom properties
+     */
+    private applyHeaderTheme(theme: HeaderTheme): void {
+        const headerThemeConfig = this.headerThemes[theme];
+        const root = document.documentElement;
+
+        // Set header theme variables
+        root.style.setProperty('--header-gradient', headerThemeConfig.gradient || 'linear-gradient(135deg, #818cf8 0%, #6366f1 100%)');
+        root.style.setProperty('--header-has-glow', headerThemeConfig.effects?.hasGlow ? '1' : '0');
+        root.style.setProperty('--header-has-pattern', headerThemeConfig.effects?.hasPattern ? '1' : '0');
+        root.style.setProperty('--header-has-animation', headerThemeConfig.effects?.hasAnimation ? '1' : '0');
+
+        // Add theme class to document for CSS styling
+        document.documentElement.setAttribute('data-header-theme', theme);
+    }
+
+    /**
+     * Get header theme configuration
+     */
+    getHeaderThemeConfig(theme?: HeaderTheme): HeaderThemeConfig {
+        const targetTheme = theme || this.getCurrentHeaderTheme();
+        return this.headerThemes[targetTheme];
+    }
+
+    /**
+     * Save header theme preference to localStorage
+     */
+    private saveHeaderThemeToStorage(theme: HeaderTheme): void {
+        if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('app_header_theme', theme);
+        }
+    }
+
+    /**
+     * Load header theme preference from localStorage
+     */
+    private loadHeaderThemeFromStorage(): void {
+        if (typeof localStorage !== 'undefined') {
+            const saved = localStorage.getItem('app_header_theme') as HeaderTheme | null;
+            if (saved && saved in this.headerThemes) {
+                this.setHeaderTheme(saved);
+            } else {
+                // Default to default header theme
+                this.setHeaderTheme('default');
+            }
+        }
     }
 
     /**

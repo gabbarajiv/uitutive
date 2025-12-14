@@ -13,6 +13,8 @@ export interface Form {
     title: string;
     description?: string;
     fields: FormField[];
+    isPublic?: boolean;
+    shareableLink?: string;
     created_at: Date;
     updated_at: Date;
 }
@@ -22,8 +24,20 @@ export interface FormSubmission {
     form_id: string;
     data: Record<string, any>;
     status: 'new' | 'reviewed' | 'archived';
+    submission_source?: 'admin' | 'public';
     user_agent?: string;
     ip_address?: string;
+    submitted_at: Date;
+    created_at: Date;
+}
+
+export interface PublicSubmission {
+    id: string;
+    form_id: string;
+    shareable_link: string;
+    submission_data: Record<string, any>;
+    ip_address?: string;
+    user_agent?: string;
     submitted_at: Date;
     created_at: Date;
 }

@@ -14,7 +14,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { ThemeService, Theme } from '../../../shared/services/theme.service';
+import { ThemeService, Theme, HeaderTheme } from '../../../shared/services/theme.service';
 import { AIService, ModelInfo } from '../../../shared/services/ai.service';
 import { PromptSuggestionsService, PromptSuggestion } from '../../../shared/services/prompt-suggestions.service';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
@@ -47,6 +47,8 @@ import { PageHeaderComponent } from '../../../shared/components/page-header/page
 export class SettingsComponent implements OnInit {
     currentTheme: Theme;
     availableThemes: Theme[] = [];
+    currentHeaderTheme: HeaderTheme;
+    availableHeaderThemes: HeaderTheme[] = [];
     apiKey: string = '';
     showApiKey: boolean = false;
     successMessage: string | null = null;
@@ -74,10 +76,12 @@ export class SettingsComponent implements OnInit {
         private dialog: MatDialog
     ) {
         this.currentTheme = this.themeService.getCurrentTheme();
+        this.currentHeaderTheme = this.themeService.getCurrentHeaderTheme();
     }
 
     ngOnInit(): void {
         this.availableThemes = this.themeService.getAvailableThemes();
+        this.availableHeaderThemes = this.themeService.getAvailableHeaderThemes();
         this.loadApiKey();
         this.loadAvailableModels();
         this.loadPromptSuggestions();
@@ -140,6 +144,32 @@ export class SettingsComponent implements OnInit {
         this.themeService.setTheme(theme);
         this.currentTheme = theme;
         this.markAsChanged();
+    }
+
+    /**
+     * Change header theme
+     */
+    changeHeaderTheme(theme: HeaderTheme): void {
+        this.themeService.setHeaderTheme(theme);
+        this.currentHeaderTheme = theme;
+        this.markAsChanged();
+    }
+
+    /**
+     * Get header theme label for display
+     */
+    getHeaderThemeLabel(theme: HeaderTheme): string {
+        const labels: Record<HeaderTheme, string> = {
+            default: 'Default',
+            christmas: '🎄 Christmas',
+            neon: '⚡ Neon',
+            ocean: '🌊 Ocean',
+            sunset: '🌅 Sunset',
+            forest: '🌲 Forest',
+            cyber: '🤖 Cyber',
+            minimal: '✨ Minimal',
+        };
+        return labels[theme] || theme;
     }
 
     /**

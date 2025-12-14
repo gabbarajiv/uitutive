@@ -1,4 +1,4 @@
-@import '../../../../shared/styles/form-table-mixins.scss';
+@use '../../../../shared/styles/form-table-mixins.scss' as form-table-mixins;
 
 .api-tracking-container {
     padding: 20px;
@@ -46,7 +46,7 @@
 
     .filters-card {
         margin-bottom: 20px;
-        @include card-container;
+        @include form-table-mixins.card-surface;
 
         .filter-form {
             display: grid;
@@ -54,10 +54,10 @@
             gap: 16px;
 
             mat-form-field {
-                @include form-field-base;
+                @include form-table-mixins.form-field-base;
 
                 body.dark-theme & {
-                    @include form-field-dark;
+                    @include form-table-mixins.form-field-dark;
                 }
             }
         }
@@ -66,42 +66,45 @@
     .metrics-card,
     .model-details {
         margin-bottom: 20px;
-        @include card-container;
+        @include form-table-mixins.card-surface;
     }
 
     .loading-card {
         margin-bottom: 20px;
-        @include loading-state;
+        background: var(--color-surface);
+        border-radius: 4px;
+        padding: 20px;
     }
 
     .metrics-grid {
-        @include metrics-grid;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 16px;
         margin-bottom: 30px;
 
         .metric {
-            @include metric-card;
+            @include form-table-mixins.metric-card;
 
             .metric-label {
-                @include metric-label;
+                @include form-table-mixins.metric-label;
             }
 
             .metric-value {
-                @include metric-value;
+                @include form-table-mixins.metric-value;
 
-                &.success,
                 &.error {
-                    @include cell-status('error');
+                    @include form-table-mixins.cell-status('error');
                 }
 
                 &.success {
-                    @include cell-status('success');
+                    @include form-table-mixins.cell-status('success');
                 }
             }
         }
     }
 
     .status-codes {
-        @include card-container;
+        @include form-table-mixins.card-surface;
         padding: 20px;
 
         h3 {
@@ -111,7 +114,7 @@
         }
 
         .status-grid {
-            @include status-grid;
+            @include form-table-mixins.status-grid;
 
             .status-item {
                 mat-chip {
@@ -129,10 +132,10 @@
     }
 
     .analytics-table {
-        @include table-base;
+        @include form-table-mixins.table-base;
 
         body.dark-theme & {
-            @include table-dark;
+            @include form-table-mixins.table-dark;
         }
 
         th {
@@ -155,23 +158,23 @@
                 &.warning,
                 &.error,
                 &.info {
-                    @include status-chip('error');
+                    @include form-table-mixins.status-chip('error');
                 }
 
                 &.success {
-                    @include status-chip('success');
+                    @include form-table-mixins.status-chip('success');
                 }
 
                 &.warning {
-                    @include status-chip('warning');
+                    @include form-table-mixins.status-chip('warning');
                 }
 
                 &.error {
-                    @include status-chip('error');
+                    @include form-table-mixins.status-chip('error');
                 }
 
                 &.info {
-                    @include status-chip('info');
+                    @include form-table-mixins.status-chip('info');
                 }
             }
 
@@ -179,23 +182,23 @@
             &.error,
             &.warning,
             &.info {
-                @include cell-status('error');
+                @include form-table-mixins.cell-status('error');
             }
 
             &.success {
-                @include cell-status('success');
+                @include form-table-mixins.cell-status('success');
             }
 
             &.error {
-                @include cell-status('error');
+                @include form-table-mixins.cell-status('error');
             }
 
             &.warning {
-                @include cell-status('warning');
+                @include form-table-mixins.cell-status('warning');
             }
 
             &.info {
-                @include cell-status('info');
+                @include form-table-mixins.cell-status('info');
             }
         }
 
@@ -212,10 +215,8 @@
     }
 
     .details-grid {
-        @include details-grid;
-
         .detail-item {
-            @include card-container;
+            @include form-table-mixins.card-surface;
             display: flex;
             justify-content: space-between;
             flex-direction: column;
@@ -231,26 +232,26 @@
                 font-weight: 600;
 
                 &.success {
-                    @include cell-status('success');
+                    @include form-table-mixins.cell-status('success');
                 }
 
                 &.error {
-                    @include cell-status('error');
+                    @include form-table-mixins.cell-status('error');
                 }
 
                 &.warning {
-                    @include cell-status('warning');
+                    @include form-table-mixins.cell-status('warning');
                 }
 
                 &.info {
-                    @include cell-status('info');
+                    @include form-table-mixins.cell-status('info');
                 }
             }
         }
     }
 
     .empty-state {
-        @include empty-state;
+        @include form-table-mixins.empty-state;
     }
 
     // Responsive Design

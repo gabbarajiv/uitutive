@@ -295,6 +295,155 @@ export class FormService {
             throw new Error(`Failed to delete submission: ${error.message}`);
         }
     }
+
+    /**
+     * Generate shareable link for a form
+     */
+    async generateShareableLink(formId: string): Promise<string> {
+        const db = getDatabase();
+        const shareableLink = uuidv4();
+        const now = new Date();
+
+        try {
+            const result = await db.run(
+                `UPDATE forms SET isPublic = true, shareableLink = ?, updated_at = ? WHERE id = ?`,
+                [shareableLink, now, formId]
+            );
+
+            // Verify the update was successful
+            if (!result || result.changes === 0) {
+                throw new Error(`Form with ID ${formId} not found or update failed`);
+            }
+
+            return shareableLink;
+        } catch (error: any) {
+            console.error(`Failed to generate shareable link for form ${formId}:`, error);
+            throw new Error(`Failed to generate shareable link: ${error.message}`);
+        }
+    }
+
+    /**
+     * Get form by shareable link
+     */
+    async getFormByLink(shareableLink: string): Promise<Form | null> {
+        const db = getDatabase();
+
+        try {
+            const result = await db.query(
+                `SELECT * FROM forms WHERE shareableLink = ? AND isPublic = true`,
+                [shareableLink]
+            );
+
+            if (!result || result.length === 0) {
+                return null;
+            }
+
+            const row = result[0];
+            return {
+                id: row.id,
+                title: row.title,
+                description: row.description,
+                fields: JSON.parse(row.fields),
+                isPublic: row.isPublic,
+                shareableLink: row.shareableLink,
+                created_at: new Date(row.created_at),
+                updated_at: new Date(row.updated_at)
+            };
+        } catch (error: any) {
+            throw new Error(`Failed to get form by link: ${error.message}`);
+        }
+    }
+
+    /**
+     * Toggle form public status
+     */
+    async toggleFormPublic(formId: string, isPublic: boolean): Promise<Form> {
+        const db = getDatabase();
+        const now = new Date();
+
+        try {
+            await db.run(
+                `UPDATE forms SET isPublic = ?, updated_at = ? WHERE id = ?`,
+                [isPublic, now, formId]
+            );
+
+            const form = await this.getForm(formId);
+            if (!form) {
+                throw new Error('Form not found after toggle');
+            }
+            return form;
+        } catch (error: any) {
+            throw new Error(`Failed to toggle form public status: ${error.message}`);
+        }
+    }
+
+    /**
+     * Create public submission (no auth required)
+     */
+    async createPublicSubmission(
+        formId: string,
+        shareableLink: string,
+        data: any,
+        userAgent?: string,
+        ipAddress?: string
+    ): Promise<any> {
+        const id = uuidv4();
+        const db = getDatabase();
+        const now = new Date();
+
+        try {
+            // Store as public submission
+            await db.run(
+                `INSERT INTO public_submissions (id, form_id, shareable_link, submission_data, ip_address, user_agent, submitted_at, created_at) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                [id, formId, shareableLink, JSON.stringify(data), ipAddress, userAgent, now, now]
+            );
+
+            // Also save to regular submissions with public source
+            const submissionId = uuidv4();
+            await db.run(
+                `INSERT INTO submissions (id, form_id, data, status, submission_source, user_agent, ip_address, submitted_at, created_at) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                [submissionId, formId, JSON.stringify(data), 'new', 'public', userAgent, ipAddress, now, now]
+            );
+
+            return {
+                id,
+                form_id: formId,
+                shareable_link: shareableLink,
+                submission_data: data,
+                ip_address: ipAddress,
+                user_agent: userAgent,
+                submitted_at: now,
+                created_at: now
+            };
+        } catch (error: any) {
+            throw new Error(`Failed to create public submission: ${error.message}`);
+        }
+    }
+
+    /**
+     * Remove shareable link (make form private)
+     */
+    async removeShareableLink(formId: string): Promise<Form> {
+        const db = getDatabase();
+        const now = new Date();
+
+        try {
+            await db.run(
+                `UPDATE forms SET isPublic = false, shareableLink = NULL, updated_at = ? WHERE id = ?`,
+                [now, formId]
+            );
+
+            const form = await this.getForm(formId);
+            if (!form) {
+                throw new Error('Form not found after removing link');
+            }
+            return form;
+        } catch (error: any) {
+            throw new Error(`Failed to remove shareable link: ${error.message}`);
+        }
+    }
 }
 
 export const formService = new FormService();

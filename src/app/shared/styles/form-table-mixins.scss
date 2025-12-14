@@ -392,10 +392,114 @@
     padding: 40px 20px;
     background-color: var(--color-surface);
     border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+
+    .empty-icon {
+        font-size: 64px;
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 16px;
+        color: rgba(99, 102, 241, 0.4);
+    }
+
+    .empty-title {
+        font-size: 18px;
+        font-weight: 500;
+        margin: 8px 0 16px 0;
+        color: var(--color-text);
+    }
 
     p {
         color: var(--color-text-secondary);
         font-size: var(--font-size-base);
         margin: 0;
+    }
+}
+
+/// Loading container styling
+@mixin loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+    background-color: var(--color-background);
+
+    mat-spinner {
+        display: flex;
+        margin: 0 auto;
+    }
+}
+
+/// Page header/title styling
+@mixin page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--color-border);
+
+    h1 {
+        margin: 0;
+        color: var(--color-text);
+        font-size: 28px;
+        font-weight: 600;
+    }
+}
+
+/// Filter/search section styling
+@mixin filter-section {
+    background: var(--color-surface);
+    border-radius: 4px;
+    padding: 16px;
+    margin-bottom: 24px;
+    border: 1px solid var(--color-border);
+    transition: all var(--transition-base);
+
+    .filter-form {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+
+        mat-form-field {
+            flex: 1;
+            min-width: 150px;
+            color: var(--color-text);
+
+            &.search-field {
+                min-width: 250px;
+            }
+        }
+
+        .clear-button {
+            height: auto;
+            align-self: auto;
+        }
+    }
+}
+
+/// Card/container with dark theme support
+@mixin card-surface {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all var(--transition-base);
+
+    body.dark-theme & {
+        background: var(--color-surface);
+        border-color: var(--color-border);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    &:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+
+        body.dark-theme & {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
     }
 }

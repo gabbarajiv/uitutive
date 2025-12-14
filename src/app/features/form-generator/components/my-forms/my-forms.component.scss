@@ -137,11 +137,6 @@
                 }
             }
         }
-
-        mat-paginator {
-            border-top: 1px solid var(--color-border);
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.02) 0%, rgba(99, 102, 241, 0) 100%);
-        }
     }
 }
 
@@ -249,25 +244,6 @@ body[data-theme="dark"] {
                         }
                     }
                 }
-
-                mat-paginator {
-                    border-top-color: var(--color-border) !important;
-                    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(99, 102, 241, 0) 100%) !important;
-
-                    ::ng-deep {
-                        .mat-mdc-paginator-container {
-                            background: transparent !important;
-                        }
-
-                        .mat-mdc-paginator-button {
-                            color: #ffffff !important;
-                        }
-
-                        .mat-mdc-paginator-label {
-                            color: #ffffff !important;
-                        }
-                    }
-                }
             }
         }
 
@@ -353,29 +329,14 @@ body[data-theme="dark"] {
                 }
             }
 
-            mat-paginator {
-                border-top-color: var(--color-border);
-                background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(99, 102, 241, 0) 100%);
+            .action-buttons {
+                button {
+                    color: #a5b4fc;
 
-                ::ng-deep {
-                    .mat-mdc-paginator-container {
-                        background: transparent;
-                    }
-
-                    .mat-mdc-paginator-button {
-                        color: #ffffff;
+                    &:hover {
+                        background-color: rgba(99, 102, 241, 0.15);
                     }
                 }
-            }
-        }
-    }
-
-    .action-buttons {
-        button {
-            color: #a5b4fc;
-
-            &:hover {
-                background-color: rgba(99, 102, 241, 0.15);
             }
         }
     }

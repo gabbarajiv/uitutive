@@ -1,3 +1,5 @@
+@use '../../../../shared/styles/form-table-mixins.scss' as form-table-mixins;
+
 .response-list-container {
     display: flex;
     flex-direction: column;
@@ -19,21 +21,6 @@
     align-items: center;
     margin-bottom: 1.5rem;
     gap: 1rem;
-
-    .header-actions {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-
-        .action-button {
-            display: flex;
-            gap: 8px;
-        }
-    }
-}
-
-/* Dark theme for header */
-:host-context(body[data-theme="dark"]) .response-header {
     background: var(--color-surface);
     padding: 16px;
     border-radius: 4px;
@@ -44,8 +31,19 @@
         color: var(--color-text);
     }
 
-    .header-actions button {
-        color: var(--color-text);
+    .header-actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+
+        .action-button {
+            display: flex;
+            gap: 8px;
+        }
+
+        button {
+            color: var(--color-text);
+        }
     }
 }
 
@@ -54,57 +52,10 @@
 /* ============================================================ */
 
 .filter-section {
-    background: var(--color-surface);
-    border-radius: 4px;
-    padding: 16px;
-    margin-bottom: 24px;
-    border: 1px solid var(--color-border);
-    transition: all var(--transition-base);
+    @include form-table-mixins.filter-section;
 
-    .filter-form {
-        display: flex;
-        gap: 16px;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: center;
-
-
-        mat-form-field {
-            flex: 1;
-            min-width: 150px;
-            color: var(--color-text);
-
-            &.search-field {
-                min-width: 250px;
-            }
-        }
-
-        .clear-button {
-            height: auto;
-            align-self: auto;
-        }
-    }
-}
-
-/* Dark theme for filter section */
-:host-context(body[data-theme="dark"]) .filter-section {
-    background: var(--color-surface);
-    border-color: var(--color-border);
-
-    .filter-form {
-        mat-form-field {
-            color: #ffffff;
-
-            ::ng-deep {
-                .mat-mdc-text-field-wrapper {
-                    color: #ffffff;
-                }
-
-                .mat-mdc-form-field-error {
-                    color: #ffffff;
-                }
-            }
-        }
+    mat-form-field {
+        color: var(--color-text);
     }
 }
 
@@ -280,48 +231,17 @@
 /* ============================================================ */
 
 .empty-state {
+    @include form-table-mixins.empty-state;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 60px 24px;
     text-align: center;
-    color: rgba(0, 0, 0, 0.54);
-    background: #ffffff;
-    border-radius: 8px;
-    border: 1px solid #e0e0e0;
-
-    .empty-icon {
-        font-size: 64px;
-        width: 64px;
-        height: 64px;
-        margin-bottom: 16px;
-        color: rgba(0, 0, 0, 0.26);
-    }
-
-    .empty-title {
-        font-size: 18px;
-        font-weight: 500;
-        margin: 8px 0;
-        color: rgba(0, 0, 0, 0.87);
-    }
 
     .empty-text {
         font-size: 14px;
         margin: 0;
         max-width: 400px;
-        color: rgba(0, 0, 0, 0.54);
-    }
-}
-
-/* ============================================================ */
-/* PAGINATOR */
-/* ============================================================ */
-
-::ng-deep {
-    .mat-mdc-paginator {
-        background-color: #fafafa;
-        border-top: 1px solid #e0e0e0;
     }
 }
 

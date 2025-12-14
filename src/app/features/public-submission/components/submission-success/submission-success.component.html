@@ -1,0 +1,31 @@
+<div class="success-container">
+    <mat-card class="success-card">
+        <mat-card-content class="success-content">
+            <!-- Success Icon -->
+            <div class="success-icon">
+                <mat-icon>check_circle</mat-icon>
+            </div>
+
+            <!-- Success Message -->
+            <h1 class="success-title">Form Submitted Successfully!</h1>
+            <p class="success-message">
+                Thank you for submitting the form. Your response has been recorded.
+            </p>
+
+            <!-- Actions -->
+            <div class="success-actions">
+                <button mat-raised-button color="primary" (click)="submitAnother()" class="action-button">
+                    Submit Another Response
+                </button>
+                <button mat-stroked-button (click)="goHome()" class="action-button">
+                    Go Home
+                </button>
+            </div>
+
+            <!-- Footer -->
+            <p class="success-footer">
+                Powered by Uitutive
+            </p>
+        </mat-card-content>
+    </mat-card>
+</div>

@@ -37,6 +37,23 @@
 
                 <div class="setting-item">
                     <div class="setting-label">
+                        <h3>Header Theme</h3>
+                        <p class="description">Customize your header appearance with different themes</p>
+                    </div>
+                    <mat-form-field appearance="outline" class="theme-select">
+                        <mat-label>Header Theme</mat-label>
+                        <mat-select [value]="currentHeaderTheme" (selectionChange)="changeHeaderTheme($event.value)">
+                            <mat-option *ngFor="let theme of availableHeaderThemes" [value]="theme">
+                                {{ getHeaderThemeLabel(theme) }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
+                <mat-divider class="inner-divider"></mat-divider>
+
+                <div class="setting-item">
+                    <div class="setting-label">
                         <h3>Theme Preview</h3>
                         <p class="description">Preview of current theme colors</p>
                     </div>

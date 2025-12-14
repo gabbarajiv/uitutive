@@ -671,6 +671,13 @@ body.dark-theme {
                 border-color: var(--color-error) !important;
             }
         }
+
+        // ====================================
+        // Specific MDC Form Field Styling
+        // ====================================
+        &.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field.mat-mdc-form-field .mdc-notched-outline__notch {
+            border-left: none;
+        }
     }
 
     .mdc-floating-label {
@@ -1153,8 +1160,10 @@ thead th,
 }
 
 // ====================================
-// Paginator
+// Paginator (Global Styles for All Components)
 // ====================================
+
+// Legacy mat-paginator
 .mat-paginator {
     background-color: var(--color-surface) !important;
     color: var(--color-text) !important;
@@ -1179,19 +1188,39 @@ thead th,
     .mat-paginator-range-label {
         color: var(--color-text) !important;
     }
+}
 
-    .mat-mdc-paginator-container {
-        background-color: var(--color-surface) !important;
-        color: var(--color-text) !important;
+// New mat-mdc-paginator (Material v14+)
+.mat-mdc-paginator {
+    background-color: var(--color-surface) !important;
+    border-top: 1px solid var(--color-border) !important;
+    color: var(--color-text) !important;
+}
 
-        .mat-mdc-paginator-page-size {
-            color: var(--color-text) !important;
-        }
+.mat-mdc-paginator-container {
+    background-color: var(--color-surface) !important;
+    color: var(--color-text) !important;
+}
 
-        .mat-mdc-paginator-range-label {
-            color: var(--color-text) !important;
+.mat-mdc-paginator-button {
+    color: var(--color-text) !important;
+
+    &:disabled {
+        color: rgba(0, 0, 0, 0.26) !important;
+
+        body.dark-theme & {
+            color: rgba(255, 255, 255, 0.38) !important;
         }
     }
+}
+
+.mat-mdc-paginator-label {
+    color: var(--color-text) !important;
+}
+
+.mat-mdc-paginator-page-size-label,
+.mat-mdc-paginator-range-label {
+    color: var(--color-text) !important;
 }
 
 

@@ -87,6 +87,22 @@
                                     <span>Export as JSON</span>
                                 </button>
                                 <mat-divider></mat-divider>
+                                <button mat-menu-item *ngIf="!hasShareableLink(element)"
+                                    (click)="generateShareableLink(element)">
+                                    <mat-icon>share</mat-icon>
+                                    <span>Generate Public Link</span>
+                                </button>
+                                <button mat-menu-item *ngIf="hasShareableLink(element)"
+                                    (click)="copyPublicLink(element)">
+                                    <mat-icon>content_copy</mat-icon>
+                                    <span>Copy Public Link</span>
+                                </button>
+                                <button mat-menu-item *ngIf="hasShareableLink(element)"
+                                    (click)="removeShareableLink(element)">
+                                    <mat-icon>link_off</mat-icon>
+                                    <span>Remove Public Link</span>
+                                </button>
+                                <mat-divider></mat-divider>
                                 <button mat-menu-item color="warn" (click)="deleteForm(element)">
                                     <mat-icon>delete</mat-icon>
                                     <span>Delete</span>

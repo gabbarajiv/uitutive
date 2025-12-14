@@ -69,6 +69,8 @@ export interface FormConfig {
     updatedAt?: Date;
     tags?: string[];
     template?: boolean;
+    shareableLink?: string;
+    isPublic?: boolean;
 }
 
 /**

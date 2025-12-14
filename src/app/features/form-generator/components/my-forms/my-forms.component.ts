@@ -227,4 +227,108 @@ export class MyFormsComponent implements OnInit, OnDestroy {
     createNewForm(): void {
         this.router.navigate(['/form-generator']);
     }
+
+    /**
+     * Generate shareable link for a form
+     */
+    generateShareableLink(form: FormConfig): void {
+        this.isLoading = true;
+        this.cdr.markForCheck();
+
+        this.formService.generateShareableLink(form.id)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (response: any) => {
+                    if (response.success && response.data) {
+                        const shareableLink = response.data.shareableLink;
+                        const publicUrl = `${window.location.origin}/submit/${shareableLink}`;
+
+                        // Copy to clipboard
+                        navigator.clipboard.writeText(publicUrl).then(() => {
+                            this.snackBar.open('Public link copied to clipboard!', 'Close', { duration: 3000 });
+                        }).catch(() => {
+                            this.snackBar.open(`Public link: ${publicUrl}`, 'Copy', { duration: 5000 });
+                        });
+
+                        // Update the form in the list
+                        const updatedForm = { ...form, shareableLink, isPublic: true };
+                        const index = this.dataSource.findIndex(f => f.id === form.id);
+                        if (index !== -1) {
+                            this.dataSource[index] = updatedForm;
+                            this.cdr.markForCheck();
+                        }
+                    } else {
+                        console.warn('Unexpected response format:', response);
+                        this.snackBar.open('Unexpected response from server', 'Close', { duration: 3000 });
+                    }
+                    this.isLoading = false;
+                    this.cdr.markForCheck();
+                },
+                error: (error) => {
+                    console.error('Failed to generate link:', error);
+                    const errorMessage = error?.error?.error || error?.message || 'Failed to generate public link';
+                    this.snackBar.open(errorMessage, 'Close', { duration: 3000 });
+                    this.isLoading = false;
+                    this.cdr.markForCheck();
+                }
+            });
+    }
+
+    /**
+     * Remove shareable link for a form
+     */
+    removeShareableLink(form: FormConfig): void {
+        const confirmed = confirm(
+            'Are you sure you want to remove the public link? This will disable public access to this form.'
+        );
+        if (!confirmed) return;
+
+        this.isLoading = true;
+        this.cdr.markForCheck();
+
+        this.formService.removeShareableLink(form.id)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: () => {
+                    this.snackBar.open('Public link removed', 'Close', { duration: 3000 });
+
+                    // Update the form in the list
+                    const updatedForm = { ...form, shareableLink: undefined, isPublic: false };
+                    const index = this.dataSource.findIndex(f => f.id === form.id);
+                    if (index !== -1) {
+                        this.dataSource[index] = updatedForm;
+                        this.cdr.markForCheck();
+                    }
+                    this.isLoading = false;
+                    this.cdr.markForCheck();
+                },
+                error: (error) => {
+                    console.error('Failed to remove link:', error);
+                    this.snackBar.open('Failed to remove public link', 'Close', { duration: 3000 });
+                    this.isLoading = false;
+                    this.cdr.markForCheck();
+                }
+            });
+    }
+
+    /**
+     * Copy public link to clipboard
+     */
+    copyPublicLink(form: FormConfig): void {
+        if (!form.shareableLink) return;
+
+        const publicUrl = `${window.location.origin}/submit/${form.shareableLink}`;
+        navigator.clipboard.writeText(publicUrl).then(() => {
+            this.snackBar.open('Public link copied to clipboard!', 'Close', { duration: 3000 });
+        }).catch(() => {
+            this.snackBar.open('Failed to copy link', 'Close', { duration: 3000 });
+        });
+    }
+
+    /**
+     * Check if form has a shareable link
+     */
+    hasShareableLink(form: FormConfig): boolean {
+        return !!(form as any).shareableLink;
+    }
 }

@@ -1,11 +1,14 @@
 import { Injectable, signal, computed, effect } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { FormConfig, FormSubmission, FormValidationError, FormState } from '../models/form.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
     providedIn: 'root',
 })
 export class FormService {
+    private apiUrl = `${environment.apiUrl}`;
     // Signals for optimal performance with zoneless change detection
     private formsSignal = signal<FormConfig[]>([]);
     private currentFormSignal = signal<FormConfig | null>(null);
@@ -46,7 +49,7 @@ export class FormService {
 
     private submissionsMap = new Map<string, FormSubmission[]>();
 
-    constructor() {
+    constructor(private http: HttpClient) {
         this.loadFormsFromStorage();
 
         // Sync signals to observables for backward compatibility
@@ -312,5 +315,26 @@ export class FormService {
                 }
             }
         }
+    }
+
+    /**
+     * Generate shareable link for a form
+     */
+    generateShareableLink(formId: string): Observable<any> {
+        return this.http.post(`${this.apiUrl}/forms/${formId}/generate-link`, {});
+    }
+
+    /**
+     * Remove shareable link from a form
+     */
+    removeShareableLink(formId: string): Observable<any> {
+        return this.http.delete(`${this.apiUrl}/forms/${formId}/remove-link`);
+    }
+
+    /**
+     * Toggle form public status
+     */
+    toggleFormPublic(formId: string, isPublic: boolean): Observable<any> {
+        return this.http.post(`${this.apiUrl}/forms/${formId}/toggle-public`, { isPublic });
     }
 }

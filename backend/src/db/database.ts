@@ -96,6 +96,8 @@ async function createSqliteTables(db: any): Promise<void> {
       title TEXT NOT NULL,
       description TEXT,
       fields JSON NOT NULL,
+      isPublic BOOLEAN DEFAULT 0,
+      shareableLink TEXT UNIQUE,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
@@ -106,8 +108,22 @@ async function createSqliteTables(db: any): Promise<void> {
       form_id TEXT NOT NULL,
       data JSON NOT NULL,
       status TEXT DEFAULT 'new',
+      submission_source TEXT DEFAULT 'admin',
       user_agent TEXT,
       ip_address TEXT,
+      submitted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(form_id) REFERENCES forms(id) ON DELETE CASCADE
+    );
+
+    -- Public form submissions
+    CREATE TABLE IF NOT EXISTS public_submissions (
+      id TEXT PRIMARY KEY,
+      form_id TEXT NOT NULL,
+      shareable_link TEXT NOT NULL,
+      submission_data JSON NOT NULL,
+      ip_address TEXT,
+      user_agent TEXT,
       submitted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY(form_id) REFERENCES forms(id) ON DELETE CASCADE
@@ -180,6 +196,8 @@ async function createPostgresTables(pool: Pool): Promise<void> {
       title TEXT NOT NULL,
       description TEXT,
       fields JSONB NOT NULL,
+      isPublic BOOLEAN DEFAULT false,
+      shareableLink TEXT UNIQUE,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
@@ -190,8 +208,22 @@ async function createPostgresTables(pool: Pool): Promise<void> {
       form_id TEXT NOT NULL,
       data JSONB NOT NULL,
       status TEXT DEFAULT 'new',
+      submission_source TEXT DEFAULT 'admin',
       user_agent TEXT,
       ip_address TEXT,
+      submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(form_id) REFERENCES forms(id) ON DELETE CASCADE
+    );
+
+    -- Public form submissions
+    CREATE TABLE IF NOT EXISTS public_submissions (
+      id TEXT PRIMARY KEY,
+      form_id TEXT NOT NULL,
+      shareable_link TEXT NOT NULL,
+      submission_data JSONB NOT NULL,
+      ip_address TEXT,
+      user_agent TEXT,
       submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY(form_id) REFERENCES forms(id) ON DELETE CASCADE
